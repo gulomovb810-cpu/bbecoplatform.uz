@@ -11,6 +11,9 @@ bbecoplatform.uz — ekologik muammolar haqida bir daqiqada xabar berish ilovasi
 | `supabase/functions/` | Edge Functions: `eco-ai` (Claude), `ingest-detections`, `inbound-report` |
 | `docs/SUPABASE_SETUP.md` | Ulash va joylash bo‘yicha qadamma-qadam yo‘riqnoma |
 | `docs/SATELLITE.md` | Sun’iy yo‘ldosh + ML pipeline’ni ulash |
+| `dist/eco-report.html` | **Yuklab olinadigan mobil ilova** — bitta fayl (barcha kod ichida) |
+| `dist/eco-admin.html` | **Yuklab olinadigan admin panel** — bitta fayl |
+| `tools/build_single.py` | `dist/` fayllarini qayta yig‘ish: `python3 tools/build_single.py` |
 
 ## Imkoniyatlar
 ### Mobil ilova
@@ -35,3 +38,9 @@ bbecoplatform.uz — ekologik muammolar haqida bir daqiqada xabar berish ilovasi
 
 `config.js` to‘ldirilmaguncha ilova va panel **demo rejimda** namunaviy ma’lumotlar bilan ishlaydi.
 Ulash tartibi: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
+
+## Bitta faylli versiya
+`dist/` papkasidagi fayllar sizga yuborilgan asl ilova kabi **bitta HTML fayl**: yuklab oling va brauzerda oching yoki hostingga qo‘ying.
+Supabase’ga ulash uchun fayl boshidagi `window.ECO_CONFIG` blokiga Project URL va anon key’ni yozing (ikkala faylda ham).
+Telefonda brauzer menyusidagi **“Bosh ekranga qo‘shish”** orqali ilova sifatida o‘rnatiladi.
+Manba fayllar o‘zgarsa, `python3 tools/build_single.py` bilan qayta yig‘ing.

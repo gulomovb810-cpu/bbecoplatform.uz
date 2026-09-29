@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1B4332">
+<title>EcoAdmin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<style>/* admin.css */
+:root{
+  --bg:#F3F6F4; --surface:#FFFFFF; --surface-2:#F7FAF8; --line:#E1E8E4; --line-strong:#C9D5CE;
+  --ink:#10231A; --ink-2:#44564C; --ink-3:#6E7F75;
+  --brand:#1B4332; --brand-2:#2D6A4F; --accent:#40916C; --accent-soft:#E3F2EA;
+  --danger:#C0392B; --danger-soft:#FBE9E7; --warn:#B7791F; --warn-soft:#FDF3E1;
+  --s0:#2563EB; --s1:#D97706; --s2:#7C3AED; --s3:#16A34A; --s4:#0F766E; --sx:#9CA3AF;
+  --radius:14px; --shadow:0 1px 2px rgba(16,35,26,.06), 0 6px 20px rgba(16,35,26,.06);
+  --font-head:'Manrope',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1612; --surface:#14201A; --surface-2:#18261F; --line:#24352C; --line-strong:#32483C;
+    --ink:#E6F0EA; --ink-2:#B3C4BA; --ink-3:#86998E;
+    --brand:#74C69D; --brand-2:#52B788; --accent:#52B788; --accent-soft:#1C3328;
+    --danger:#F0776A; --danger-soft:#3A1F1C; --warn:#F2B654; --warn-soft:#3A2E17;
+    --s0:#60A5FA; --s1:#FBBF24; --s2:#A78BFA; --s3:#4ADE80; --s4:#2DD4BF; --sx:#6B7280;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1612; --surface:#14201A; --surface-2:#18261F; --line:#24352C; --line-strong:#32483C;
+  --ink:#E6F0EA; --ink-2:#B3C4BA; --ink-3:#86998E;
+  --brand:#74C69D; --brand-2:#52B788; --accent:#52B788; --accent-soft:#1C3328;
+  --danger:#F0776A; --danger-soft:#3A1F1C; --warn:#F2B654; --warn-soft:#3A2E17;
+  --s0:#60A5FA; --s1:#FBBF24; --s2:#A78BFA; --s3:#4ADE80; --s4:#2DD4BF; --sx:#6B7280;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25); color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0; height:100%}
+body{background:var(--bg); color:var(--ink); font:14px/1.5 var(--font-body); -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-head); margin:0; letter-spacing:-.01em}
+a{color:var(--brand-2)}
+code{background:var(--surface-2); border:1px solid var(--line); padding:1px 5px; border-radius:6px; font-size:12px}
+[hidden]{display:none !important}
+.muted{color:var(--ink-3)} .small{font-size:12px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- buttons & inputs ---------- */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid var(--line-strong); background:var(--surface);
+  color:var(--ink); padding:8px 14px; border-radius:10px; font:600 13px var(--font-body); cursor:pointer; white-space:nowrap; text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+.btn-primary{background:var(--brand); border-color:var(--brand); color:#fff}
+:root[data-theme="dark"] .btn-primary{color:#0D1612}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .btn-primary{color:#0D1612} }
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-danger{color:var(--danger); border-color:var(--danger)}
+.btn-danger:hover{background:var(--danger-soft)}
+.btn-ghost{background:transparent; border-color:transparent; color:var(--ink-2)}
+.btn-ghost:hover{background:var(--surface-2); border-color:var(--line)}
+.btn-sm{padding:5px 10px; font-size:12px; border-radius:8px}
+.btn-block{width:100%}
+.icon-btn{width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; font-size:16px; display:inline-flex; align-items:center; justify-content:center}
+.icon-btn:hover{border-color:var(--accent)}
+input,select,textarea{font:14px var(--font-body); color:var(--ink); background:var(--surface); border:1px solid var(--line-strong); border-radius:10px; padding:8px 10px; outline:none; min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical; min-height:80px; width:100%}
+.field{display:flex; flex-direction:column; gap:5px; margin-bottom:12px}
+.field>span{font-size:12px; font-weight:600; color:var(--ink-2)}
+.field input,.field select,.field textarea{width:100%}
+.form-error{color:var(--danger); font-size:13px; min-height:18px; margin-bottom:6px}
+.switch{position:relative; display:inline-block; width:42px; height:24px; flex:none}
+.switch input{opacity:0; width:0; height:0}
+.switch i{position:absolute; inset:0; background:var(--line-strong); border-radius:24px; transition:.2s; cursor:pointer}
+.switch i:before{content:""; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s}
+.switch input:checked+i{background:var(--accent)}
+.switch input:checked+i:before{transform:translateX(18px)}
+
+/* ---------- login ---------- */
+.login-view{min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px 16px;
+  background:radial-gradient(1200px 600px at 10% -10%, var(--accent-soft), transparent), var(--bg)}
+.login-card{width:100%; max-width:380px; background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:28px; box-shadow:var(--shadow)}
+.brand{display:flex; align-items:center; gap:10px}
+.brand b{display:block; font-family:var(--font-head); font-size:15px}
+.brand small{display:block; color:var(--ink-3); font-size:12px}
+.brand-mark{width:36px; height:36px; border-radius:10px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; font-size:18px}
+.brand-lg{margin-bottom:22px}
+
+/* ---------- shell ---------- */
+.shell{display:flex; min-height:100%}
+.sidebar{width:248px; flex:none; background:var(--surface); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:18px 12px; position:sticky; top:0; height:100vh}
+.sidebar .brand{padding:0 8px 18px}
+.nav{display:flex; flex-direction:column; gap:2px; flex:1; overflow:auto}
+.nav a{display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:10px; color:var(--ink-2); text-decoration:none; font-weight:500}
+.nav a:hover{background:var(--surface-2); color:var(--ink)}
+.nav a.active{background:var(--accent-soft); color:var(--brand); font-weight:600}
+.nav .ico{width:22px; text-align:center}
+.badge{margin-left:auto; background:var(--danger); color:#fff; font-style:normal; font-size:11px; font-weight:700; border-radius:20px; padding:1px 7px}
+.sidebar-foot{border-top:1px solid var(--line); padding-top:12px; display:flex; flex-direction:column; gap:8px}
+.me{display:flex; align-items:center; gap:10px; padding:0 6px}
+.avatar{width:32px; height:32px; border-radius:50%; background:var(--brand-2); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex:none}
+.me b{display:block; font-size:13px} .me small{color:var(--ink-3); font-size:11px; text-transform:uppercase; letter-spacing:.04em}
+.main{flex:1; min-width:0; display:flex; flex-direction:column}
+.topbar{display:flex; align-items:center; gap:12px; padding:16px 24px; border-bottom:1px solid var(--line); background:var(--surface); position:sticky; top:0; z-index:500}
+.topbar-title{flex:1; min-width:0}
+.topbar-title h1{font-size:19px}
+.topbar-title p{margin:0; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.topbar-actions{display:flex; align-items:center; gap:8px}
+.live{display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-3); padding:0 8px}
+.live i{width:8px; height:8px; border-radius:50%; background:var(--sx)}
+.live.on i{background:var(--s3); box-shadow:0 0 0 3px color-mix(in srgb, var(--s3) 25%, transparent)}
+.live.demo i{background:var(--warn)}
+.demo-banner{margin:16px 24px 0; padding:10px 14px; border-radius:12px; background:var(--warn-soft); color:var(--ink); border:1px solid color-mix(in srgb, var(--warn) 40%, transparent); font-size:13px}
+.page{padding:20px 24px 40px; display:none}
+.page.active{display:block}
+.only-mobile{display:none}
+.scrim{display:none}
+
+/* ---------- cards / grid ---------- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+.card-h{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px 0}
+.card-h h3{font-size:15px}
+.card-b{padding:14px 16px 16px}
+.grid{display:grid; gap:16px}
+.g-kpi{grid-template-columns:repeat(auto-fill, minmax(190px,1fr))}
+.g-2{grid-template-columns:repeat(2, minmax(0,1fr))}
+.g-3{grid-template-columns:2fr 1fr}
+.mt{margin-top:16px}
+.kpi{padding:14px 16px}
+.kpi .k-label{font-size:12px; color:var(--ink-3); font-weight:500; display:flex; align-items:center; gap:6px}
+.kpi .k-val{font-family:var(--font-head); font-size:28px; font-weight:800; margin-top:4px; font-variant-numeric:tabular-nums}
+.kpi .k-sub{font-size:12px; color:var(--ink-3)}
+.kpi.clickable{cursor:pointer} .kpi.clickable:hover{border-color:var(--accent)}
+.dot{width:8px; height:8px; border-radius:50%; display:inline-block; flex:none}
+.alert-row{display:flex; gap:10px; flex-wrap:wrap}
+.alert{display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; background:var(--warn-soft); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); cursor:pointer; font-size:13px}
+.alert.ok{background:var(--accent-soft); border-color:color-mix(in srgb, var(--accent) 35%, transparent); cursor:default}
+.chart-box{position:relative; height:280px}
+.chart-box.tall{height:420px}
+
+/* bars */
+.bars{display:flex; flex-direction:column; gap:8px}
+.bar-row{display:grid; grid-template-columns:150px 1fr 44px; gap:10px; align-items:center; font-size:13px}
+.bar-row .lbl{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink-2)}
+.bar-track{display:block; height:10px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line)}
+.bar-fill{display:block; height:100%; background:var(--accent); border-radius:6px}
+.bar-row .v{text-align:right; font-weight:600; font-variant-numeric:tabular-nums}
+
+/* ---------- toolbar / table ---------- */
+.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px}
+.toolbar .grow{flex:1 1 220px}
+.toolbar input[type=search]{width:100%}
+.toolbar select{max-width:190px}
+.table-wrap{overflow:auto; border-radius:var(--radius)}
+table.tbl{width:100%; border-collapse:collapse; font-size:13px}
+.tbl th{position:sticky; top:0; background:var(--surface-2); text-align:left; font-weight:600; color:var(--ink-2); font-size:12px; padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
+.tbl td{padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr.row-click{cursor:pointer}
+.tbl tbody tr.row-click:hover{background:var(--surface-2)}
+.tbl .desc{max-width:340px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tbl .nowrap{white-space:nowrap}
+.tbl input[type=checkbox]{width:16px; height:16px}
+.case-no{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; font-weight:600}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;
+  background:color-mix(in srgb, var(--c, var(--sx)) 14%, transparent); color:var(--c, var(--ink-2))}
+.pill .dot{background:var(--c)}
+.chip{display:inline-block; white-space:nowrap; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; background:var(--surface-2); border:1px solid var(--line); color:var(--ink-2); margin:1px 2px 1px 0}
+.prio-1{color:var(--warn); font-weight:700} .prio-2{color:var(--danger); font-weight:700}
+.pager{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; border-top:1px solid var(--line); font-size:13px; flex-wrap:wrap}
+.pager .pg-btns{display:flex; gap:6px}
+.bulk{display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--accent-soft); border-radius:12px; margin-bottom:12px; flex-wrap:wrap}
+.empty{padding:40px 16px; text-align:center; color:var(--ink-3)}
+.tabs{display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--line); padding:4px; border-radius:12px; flex-wrap:wrap}
+.tabs button{border:0; background:transparent; padding:6px 12px; border-radius:8px; font:600 13px var(--font-body); color:var(--ink-2); cursor:pointer}
+.tabs button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
+.tabs button em{font-style:normal; color:var(--ink-3); font-weight:500; margin-left:4px}
+
+/* heat table */
+.heat td,.heat th{text-align:center}
+.heat td:first-child,.heat th:first-child{text-align:left}
+.heat td.h{font-weight:600; font-variant-numeric:tabular-nums}
+
+/* ---------- drawer / modal ---------- */
+.drawer-wrap,.modal-wrap{position:fixed; inset:0; z-index:2000}
+.drawer-scrim{position:absolute; inset:0; background:rgba(8,20,14,.45)}
+.drawer{position:absolute; right:0; top:0; bottom:0; width:min(620px, 100%); background:var(--bg); overflow:auto; box-shadow:-10px 0 40px rgba(0,0,0,.2); animation:slideIn .2s ease}
+@keyframes slideIn{from{transform:translateX(30px); opacity:.5}}
+.drawer-h{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:10px; padding:14px 18px; background:var(--surface); border-bottom:1px solid var(--line)}
+.drawer-h h2{font-size:17px; flex:1}
+.drawer-b{padding:16px 18px 40px; display:flex; flex-direction:column; gap:14px}
+.media-box{border-radius:var(--radius); overflow:hidden; background:var(--surface-2); border:1px solid var(--line); min-height:160px; display:flex; align-items:center; justify-content:center; color:var(--ink-3)}
+.media-box img,.media-box video{width:100%; max-height:380px; object-fit:contain; display:block; background:#000; cursor:zoom-in}
+.meta{display:grid; grid-template-columns:130px 1fr; gap:8px 12px; font-size:13px}
+.meta dt{color:var(--ink-3)} .meta dd{margin:0; word-break:break-word}
+.mini-map{position:relative; z-index:0; height:200px; border-radius:12px; overflow:hidden; border:1px solid var(--line)}
+.timeline{list-style:none; margin:0; padding:0}
+.timeline li{position:relative; padding:0 0 14px 22px; font-size:13px}
+.timeline li:before{content:""; position:absolute; left:5px; top:6px; width:9px; height:9px; border-radius:50%; background:var(--c, var(--accent))}
+.timeline li:after{content:""; position:absolute; left:9px; top:18px; bottom:0; width:1px; background:var(--line)}
+.timeline li:last-child:after{display:none}
+.timeline time{display:block; color:var(--ink-3); font-size:12px}
+.stepper{display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-bottom:12px}
+.stepper button{border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 4px; font:600 11px var(--font-body); color:var(--ink-2); cursor:pointer; line-height:1.25}
+.stepper button.on{background:color-mix(in srgb, var(--c) 16%, var(--surface)); border-color:var(--c); color:var(--c)}
+.row{display:flex; gap:10px; flex-wrap:wrap}
+.row>*{flex:1 1 180px}
+.modal{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(560px, calc(100% - 32px)); max-height:calc(100% - 32px); overflow:auto; background:var(--surface); border-radius:18px; box-shadow:var(--shadow)}
+.modal header{display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--line)}
+.modal header h3{font-size:16px}
+.modal-body{padding:16px 18px}
+.modal footer{display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--line)}
+.checks{display:flex; flex-wrap:wrap; gap:6px}
+.checks label{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--line); border-radius:10px; cursor:pointer; font-size:13px}
+.lightbox{position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; padding:16px; cursor:zoom-out}
+.lightbox img,.lightbox video{max-width:100%; max-height:100%}
+
+/* ---------- map ---------- */
+.page-map.active{display:flex; flex-direction:column}
+.map-wrap{position:relative; z-index:0; height:calc(100vh - 250px); min-height:420px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--line)}
+#bigMap{position:absolute; inset:0}
+.map-legend{position:absolute; z-index:800; left:12px; bottom:12px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:12px; box-shadow:var(--shadow)}
+.map-legend div{display:flex; align-items:center; gap:6px}
+.leaflet-popup-content{font:13px/1.45 var(--font-body)}
+.leaflet-container{background:var(--surface-2); font-family:var(--font-body)}
+
+/* ---------- settings ---------- */
+.set-list{display:flex; flex-direction:column}
+.set-item{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--line)}
+.set-item:last-child{border-bottom:none}
+.set-item b{display:block}
+.set-item p{margin:2px 0 0; color:var(--ink-3); font-size:12px}
+.set-item input[type=number]{width:90px}
+
+/* ---------- toasts / boot ---------- */
+.toasts{position:fixed; right:16px; bottom:16px; z-index:4000; display:flex; flex-direction:column; gap:8px; max-width:calc(100% - 32px)}
+.toast{background:var(--ink); color:var(--bg); padding:10px 14px; border-radius:12px; font-size:13px; box-shadow:var(--shadow); animation:slideIn .2s ease; max-width:360px}
+.toast.err{background:var(--danger); color:#fff}
+.toast.ok{background:var(--brand-2); color:#fff}
+.boot{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg); z-index:5000}
+.spinner{width:34px; height:34px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px){ .g-3{grid-template-columns:1fr} }
+@media (max-width: 860px){
+  .only-mobile{display:inline-flex}
+  .sidebar{position:fixed; left:0; top:0; z-index:1500; transform:translateX(-100%); transition:transform .2s; box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .scrim.show{display:block; position:fixed; inset:0; z-index:1400; background:rgba(8,20,14,.4)}
+  .topbar{padding:12px 16px}
+  .page{padding:16px 16px 32px}
+  .demo-banner{margin:12px 16px 0}
+  .g-2{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 40px}
+  .live span{display:none}
+  .meta{grid-template-columns:100px 1fr}
+}
+
+/* ---------- v2: sun'iy yo'ldosh, shaffoflik, AI, maxfiy ---------- */
+.mini-kpi .k-val{font-size:22px}
+.v2-note{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px}
+.ai-line{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.legal-list{margin:0; padding-left:18px; font-size:13px; line-height:1.6}
+.sat-grid{display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:16px}
+.sat-grid .map-wrap{height:calc(100vh - 260px); min-height:460px}
+#satMap{position:absolute; inset:0}
+.sat-list{height:calc(100vh - 260px); min-height:460px; overflow:auto; padding:6px}
+.det-item{border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:6px; display:flex; flex-direction:column; gap:6px; font-size:13px}
+.det-item.sel{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.det-h{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.det-meta{color:var(--ink-2); font-size:12px}
+.det-conf{display:inline-block; font-weight:700; padding:1px 8px; border-radius:20px; color:#fff; background:linear-gradient(90deg, #E11D48 var(--p), #9CA3AF var(--p))}
+.det-img{width:100%; border-radius:8px; border:1px solid var(--line)}
+.det-actions{display:flex; flex-wrap:wrap; gap:6px}
+.sug-item{border-bottom:1px solid var(--line); padding:10px 0; font-size:13px}
+.sug-item:last-child{border-bottom:none}
+@media (max-width: 1100px){ .sat-grid{grid-template-columns:1fr} .sat-list{height:auto; max-height:520px} }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script>/* ../config.js */
+// ============================================================
+// bbecoplatform.uz — umumiy sozlama (mobil ilova + admin panel)
+// Supabase Dashboard → Project Settings → API bo'limidan oling:
+//   • Project URL      → SUPABASE_URL
+//   • anon public key  → SUPABASE_ANON_KEY
+// DIQQAT: bu yerga hech qachon "service_role" kalitini qo'ymang!
+// Kalitlar qo'yilmaguncha ilova va admin panel DEMO rejimida ishlaydi.
+// ============================================================
+window.ECO_CONFIG = {
+  SUPABASE_URL: 'https://YOUR-PROJECT.supabase.co',
+  SUPABASE_ANON_KEY: 'YOUR-ANON-PUBLIC-KEY',
+  MEDIA_BUCKET: 'report-media'
+};
+
+</script>
+</head>
+<body>
+
+<!-- ============ KIRISH ============ -->
+<div id="loginView" class="login-view" hidden>
+  <form class="login-card" id="loginForm" autocomplete="on">
+    <div class="brand brand-lg"><span class="brand-mark">🌿</span><div><b>bbecoplatform.uz</b><small>Boshqaruv paneli</small></div></div>
+    <label class="field"><span>Email</span><input id="loginEmail" type="email" required autocomplete="username" placeholder="admin@bbecoplatform.uz"></label>
+    <label class="field"><span>Parol</span><input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
+    <div class="form-error" id="loginError"></div>
+    <button class="btn btn-primary btn-block" type="submit" id="loginBtn">Kirish</button>
+    <p class="muted small" id="loginHint">Faqat <b>admin</b> yoki <b>moderator</b> roliga ega hisoblar kira oladi.</p>
+  </form>
+</div>
+
+<!-- ============ ASOSIY QOBIQ ============ -->
+<div id="shell" class="shell" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-mark">🌿</span><div><b>bbecoplatform.uz</b><small>Admin panel</small></div></div>
+    <nav class="nav" id="nav">
+      <a href="#dashboard" data-page="dashboard"><span class="ico">🏠</span><span>Umumiy holat</span></a>
+      <a href="#reports" data-page="reports"><span class="ico">📥</span><span>ECO REPORTS</span><em class="badge" id="badgeNew" hidden>0</em></a>
+      <a href="#map" data-page="map"><span class="ico">🗺️</span><span>ECO MAP</span></a>
+      <a href="#sat" data-page="sat"><span class="ico">🛰️</span><span>Sun’iy yo‘ldosh</span><em class="badge" id="badgeSat" hidden>0</em></a>
+      <a href="#orgs" data-page="orgs"><span class="ico">🏢</span><span>Tashkilotlar</span></a>
+      <a href="#users" data-page="users"><span class="ico">👥</span><span>Foydalanuvchilar</span></a>
+      <a href="#stats" data-page="stats"><span class="ico">📊</span><span>Statistika</span></a>
+      <a href="#ledger" data-page="ledger"><span class="ico">💰</span><span>Shaffoflik</span><em class="badge" id="badgeSug" hidden>0</em></a>
+      <a href="#activity" data-page="activity"><span class="ico">🧾</span><span>Faoliyat jurnali</span></a>
+      <a href="#settings" data-page="settings"><span class="ico">⚙️</span><span>Sozlamalar</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="me" id="meBox"></div>
+      <button class="btn btn-ghost btn-block" id="logoutBtn">Chiqish</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menuBtn" aria-label="Menyu">☰</button>
+      <div class="topbar-title"><h1 id="pageTitle">Umumiy holat</h1><p id="pageSub" class="muted"></p></div>
+      <div class="topbar-actions">
+        <span class="live" id="liveDot" title="Ulanish holati"><i></i><span id="liveText">—</span></span>
+        <button class="icon-btn" id="refreshBtn" title="Yangilash">⟳</button>
+        <button class="icon-btn" id="themeBtn" title="Mavzu">◐</button>
+      </div>
+    </header>
+    <div class="demo-banner" id="demoBanner" hidden>
+      🧪 <b>DEMO rejim.</b> Supabase ulanmagan — namunaviy ma'lumotlar ko‘rsatilmoqda, o‘zgarishlar saqlanmaydi.
+      Ulash uchun <code>config.js</code> fayliga Project URL va anon key'ni kiriting (<a href="../docs/SUPABASE_SETUP.md" target="_blank">yo‘riqnoma</a>).
+    </div>
+
+    <section class="page" data-page="dashboard"></section>
+    <section class="page" data-page="reports"></section>
+    <section class="page page-map" data-page="map"></section>
+    <section class="page page-map" data-page="sat"></section>
+    <section class="page" data-page="ledger"></section>
+    <section class="page" data-page="orgs"></section>
+    <section class="page" data-page="users"></section>
+    <section class="page" data-page="stats"></section>
+    <section class="page" data-page="activity"></section>
+    <section class="page" data-page="settings"></section>
+  </main>
+</div>
+
+<!-- Ariza tafsilotlari paneli -->
+<div class="drawer-wrap" id="drawerWrap" hidden>
+  <div class="drawer-scrim" data-close></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true"></aside>
+</div>
+
+<!-- Umumiy modal -->
+<div class="modal-wrap" id="modalWrap" hidden>
+  <div class="drawer-scrim" data-close></div>
+  <div class="modal" role="dialog" aria-modal="true">
+    <header><h3 id="modalTitle"></h3><button class="icon-btn" data-close aria-label="Yopish">✕</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <footer id="modalFoot"></footer>
+  </div>
+</div>
+
+<!-- Media ko'rish -->
+<div class="lightbox" id="lightbox" hidden></div>
+
+<div class="toasts" id="toasts"></div>
+<div class="boot" id="boot"><div class="spinner"></div></div>
+
+<script>/* admin.js */
+/* =====================================================================
+   bbecoplatform.uz — Admin panel
+   Ma'lumotlar manbai: Supabase (config.js). Kalitlar bo'lmasa — DEMO rejim.
+   ===================================================================== */
+'use strict';
+
+// ---------------------------------------------------------------------
+// Konstantalar (mobil ilova bilan bir xil)
+// ---------------------------------------------------------------------
+const STATUSES = [
+  { t: 'Qabul qilindi',                 short: 'Qabul',       c: 'var(--s0)' },
+  { t: 'Tekshirilmoqda',                short: 'Tekshiruv',   c: 'var(--s1)' },
+  { t: 'Mas’ul tashkilotga yuborildi',  short: 'Tashkilotda', c: 'var(--s2)' },
+  { t: 'Bartaraf etildi',               short: 'Bartaraf',    c: 'var(--s3)' },
+  { t: 'Yakunlandi',                    short: 'Yakunlandi',  c: 'var(--s4)' }
+];
+const CANCELLED = { t: 'Bekor qilingan', c: 'var(--sx)' };
+const CATEGORIES = [
+  { k: 'Chiqindi', icon: '🗑️', color: '#B45309' },
+  { k: 'Havo',     icon: '💨', color: '#64748B' },
+  { k: 'Suv',      icon: '💧', color: '#2563EB' },
+  { k: 'Daraxt',   icon: '🌳', color: '#16A34A' },
+  { k: 'Tuproq',   icon: '🪨', color: '#A16207' },
+  { k: 'Boshqa',   icon: '❗', color: '#9333EA' }
+];
+const REGIONS = [
+  { code: 'tashkent_city',  uz: 'Toshkent shahri',               lat: 41.3111, lng: 69.2797 },
+  { code: 'tashkent',       uz: 'Toshkent viloyati',             lat: 41.2000, lng: 69.9000 },
+  { code: 'andijan',        uz: 'Andijon viloyati',              lat: 40.7821, lng: 72.3442 },
+  { code: 'bukhara',        uz: 'Buxoro viloyati',               lat: 39.9000, lng: 64.2000 },
+  { code: 'fergana',        uz: 'Farg‘ona viloyati',             lat: 40.3864, lng: 71.7864 },
+  { code: 'jizzakh',        uz: 'Jizzax viloyati',               lat: 40.1158, lng: 67.8422 },
+  { code: 'khorezm',        uz: 'Xorazm viloyati',               lat: 41.5500, lng: 60.6333 },
+  { code: 'namangan',       uz: 'Namangan viloyati',             lat: 40.9983, lng: 71.6726 },
+  { code: 'navoi',          uz: 'Navoiy viloyati',               lat: 40.7000, lng: 64.6000 },
+  { code: 'kashkadarya',    uz: 'Qashqadaryo viloyati',          lat: 38.8600, lng: 65.7900 },
+  { code: 'karakalpakstan', uz: 'Qoraqalpog‘iston Respublikasi', lat: 42.4600, lng: 59.6000 },
+  { code: 'samarkand',      uz: 'Samarqand viloyati',            lat: 39.6542, lng: 66.9597 },
+  { code: 'syrdarya',       uz: 'Sirdaryo viloyati',             lat: 40.4897, lng: 68.7842 },
+  { code: 'surkhandarya',   uz: 'Surxondaryo viloyati',          lat: 37.9400, lng: 67.5700 }
+];
+const PRIORITIES = ['Oddiy', 'Muhim', 'Shoshilinch'];
+const ROLES = { user: 'Foydalanuvchi', moderator: 'Moderator', admin: 'Admin' };
+const PAGE_TITLES = {
+  dashboard: ['Umumiy holat', 'bbecoplatform.uz — umumiy ko‘rsatkichlar'],
+  reports:   ['📥 ECO REPORTS', 'Fuqarolardan kelgan barcha ekologik murojaatlar'],
+  map:       ['🗺️ ECO MAP', 'Barcha arizalar joylashuvi'],
+  orgs:      ['🏢 Tashkilotlar', 'Mas’ul tashkilotlar ro‘yxati'],
+  users:     ['👥 Foydalanuvchilar', 'Mobil ilovada ro‘yxatdan o‘tgan foydalanuvchilar'],
+  stats:     ['📊 Statistika', 'Viloyatlar va muammo turlari bo‘yicha tahlil'],
+  sat:       ['🛰️ Sun’iy yo‘ldosh', 'Xabar qilinmagan noqonuniy chiqindixonalarni proaktiv aniqlash'],
+  ledger:    ['💰 Shaffoflik', 'Kompensatsiya va jarimalar qaysi loyihalarga sarflanmoqda'],
+  activity:  ['🧾 Faoliyat jurnali', 'Arizalar bo‘yicha barcha o‘zgarishlar tarixi'],
+  settings:  ['⚙️ Sozlamalar', 'Ilova va panel sozlamalari']
+};
+const DEFAULT_SETTINGS = { accepting_reports: true, edit_days: 5, daily_limit: 10, auto_assign: false, announcement: { enabled: false, uz: '', ru: '' },
+  anon_reports_enabled: true, whistle_pubkey: null, ai_enabled: true, ai_daily_limit: 20, rating_enabled: true, transparency_enabled: true };
+
+const CFG = window.ECO_CONFIG || {};
+const BUCKET = CFG.MEDIA_BUCKET || 'report-media';
+const LIVE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && !/YOUR-PROJECT/.test(CFG.SUPABASE_URL) && !/YOUR-ANON/.test(CFG.SUPABASE_ANON_KEY));
+const sb = LIVE && window.supabase ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+
+// ---------------------------------------------------------------------
+// Yordamchilar
+// ---------------------------------------------------------------------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const regionName = c => (REGIONS.find(r => r.code === c) || {}).uz || c || '—';
+const catOf = k => CATEGORIES.find(c => c.k === k) || { k: k || '—', icon: '•', color: '#888' };
+const fmtDate = d => d ? new Date(d).toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+const fmtDT = d => d ? new Date(d).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+const dayKey = d => { const x = new Date(d); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); };
+const daysBetween = (a, b) => (new Date(b) - new Date(a)) / 86400000;
+const nf = n => Number(n || 0).toLocaleString('uz-UZ');
+function ago(d) {
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 60) return 'hozirgina';
+  if (s < 3600) return Math.floor(s / 60) + ' daq. oldin';
+  if (s < 86400) return Math.floor(s / 3600) + ' soat oldin';
+  if (s < 86400 * 30) return Math.floor(s / 86400) + ' kun oldin';
+  return fmtDate(d);
+}
+function statusPill(r) {
+  const s = r.cancelled ? CANCELLED : STATUSES[r.status] || STATUSES[0];
+  return `<span class="pill" style="--c:${s.c}"><span class="dot"></span>${esc(s.t)}</span>`;
+}
+function catChip(k) { const c = catOf(k); return `<span class="nowrap">${c.icon} ${esc(c.k)}</span>`; }
+function userLabel(u) {
+  if (!u) return '<span class="muted">O‘chirilgan hisob</span>';
+  if (u.is_anonymous) return '<span class="muted">👤 Mehmon</span>';
+  return esc(u.full_name || u.phone || u.email || '—');
+}
+function contactOf(u) { if (!u) return '—'; return u.phone ? '+' + String(u.phone).replace(/^\+/, '') : (u.email || '—'); }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function resolveColor(c) { const m = /^var\((--[\w-]+)\)$/.exec(c); return m ? cssVar(m[1]) : c; }
+function toast(msg, type = '') {
+  const el = document.createElement('div'); el.className = 'toast ' + type; el.textContent = msg;
+  $('#toasts').appendChild(el); setTimeout(() => el.remove(), 4200);
+}
+function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('eco_admin_' + k)); localStorage.setItem('eco_admin_' + k, JSON.stringify(v)); } catch (e) { return null; } }
+function downloadCSV(name, rows) {
+  const csv = rows.map(r => r.map(v => { const s = String(v ?? ''); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function debounce(fn, ms = 250) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+// ---------------------------------------------------------------------
+// Holat
+// ---------------------------------------------------------------------
+const state = {
+  me: null, reports: [], orgs: [], users: [], settings: { ...DEFAULT_SETTINGS },
+  page: 'dashboard', newCount: 0, charts: {}, maps: {},
+  rf: { q: '', status: '', category: '', region: '', org: '', period: '', user: '', sort: 'new', page: 1, per: 25, sel: new Set() },
+  uf: { tab: 'all', q: '' },
+  mf: { status: new Set([0, 1, 2, 3, 4]), cat: new Set(CATEGORIES.map(c => c.k)), cancelled: false },
+  sf: { period: '30' },
+  seenAt: store('seenAt') || 0
+};
+const isAdmin = () => state.me && state.me.role === 'admin';
+const orgName = id => (state.orgs.find(o => o.id === id) || {}).short_name || (state.orgs.find(o => o.id === id) || {}).name || '—';
+const orgFull = id => (state.orgs.find(o => o.id === id) || {}).name || null;
+
+// =====================================================================
+// MA'LUMOTLAR QATLAMI
+// =====================================================================
+const REPORT_COLS = 'id,case_no,user_id,description,category,region,address,lat,lng,location_text,media_path,media_type,status,priority,org_id,admin_note,cancelled,cancelled_at,edited_at,status_changed_at,resolved_at,created_at,updated_at,channel,is_anonymous_report,contact_cipher,caller_phone,audio_path,transboundary,countries,ai_category,ai_confidence,ai_summary,legal_refs,rejected,reject_reason,detection_id,profiles!reports_user_id_fkey(full_name,phone,email,is_anonymous)';
+const normReport = r => { const { profiles, ...rest } = r; return { ...rest, user: profiles || null }; };
+
+async function fetchAll(build) {
+  const step = 1000; let from = 0, out = [];
+  for (;;) {
+    const { data, error } = await build().range(from, from + step - 1);
+    if (error) throw error;
+    out = out.concat(data || []);
+    if (!data || data.length < step) return out;
+    from += step;
+  }
+}
+
+const liveApi = {
+  async session() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return null;
+    return this.staffProfile(session.user);
+  },
+  async staffProfile(user) {
+    const { data, error } = await sb.from('profiles').select('id,full_name,email,role,blocked').eq('id', user.id).maybeSingle();
+    if (error || !data || !['admin', 'moderator'].includes(data.role) || data.blocked) return null;
+    return { ...data, email: data.email || user.email };
+  },
+  async signIn(email, password) {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(/invalid/i.test(error.message) ? 'Email yoki parol noto‘g‘ri.' : error.message);
+    const me = await this.staffProfile(data.user);
+    if (!me) { await sb.auth.signOut(); throw new Error('Bu hisobda admin paneliga kirish huquqi yo‘q.'); }
+    return me;
+  },
+  async signOut() { await sb.auth.signOut(); },
+  async reports() { return (await fetchAll(() => sb.from('reports').select(REPORT_COLS).order('created_at', { ascending: false }))).map(normReport); },
+  async report(id) {
+    const { data, error } = await sb.from('reports').select(REPORT_COLS).eq('id', id).maybeSingle();
+    if (error) throw error; return data ? normReport(data) : null;
+  },
+  async updateReports(ids, patch) {
+    const { data, error } = await sb.from('reports').update(patch).in('id', ids).select(REPORT_COLS);
+    if (error) throw error; return data.map(normReport);
+  },
+  async deleteReport(r) {
+    if (r.media_path) await sb.storage.from(BUCKET).remove([r.media_path]);
+    const { error } = await sb.from('reports').delete().eq('id', r.id); if (error) throw error;
+  },
+  async history(reportId) {
+    const { data, error } = await sb.from('report_status_history')
+      .select('id,event,status,note,created_at,actor,profiles!report_status_history_actor_fkey(full_name,role)')
+      .eq('report_id', reportId).order('created_at');
+    if (error) throw error; return data.map(h => ({ ...h, actorName: h.profiles && h.profiles.full_name, actorRole: h.profiles && h.profiles.role }));
+  },
+  async activity(limit = 300) {
+    const { data, error } = await sb.from('report_status_history')
+      .select('id,event,status,note,created_at,report_id,reports(case_no),profiles!report_status_history_actor_fkey(full_name,role)')
+      .order('created_at', { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data.map(h => ({ ...h, case_no: h.reports && h.reports.case_no, actorName: h.profiles && h.profiles.full_name, actorRole: h.profiles && h.profiles.role }));
+  },
+  async mediaUrl(path) {
+    const { data, error } = await sb.storage.from(BUCKET).createSignedUrl(path, 3600);
+    if (error) throw error; return data.signedUrl;
+  },
+  async orgs() { const { data, error } = await sb.from('organizations').select('*').order('name'); if (error) throw error; return data; },
+  async saveOrg(o) {
+    const q = o.id ? sb.from('organizations').update(o).eq('id', o.id) : sb.from('organizations').insert(o);
+    const { data, error } = await q.select().single(); if (error) throw error; return data;
+  },
+  async deleteOrg(id) { const { error } = await sb.from('organizations').delete().eq('id', id); if (error) throw error; },
+  async users() { return fetchAll(() => sb.from('profiles').select('*').order('created_at', { ascending: false })); },
+  async updateUser(id, patch) { const { data, error } = await sb.from('profiles').update(patch).eq('id', id).select().single(); if (error) throw error; return data; },
+  async deleteUser(id) { const { error } = await sb.rpc('admin_delete_user', { p_user: id }); if (error) throw error; },
+  async settings() {
+    const { data, error } = await sb.from('app_settings').select('key,value'); if (error) throw error;
+    const s = { ...DEFAULT_SETTINGS }; data.forEach(r => { s[r.key] = r.value; }); return s;
+  },
+  async saveSetting(key, value) {
+    const { error } = await sb.from('app_settings').upsert({ key, value, updated_at: new Date().toISOString() }); if (error) throw error;
+  },
+  subscribe(handlers) {
+    const ch = sb.channel('admin-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, p => handlers.report(p))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, p => handlers.profile(p))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'detections' }, p => handlers.detection && handlers.detection(p))
+      .subscribe(status => handlers.status(status));
+    return () => sb.removeChannel(ch);
+  }
+};
+
+// --------------------------- DEMO ------------------------------------
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const demoDB = (() => {
+  const rnd = mulberry32(20260929), pick = a => a[Math.floor(rnd() * a.length)];
+  const uuid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = rnd() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  const first = ['Aziz', 'Dilnoza', 'Jasur', 'Madina', 'Sardor', 'Nilufar', 'Bekzod', 'Malika', 'Otabek', 'Gulnora', 'Shoxrux', 'Zarina', 'Farrux', 'Sevara', 'Ulug‘bek', 'Kamola'];
+  const last = ['Karimov', 'Rahimova', 'Toshmatov', 'Yusupova', 'Aliyev', 'Saidova', 'Ergashev', 'Nazarova', 'Qodirov', 'Mirzayeva'];
+  const texts = {
+    Chiqindi: ['Hovuz yoniga chiqindi tashlanmoqda, hid kelyapti', 'Ko‘cha chetida qurilish chiqindilari uyilib yotibdi', 'Konteynerlar 5 kundan beri bo‘shatilmagan', 'Ariq ichiga maishiy chiqindi tashlangan'],
+    Havo: ['Zavod mo‘ridan kechasi qora tutun chiqmoqda', 'Barglar yoqilyapti, nafas olish qiyin', 'Asfalt zavodidan kuchli hid tarqalmoqda'],
+    Suv: ['Kanalga oqova suv tashlanmoqda', 'Ichimlik suvi quvuri yorilib suv isrof bo‘lyapti', 'Daryo suvi rangi o‘zgargan, baliqlar o‘lgan'],
+    Daraxt: ['Ruxsatsiz daraxtlar kesilmoqda', 'Bog‘dagi eski chinorlar quritilmoqda', 'Yangi ekilgan ko‘chatlar sug‘orilmayapti'],
+    Tuproq: ['Dalaga kimyoviy o‘g‘it qoldiqlari tashlangan', 'Yer uchastkasidan tuproq noqonuniy qazib olinmoqda'],
+    Boshqa: ['Parkda shovqin kechasi ham davom etmoqda', 'Qurilish maydonchasida chang bostirilmayapti']
+  };
+  const orgs = [
+    { name: 'O‘zbekiston Respublikasi Ekologiya, atrof-muhitni muhofaza qilish va iqlim o‘zgarishi vazirligi', short_name: 'Ekologiya vazirligi', region: null, categories: CATEGORIES.map(c => c.k), phone: '+998 71 207-07-70', email: 'info@eco.gov.uz', head: '', address: 'Toshkent sh.' },
+    { name: 'Toshkent shahar Ekologiya boshqarmasi', short_name: 'Toshkent sh. ekologiya', region: 'tashkent_city', categories: ['Havo', 'Suv', 'Daraxt', 'Tuproq', 'Boshqa'] },
+    { name: '“Toshkent shahar obodonlashtirish” boshqarmasi', short_name: 'Obodonlashtirish', region: 'tashkent_city', categories: ['Chiqindi', 'Daraxt'] },
+    { name: 'Chiqindilar bilan ishlash agentligi', short_name: 'Chiqindi agentligi', region: null, categories: ['Chiqindi'] },
+    { name: 'Samarqand viloyati Ekologiya boshqarmasi', short_name: 'Samarqand ekologiya', region: 'samarkand', categories: CATEGORIES.map(c => c.k) },
+    { name: 'Farg‘ona viloyati Ekologiya boshqarmasi', short_name: 'Farg‘ona ekologiya', region: 'fergana', categories: CATEGORIES.map(c => c.k) },
+    { name: 'Buxoro viloyati Ekologiya boshqarmasi', short_name: 'Buxoro ekologiya', region: 'bukhara', categories: CATEGORIES.map(c => c.k) },
+    { name: 'Suv xo‘jaligi vazirligi', short_name: 'Suv xo‘jaligi', region: null, categories: ['Suv'] }
+  ].map((o, i) => ({ id: uuid(), active: true, phone: o.phone || '', email: o.email || '', head: o.head || '', address: o.address || '', created_at: new Date(Date.now() - 200 * 864e5).toISOString(), ...o }));
+  const users = [];
+  const now = Date.now();
+  for (let i = 0; i < 64; i++) {
+    const anon = rnd() < 0.25, created = now - rnd() * 120 * 864e5;
+    users.push({
+      id: uuid(), full_name: anon ? null : pick(first) + ' ' + pick(last),
+      phone: !anon && rnd() < 0.7 ? '99890' + String(Math.floor(1e6 + rnd() * 8e6)) : null,
+      email: null, is_anonymous: anon, role: 'user', blocked: rnd() < 0.04, admin_note: null,
+      created_at: new Date(created).toISOString(), last_sign_in_at: new Date(created + rnd() * (now - created)).toISOString()
+    });
+    if (!anon && !users[i].phone) users[i].email = users[i].full_name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '') + i + '@gmail.com';
+  }
+  const me = { id: uuid(), full_name: 'Demo Admin', email: 'admin@bbecoplatform.uz', role: 'admin', blocked: false, is_anonymous: false, phone: null, created_at: new Date(now - 300 * 864e5).toISOString() };
+  users.push(me);
+  const weights = { tashkent_city: 9, tashkent: 4, samarkand: 4, fergana: 4, andijan: 3, namangan: 3, bukhara: 2, kashkadarya: 3, surkhandarya: 2, khorezm: 2, navoi: 1, jizzakh: 1, syrdarya: 1, karakalpakstan: 2 };
+  const regionBag = Object.entries(weights).flatMap(([k, w]) => Array(w).fill(k));
+  const catBag = ['Chiqindi', 'Chiqindi', 'Chiqindi', 'Chiqindi', 'Havo', 'Havo', 'Suv', 'Suv', 'Daraxt', 'Daraxt', 'Tuproq', 'Boshqa'];
+  const reports = [], history = [];
+  for (let i = 0; i < 180; i++) {
+    const created = now - Math.pow(rnd(), 1.6) * 90 * 864e5;
+    const age = (now - created) / 864e5;
+    const region = pick(regionBag), reg = REGIONS.find(r => r.code === region), cat = pick(catBag);
+    const u = pick(users.slice(0, 64));
+    let status = age < 1 ? 0 : Math.min(4, Math.floor(rnd() * Math.min(5, age / 3 + 1)));
+    const cancelled = rnd() < 0.05;
+    const hasGeo = rnd() < 0.88;
+    const org = status >= 2 ? (orgs.find(o => o.region === region && o.categories.includes(cat)) || orgs.find(o => !o.region && o.categories.includes(cat)) || orgs[0]) : null;
+    const r = {
+      id: uuid(), case_no: 'ECO-' + String(i + 1).padStart(6, '0'), user_id: u.id,
+      description: pick(texts[cat]), category: cat, region,
+      address: rnd() < 0.5 ? pick(['Mahalla guzari yonida', 'Bozor orqasida', 'Maktab ro‘parasida', 'Katta yo‘l bo‘yida', 'Ko‘prik yonida']) : null,
+      lat: hasGeo ? reg.lat + (rnd() - 0.5) * (region === 'tashkent_city' ? 0.12 : 0.9) : null,
+      lng: hasGeo ? reg.lng + (rnd() - 0.5) * (region === 'tashkent_city' ? 0.16 : 1.2) : null,
+      location_text: hasGeo ? null : 'Qo‘lda tanlangan: ' + reg.uz,
+      media_path: null, media_type: rnd() < 0.85 ? 'image' : 'video',
+      status, priority: rnd() < 0.12 ? 2 : rnd() < 0.25 ? 1 : 0, org_id: org ? org.id : null,
+      admin_note: status >= 3 ? 'Muammo joyida o‘rganildi va bartaraf etildi. Murojaatingiz uchun rahmat!' : null,
+      cancelled, cancelled_at: cancelled ? new Date(created + 864e5).toISOString() : null,
+      edited_at: rnd() < 0.08 ? new Date(created + 36e5).toISOString() : null,
+      created_at: new Date(created).toISOString(), updated_at: new Date(created).toISOString(), status_changed_at: null, resolved_at: null
+    };
+    history.push({ id: history.length + 1, report_id: r.id, event: 'created', status: 0, created_at: r.created_at, actor: u.id });
+    let t = created;
+    for (let s = 1; s <= status; s++) {
+      t += rnd() * 2.5 * 864e5; if (t > now) t = now - 6e5;
+      history.push({ id: history.length + 1, report_id: r.id, event: 'status', status: s, created_at: new Date(t).toISOString(), actor: me.id });
+      if (s === 2 && org) history.push({ id: history.length + 1, report_id: r.id, event: 'org', note: org.name, created_at: new Date(t).toISOString(), actor: me.id });
+      if (s === 3) r.resolved_at = new Date(t).toISOString();
+      r.status_changed_at = new Date(t).toISOString();
+    }
+    if (cancelled) history.push({ id: history.length + 1, report_id: r.id, event: 'cancelled', created_at: r.cancelled_at, actor: u.id });
+    reports.push(r);
+  }
+  reports.sort((a, b) => a.created_at < b.created_at ? 1 : -1);
+  return { reports, users, orgs, history, me, uuid, settings: { ...DEFAULT_SETTINGS } };
+})();
+
+const demoApi = {
+  _withUser(r) { const u = demoDB.users.find(x => x.id === r.user_id); return { ...r, user: u ? { full_name: u.full_name, phone: u.phone, email: u.email, is_anonymous: u.is_anonymous } : null }; },
+  async session() { return store('demo_session') ? demoDB.me : null; },
+  async signIn() { store('demo_session', true); return demoDB.me; },
+  async signOut() { store('demo_session', false); },
+  async reports() { return demoDB.reports.map(r => this._withUser(r)); },
+  async report(id) { const r = demoDB.reports.find(x => x.id === id); return r ? this._withUser(r) : null; },
+  async updateReports(ids, patch) {
+    return ids.map(id => {
+      const r = demoDB.reports.find(x => x.id === id), now = new Date().toISOString();
+      const add = (e, extra) => demoDB.history.push({ id: demoDB.history.length + 1, report_id: id, event: e, created_at: now, actor: demoDB.me.id, ...extra });
+      if ('status' in patch && patch.status !== r.status) { add('status', { status: patch.status }); r.status_changed_at = now; if (patch.status >= 3 && r.status < 3) r.resolved_at = now; if (patch.status < 3) r.resolved_at = null; }
+      if ('org_id' in patch && patch.org_id !== r.org_id) add('org', { note: orgFull(patch.org_id) || '—' });
+      if ('admin_note' in patch && patch.admin_note !== r.admin_note && patch.admin_note) add('note', { note: patch.admin_note });
+      if ('priority' in patch && patch.priority !== r.priority) add('priority', { status: patch.priority });
+      Object.assign(r, patch, { updated_at: now });
+      return this._withUser(r);
+    });
+  },
+  async deleteReport(r) { demoDB.reports = demoDB.reports.filter(x => x.id !== r.id); },
+  async history(id) { return demoDB.history.filter(h => h.report_id === id).sort((a, b) => a.created_at < b.created_at ? -1 : 1).map(h => this._actor(h)); },
+  _actor(h) { const u = demoDB.users.find(x => x.id === h.actor); return { ...h, actorName: u && u.full_name, actorRole: u && u.role }; },
+  async activity(limit = 300) {
+    return demoDB.history.slice().sort((a, b) => a.created_at < b.created_at ? 1 : -1).slice(0, limit)
+      .map(h => ({ ...this._actor(h), case_no: (demoDB.reports.find(r => r.id === h.report_id) || {}).case_no }));
+  },
+  async mediaUrl() { return null; },
+  async orgs() { return demoDB.orgs.slice().sort((a, b) => a.name.localeCompare(b.name)); },
+  async saveOrg(o) {
+    if (o.id) { const x = demoDB.orgs.find(z => z.id === o.id); Object.assign(x, o); return x; }
+    const n = { ...o, id: demoDB.uuid(), created_at: new Date().toISOString() }; demoDB.orgs.push(n); return n;
+  },
+  async deleteOrg(id) { demoDB.orgs = demoDB.orgs.filter(o => o.id !== id); demoDB.reports.forEach(r => { if (r.org_id === id) r.org_id = null; }); },
+  async users() { return demoDB.users.slice(); },
+  async updateUser(id, patch) { const u = demoDB.users.find(x => x.id === id); Object.assign(u, patch); return u; },
+  async deleteUser(id) { demoDB.users = demoDB.users.filter(u => u.id !== id); demoDB.reports.forEach(r => { if (r.user_id === id) r.user_id = null; }); },
+  async settings() { return { ...demoDB.settings }; },
+  async saveSetting(k, v) { demoDB.settings[k] = v; },
+  subscribe(h) { setTimeout(() => h.status('DEMO'), 50); return () => {}; }
+};
+
+const api = LIVE ? liveApi : demoApi;
+
+// =====================================================================
+// ISHGA TUSHIRISH, KIRISH, NAVIGATSIYA
+// =====================================================================
+function applyTheme(t) {
+  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+applyTheme(store('theme'));
+
+async function boot() {
+  $('#demoBanner').hidden = LIVE;
+  if (!LIVE) $('#loginHint').innerHTML = '🧪 DEMO rejim: istalgan email/parol bilan kiring. Haqiqiy ma’lumotlar uchun <code>config.js</code> ni to‘ldiring.';
+  if (LIVE && !sb) { toast('Supabase kutubxonasi yuklanmadi. Internetni tekshiring.', 'err'); }
+  let me = null;
+  try { me = await api.session(); } catch (e) { console.warn(e); }
+  $('#boot').hidden = true;
+  if (me) startApp(me); else showLogin();
+}
+
+function showLogin() {
+  $('#shell').hidden = true; $('#loginView').hidden = false;
+  $('#loginEmail').focus();
+}
+
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#loginBtn'), err = $('#loginError');
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
+  try { startApp(await api.signIn($('#loginEmail').value.trim(), $('#loginPass').value)); }
+  catch (ex) { err.textContent = ex.message || 'Kirishda xatolik'; }
+  finally { btn.disabled = false; btn.textContent = 'Kirish'; }
+});
+
+let unsubscribe = null;
+async function startApp(me) {
+  state.me = me;
+  $('#loginView').hidden = true; $('#shell').hidden = false;
+  $('#meBox').innerHTML = `<span class="avatar">${esc((me.full_name || me.email || 'A').trim()[0].toUpperCase())}</span><div><b>${esc(me.full_name || me.email)}</b><small>${esc(ROLES[me.role] || me.role)}</small></div>`;
+  $('#boot').hidden = false;
+  try { await loadAll(); } catch (e) { toast('Ma’lumotlarni yuklab bo‘lmadi: ' + e.message, 'err'); console.error(e); }
+  $('#boot').hidden = true;
+  if (unsubscribe) unsubscribe();
+  unsubscribe = api.subscribe({ report: onReportChange, profile: onProfileChange, detection: onDetectionChange, status: onLiveStatus });
+  route();
+}
+
+async function loadAll() {
+  const [reports, orgs, users, settings] = await Promise.all([api.reports(), api.orgs(), api.users(), api.settings()]);
+  Object.assign(state, { reports, orgs, users, settings });
+  await v2Load();
+  updateBadge();
+}
+
+$('#logoutBtn').addEventListener('click', async () => {
+  if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  await api.signOut(); state.me = null; closeDrawer(); showLogin();
+});
+$('#refreshBtn').addEventListener('click', async () => {
+  $('#refreshBtn').disabled = true;
+  try { await loadAll(); render(); toast('Yangilandi', 'ok'); } catch (e) { toast(e.message, 'err'); }
+  $('#refreshBtn').disabled = false;
+});
+$('#themeBtn').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const dark = cur ? cur === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const next = dark ? 'light' : 'dark'; store('theme', next); applyTheme(next); render();
+});
+$('#menuBtn').addEventListener('click', () => { $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); });
+$('#scrim').addEventListener('click', closeMenu);
+function closeMenu() { $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
+window.addEventListener('hashchange', route);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#lightbox').hidden) closeLightbox(); else if (!$('#modalWrap').hidden) closeModal(); else closeDrawer(); } });
+
+function route() {
+  if (!state.me) return;
+  const h = (location.hash || '#dashboard').slice(1).split('/');
+  state.page = PAGE_TITLES[h[0]] ? h[0] : 'dashboard';
+  $$('#nav a').forEach(a => a.classList.toggle('active', a.dataset.page === state.page));
+  $$('.page').forEach(p => p.classList.toggle('active', p.dataset.page === state.page));
+  $('#pageTitle').textContent = PAGE_TITLES[state.page][0];
+  $('#pageSub').textContent = PAGE_TITLES[state.page][1];
+  closeMenu();
+  if (state.page === 'reports') { state.seenAt = Date.now(); store('seenAt', state.seenAt); updateBadge(); }
+  render();
+  if (h[0] === 'reports' && h[1]) openReport(h[1]);
+}
+
+function render() {
+  const fn = { dashboard: renderDashboard, reports: renderReports, map: renderMap, sat: renderSat, ledger: renderLedgerAdmin, orgs: renderOrgs, users: renderUsers, stats: renderStats, activity: renderActivity, settings: renderSettings }[state.page];
+  if (fn) fn($(`.page[data-page="${state.page}"]`));
+}
+const renderSoon = debounce(render, 400);
+
+function updateBadge() {
+  const n = state.reports.filter(r => !r.cancelled && r.status === 0 && new Date(r.created_at).getTime() > state.seenAt).length;
+  const b = $('#badgeNew'); b.hidden = !n; b.textContent = n;
+}
+
+// ---------------- Realtime ----------------
+function onLiveStatus(s) {
+  const el = $('#liveDot');
+  el.classList.toggle('on', s === 'SUBSCRIBED'); el.classList.toggle('demo', s === 'DEMO');
+  $('#liveText').textContent = s === 'SUBSCRIBED' ? 'Jonli' : s === 'DEMO' ? 'Demo' : 'Ulanmoqda...';
+  el.title = s === 'SUBSCRIBED' ? 'Realtime ulangan — yangi arizalar avtomatik ko‘rinadi' : String(s);
+}
+async function onReportChange(p) {
+  if (p.eventType === 'DELETE') { state.reports = state.reports.filter(r => r.id !== p.old.id); }
+  else {
+    const r = await api.report(p.new.id).catch(() => null); if (!r) return;
+    const i = state.reports.findIndex(x => x.id === r.id);
+    if (i >= 0) state.reports[i] = r; else state.reports.unshift(r);
+    if (p.eventType === 'INSERT') {
+      toast(`📥 Yangi ariza: ${r.case_no} — ${catOf(r.category).icon} ${regionName(r.region)}`, 'ok');
+      if (r.user_id && !state.users.some(u => u.id === r.user_id)) api.users().then(u => { state.users = u; });
+    }
+  }
+  updateBadge();
+  if (drawerReport && drawerReport.id === (p.new || p.old).id && p.eventType !== 'DELETE') refreshDrawer();
+  renderSoon();
+}
+function onProfileChange(p) {
+  if (p.eventType === 'DELETE') state.users = state.users.filter(u => u.id !== p.old.id);
+  else { const i = state.users.findIndex(u => u.id === p.new.id); if (i >= 0) state.users[i] = p.new; else state.users.unshift(p.new); }
+  if (['users', 'dashboard'].includes(state.page)) renderSoon();
+}
+
+// =====================================================================
+// FILTR YORDAMCHILARI
+// =====================================================================
+function periodStart(p) {
+  if (!p || p === 'all') return 0;
+  if (p === 'today') { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  return Date.now() - Number(p) * 864e5;
+}
+const regionOptions = (sel, all = 'Barcha viloyatlar') => `<option value="">${all}</option>` + REGIONS.map(r => `<option value="${r.code}" ${sel === r.code ? 'selected' : ''}>${esc(r.uz)}</option>`).join('');
+const catOptions = (sel, all = 'Barcha turlar') => `<option value="">${all}</option>` + CATEGORIES.map(c => `<option value="${c.k}" ${sel === c.k ? 'selected' : ''}>${c.icon} ${c.k}</option>`).join('');
+const orgOptions = (sel, all = 'Barcha tashkilotlar') => `<option value="">${all}</option><option value="none" ${sel === 'none' ? 'selected' : ''}>— Biriktirilmagan</option>` + state.orgs.map(o => `<option value="${o.id}" ${sel === o.id ? 'selected' : ''}>${esc(o.short_name || o.name)}</option>`).join('');
+const statusOptions = (sel) => `<option value="">Barcha holatlar</option><option value="open" ${sel === 'open' ? 'selected' : ''}>⏳ Jarayondagilar (0–2)</option>` +
+  STATUSES.map((s, i) => `<option value="${i}" ${String(sel) === String(i) ? 'selected' : ''}>${esc(s.t)}</option>`).join('') +
+  `<option value="stale" ${sel === 'stale' ? 'selected' : ''}>⚠️ 3 kundan beri “Qabul qilindi”</option><option value="cancelled" ${sel === 'cancelled' ? 'selected' : ''}>✖ Bekor qilinganlar</option>`;
+const periodOptions = (sel, withAll = true) => [['', 'Butun davr'], ['today', 'Bugun'], ['7', '7 kun'], ['30', '30 kun'], ['90', '90 kun'], ['365', '1 yil']]
+  .filter(x => withAll || x[0]).map(([v, t]) => `<option value="${v}" ${sel === v ? 'selected' : ''}>${t}</option>`).join('');
+
+function filterReports(f) {
+  const q = (f.q || '').trim().toLowerCase(), since = periodStart(f.period);
+  return state.reports.filter(r => {
+    if (f.status === 'cancelled') { if (!r.cancelled) return false; }
+    else if (f.status === 'open') { if (r.cancelled || r.status > 2) return false; }
+    else if (f.status === 'stale') { if (r.cancelled || r.status !== 0 || daysBetween(r.created_at, Date.now()) < 3) return false; }
+    else if (f.status !== '' && f.status != null) { if (r.cancelled || r.status !== Number(f.status)) return false; }
+    if (f.category && r.category !== f.category) return false;
+    if (f.region && r.region !== f.region) return false;
+    if (f.org === 'none' ? r.org_id : (f.org && r.org_id !== f.org)) return false;
+    if (f.user && r.user_id !== f.user) return false;
+    if (!v2Filter(r, f)) return false;
+    if (since && new Date(r.created_at).getTime() < since) return false;
+    if (q) {
+      const hay = [r.case_no, r.description, r.address, r.location_text, regionName(r.region), r.user && r.user.full_name, r.user && r.user.phone, r.user && r.user.email, r.caller_phone].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function destroyChart(key) { if (state.charts[key]) { state.charts[key].destroy(); delete state.charts[key]; } }
+function makeChart(key, canvas, cfg) {
+  destroyChart(key);
+  if (!window.Chart || !canvas) return;
+  Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+  Chart.defaults.color = cssVar('--ink-3');
+  Chart.defaults.borderColor = cssVar('--line');
+  state.charts[key] = new Chart(canvas, cfg);
+}
+function barsHTML(items, color) {
+  const max = Math.max(1, ...items.map(i => i.v));
+  return `<div class="bars">${items.map(i => `<div class="bar-row" ${i.onclick ? `style="cursor:pointer" onclick="${i.onclick}"` : ''}>
+    <span class="lbl" title="${esc(i.label)}">${i.html || esc(i.label)}</span>
+    <span class="bar-track"><span class="bar-fill" style="width:${(i.v / max * 100).toFixed(1)}%; background:${i.color || color || 'var(--accent)'}"></span></span>
+    <span class="v">${nf(i.v)}</span></div>`).join('')}</div>`;
+}
+function goReports(patch) { Object.assign(state.rf, { q: '', status: '', category: '', region: '', org: '', period: '', user: '', channel: '', flag: '', page: 1 }, patch); location.hash = '#reports'; if (state.page === 'reports') render(); }
+window.goReports = goReports;
+
+// =====================================================================
+// 1. UMUMIY HOLAT
+// =====================================================================
+function renderDashboard(el) {
+  const R = state.reports, active = R.filter(r => !r.cancelled);
+  const today = periodStart('today');
+  const cnt = f => active.filter(f).length;
+  const resolved = active.filter(r => r.resolved_at);
+  const avgDays = resolved.length ? resolved.reduce((s, r) => s + daysBetween(r.created_at, r.resolved_at), 0) / resolved.length : 0;
+  const registered = state.users.filter(u => !u.is_anonymous && u.role === 'user').length;
+  const guests = state.users.filter(u => u.is_anonymous).length;
+  const stale = cnt(r => r.status === 0 && daysBetween(r.created_at, Date.now()) >= 3);
+  const noOrg = cnt(r => r.status >= 1 && r.status <= 2 && !r.org_id);
+  const urgent = cnt(r => r.priority === 2 && r.status < 3);
+
+  const kpi = (label, val, sub, color, click) => `<div class="card kpi ${click ? 'clickable' : ''}" ${click ? `onclick="${click}"` : ''}>
+    <div class="k-label">${color ? `<span class="dot" style="background:${color}"></span>` : ''}${label}</div><div class="k-val">${val}</div><div class="k-sub">${sub || '&nbsp;'}</div></div>`;
+
+  const byRegion = REGIONS.map(r => ({ label: r.uz, v: active.filter(x => x.region === r.code).length, onclick: `goReports({region:'${r.code}'})` })).sort((a, b) => b.v - a.v).slice(0, 8);
+  const byCat = CATEGORIES.map(c => ({ label: c.k, html: `${c.icon} ${c.k}`, v: active.filter(x => x.category === c.k).length, color: c.color, onclick: `goReports({category:'${c.k}'})` })).sort((a, b) => b.v - a.v);
+  const latest = R.slice(0, 8);
+
+  el.innerHTML = `
+  <div class="grid g-kpi">
+    ${kpi('Jami arizalar', nf(R.length), `Bugun: +${nf(R.filter(r => new Date(r.created_at) >= today).length)}`, null, "goReports({})")}
+    ${kpi('Yangi (qabul qilindi)', nf(cnt(r => r.status === 0)), 'Ko‘rib chiqilishi kerak', STATUSES[0].c, "goReports({status:'0'})")}
+    ${kpi('Jarayonda', nf(cnt(r => r.status === 1 || r.status === 2)), 'Tekshiruv + tashkilotda', STATUSES[1].c, "goReports({status:'open'})")}
+    ${kpi('Hal qilingan', nf(cnt(r => r.status >= 3)), active.length ? Math.round(cnt(r => r.status >= 3) / active.length * 100) + '% arizalar' : '', STATUSES[3].c, "goReports({status:'3'})")}
+    ${kpi('O‘rtacha hal qilish', avgDays ? avgDays.toFixed(1) + ' kun' : '—', 'Qabuldan bartarafgacha')}
+    ${kpi('Foydalanuvchilar', nf(registered), `+ ${nf(guests)} mehmon`, null, "location.hash='#users'")}
+  </div>
+
+  <div class="alert-row mt">
+    ${stale ? `<div class="alert" onclick="goReports({status:'stale'})">⚠️ <b>${stale}</b> ta ariza 3 kundan beri ko‘rib chiqilmagan</div>` : ''}
+    ${noOrg ? `<div class="alert" onclick="goReports({status:'open', org:'none'})">🏢 <b>${noOrg}</b> ta jarayondagi ariza tashkilotga biriktirilmagan</div>` : ''}
+    ${urgent ? `<div class="alert" onclick="goReports({status:'open'}); state.rf.sort='prio'">🔥 <b>${urgent}</b> ta shoshilinch ariza</div>` : ''}
+    ${!stale && !noOrg && !urgent ? `<div class="alert ok">✅ Kechikkan yoki biriktirilmagan arizalar yo‘q</div>` : ''}
+    ${state.settings.accepting_reports === false ? `<div class="alert" onclick="location.hash='#settings'">⛔ Arizalarni qabul qilish to‘xtatilgan</div>` : ''}
+    ${v2Alerts()}
+  </div>
+  ${v2DashboardRow()}
+
+  <div class="grid g-3 mt">
+    <div class="card"><div class="card-h"><h3>So‘nggi 30 kun dinamikasi</h3><span class="muted small">kelgan / hal qilingan</span></div>
+      <div class="card-b"><div class="chart-box"><canvas id="chTrend"></canvas></div></div></div>
+    <div class="card"><div class="card-h"><h3>Holatlar</h3></div><div class="card-b"><div class="chart-box"><canvas id="chStatus"></canvas></div></div></div>
+  </div>
+
+  <div class="grid g-2 mt">
+    <div class="card"><div class="card-h"><h3>Viloyatlar (top 8)</h3><a href="#stats" class="small">Batafsil →</a></div><div class="card-b">${barsHTML(byRegion)}</div></div>
+    <div class="card"><div class="card-h"><h3>Muammo turlari</h3><a href="#stats" class="small">Batafsil →</a></div><div class="card-b">${barsHTML(byCat)}</div></div>
+  </div>
+
+  <div class="card mt"><div class="card-h"><h3>So‘nggi arizalar</h3><a href="#reports" class="small">Barchasi →</a></div>
+    <div class="card-b" style="padding:8px 0 0">${reportTable(latest, { compact: true })}</div></div>`;
+
+  // Trend chart
+  const days = []; for (let i = 29; i >= 0; i--) days.push(dayKey(Date.now() - i * 864e5));
+  const inc = Object.fromEntries(days.map(d => [d, 0])), res = Object.fromEntries(days.map(d => [d, 0]));
+  R.forEach(r => { const k = dayKey(r.created_at); if (k in inc) inc[k]++; if (r.resolved_at) { const k2 = dayKey(r.resolved_at); if (k2 in res) res[k2]++; } });
+  makeChart('trend', $('#chTrend'), {
+    type: 'bar',
+    data: { labels: days.map(d => d.slice(8) + '.' + d.slice(5, 7)), datasets: [
+      { label: 'Kelgan', data: days.map(d => inc[d]), backgroundColor: cssVar('--s0'), borderRadius: 4 },
+      { label: 'Hal qilingan', data: days.map(d => res[d]), backgroundColor: cssVar('--s3'), borderRadius: 4 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+  const sCounts = STATUSES.map((_, i) => cnt(r => r.status === i)).concat(R.filter(r => r.cancelled).length);
+  makeChart('status', $('#chStatus'), {
+    type: 'doughnut',
+    data: { labels: STATUSES.map(s => s.t).concat(CANCELLED.t), datasets: [{ data: sCounts, backgroundColor: STATUSES.map(s => resolveColor(s.c)).concat(resolveColor(CANCELLED.c)), borderColor: cssVar('--surface'), borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } } }
+  });
+}
+
+function reportTable(rows, opts = {}) {
+  if (!rows.length) return `<div class="empty">Arizalar topilmadi</div>`;
+  const sel = state.rf.sel;
+  return `<div class="table-wrap"><table class="tbl"><thead><tr>
+    ${opts.compact ? '' : `<th style="width:32px"><input type="checkbox" id="selAll" ${rows.every(r => sel.has(r.id)) ? 'checked' : ''}></th>`}
+    <th>№</th><th>Sana</th><th>Tur</th><th>Viloyat</th><th>Tavsif</th>${opts.compact ? '' : '<th>Fuqaro</th><th>Tashkilot</th><th title="AI tahlili: taxmin qilingan tur va ishonch">AI</th>'}<th>Holat</th></tr></thead><tbody>
+    ${rows.map(r => `<tr class="row-click" data-id="${r.id}">
+      ${opts.compact ? '' : `<td onclick="event.stopPropagation()"><input type="checkbox" class="selOne" value="${r.id}" ${sel.has(r.id) ? 'checked' : ''}></td>`}
+      <td class="nowrap">${channelIcon(r)} <span class="case-no">${esc(r.case_no)}</span>${r.transboundary ? ' <span title="Transchegaraviy">🌐</span>' : ''}${r.priority ? ` <span class="prio-${r.priority}" title="${PRIORITIES[r.priority]}">${r.priority === 2 ? '🔥' : '▲'}</span>` : ''}</td>
+      <td class="nowrap" title="${fmtDT(r.created_at)}">${fmtDate(r.created_at)}<div class="muted small">${ago(r.created_at)}</div></td>
+      <td>${catChip(r.category)}</td>
+      <td class="nowrap">${esc(regionName(r.region))}</td>
+      <td class="desc" title="${esc(r.description)}">${r.media_path || r.media_type ? (r.media_type === 'video' ? '🎬 ' : '📷 ') : ''}${r.audio_path ? '🎙️ ' : ''}${esc(r.description)}</td>
+      ${opts.compact ? '' : `<td class="nowrap">${reporterLabel(r)}</td><td class="nowrap">${r.org_id ? esc(orgName(r.org_id)) : '<span class="muted">—</span>'}</td><td class="nowrap">${aiCell(r)}</td>`}
+      <td>${statusPill(r)}${r.rejected ? ' <span class="pill" style="--c:var(--danger)">Asossiz</span>' : ''}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+document.addEventListener('click', e => {
+  const tr = e.target.closest('tr.row-click[data-id]');
+  if (tr && !e.target.closest('input,button,a,select')) openReport(tr.dataset.id);
+});
+
+// =====================================================================
+// 2. ECO REPORTS
+// =====================================================================
+function renderReports(el) {
+  const f = state.rf;
+  let rows = filterReports(f);
+  const sorters = {
+    new: (a, b) => a.created_at < b.created_at ? 1 : -1,
+    old: (a, b) => a.created_at > b.created_at ? 1 : -1,
+    prio: (a, b) => (b.priority - a.priority) || (a.created_at > b.created_at ? 1 : -1),
+    upd: (a, b) => (a.updated_at || a.created_at) < (b.updated_at || b.created_at) ? 1 : -1
+  };
+  rows.sort(sorters[f.sort] || sorters.new);
+  const total = rows.length, pages = Math.max(1, Math.ceil(total / f.per));
+  if (f.page > pages) f.page = pages;
+  const pageRows = rows.slice((f.page - 1) * f.per, f.page * f.per);
+  const userName = f.user ? (state.users.find(u => u.id === f.user) || {}).full_name || 'Foydalanuvchi' : '';
+  // tanlanganlardan ko'rinmaydiganlarini olib tashlaymiz
+  const visibleIds = new Set(rows.map(r => r.id)); [...f.sel].forEach(id => { if (!visibleIds.has(id)) f.sel.delete(id); });
+
+  el.innerHTML = `
+  <div class="toolbar">
+    <div class="grow"><input type="search" id="fQ" placeholder="🔍 Raqam, tavsif, manzil, fuqaro ismi yoki telefoni..." value="${esc(f.q)}"></div>
+    <select id="fStatus">${statusOptions(f.status)}</select>
+    <select id="fCat">${catOptions(f.category)}</select>
+    <select id="fRegion">${regionOptions(f.region)}</select>
+    <select id="fOrg">${orgOptions(f.org)}</select>
+    <select id="fPeriod">${periodOptions(f.period)}</select>
+    <select id="fChannel">${channelOptions(f.channel)}</select>
+    <select id="fFlag">${flagOptions(f.flag)}</select>
+    <select id="fSort"><option value="new">Avval yangilari</option><option value="old">Avval eskilari</option><option value="prio">Muhimligi bo‘yicha</option><option value="upd">Oxirgi o‘zgargan</option></select>
+    <button class="btn" id="fReset">Tozalash</button>
+    <button class="btn" id="fExport">⬇ CSV</button>
+    <button class="btn btn-primary" id="fOperator" title="Telefon, SMS yoki shaxsan kelgan murojaatni kiritish">📞 Murojaat qabul qilish</button>
+  </div>
+  ${f.user ? `<div class="bulk">👤 Faqat <b>${esc(userName)}</b> arizalari <button class="btn btn-sm" onclick="goReports({})">✕ Olib tashlash</button></div>` : ''}
+  ${f.sel.size ? `<div class="bulk"><b>${f.sel.size}</b> ta tanlandi:
+      <select id="bStatus"><option value="">Holatni o‘zgartirish...</option>${STATUSES.map((s, i) => `<option value="${i}">${esc(s.t)}</option>`).join('')}</select>
+      <select id="bOrg"><option value="">Tashkilotga yo‘naltirish...</option>${state.orgs.filter(o => o.active).map(o => `<option value="${o.id}">${esc(o.short_name || o.name)}</option>`).join('')}</select>
+      <button class="btn btn-primary btn-sm" id="bApply">Qo‘llash</button><button class="btn btn-ghost btn-sm" id="bClear">Bekor qilish</button></div>` : ''}
+  <div class="card">
+    ${reportTable(pageRows)}
+    <div class="pager"><span class="muted">Jami: <b>${nf(total)}</b> ta ariza${total !== state.reports.length ? ` (${nf(state.reports.length)} dan)` : ''}</span>
+      <span class="pg-btns">
+        <select id="fPer">${[25, 50, 100].map(n => `<option ${f.per === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
+        <button class="btn btn-sm" id="pgPrev" ${f.page <= 1 ? 'disabled' : ''}>‹</button>
+        <span style="align-self:center">${f.page} / ${pages}</span>
+        <button class="btn btn-sm" id="pgNext" ${f.page >= pages ? 'disabled' : ''}>›</button></span></div>
+  </div>`;
+
+  $('#fSort').value = f.sort;
+  const set = (k, v) => { f[k] = v; f.page = 1; renderReports(el); };
+  $('#fQ').addEventListener('input', debounce(e => { f.q = e.target.value; f.page = 1; renderReports(el); const i = $('#fQ'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300));
+  $('#fStatus').onchange = e => set('status', e.target.value);
+  $('#fCat').onchange = e => set('category', e.target.value);
+  $('#fRegion').onchange = e => set('region', e.target.value);
+  $('#fOrg').onchange = e => set('org', e.target.value);
+  $('#fPeriod').onchange = e => set('period', e.target.value);
+  $('#fChannel').onchange = e => set('channel', e.target.value);
+  $('#fFlag').onchange = e => set('flag', e.target.value);
+  $('#fOperator').onclick = () => operatorModal();
+  $('#fSort').onchange = e => set('sort', e.target.value);
+  $('#fPer').onchange = e => set('per', Number(e.target.value));
+  $('#fReset').onclick = () => goReports({});
+  $('#pgPrev').onclick = () => { f.page--; renderReports(el); };
+  $('#pgNext').onclick = () => { f.page++; renderReports(el); };
+  $('#fExport').onclick = () => exportReports(rows);
+  const selAll = $('#selAll');
+  if (selAll) selAll.onchange = e => { pageRows.forEach(r => e.target.checked ? f.sel.add(r.id) : f.sel.delete(r.id)); renderReports(el); };
+  $$('.selOne', el).forEach(cb => cb.onchange = () => { cb.checked ? f.sel.add(cb.value) : f.sel.delete(cb.value); renderReports(el); });
+  if (f.sel.size) {
+    $('#bClear').onclick = () => { f.sel.clear(); renderReports(el); };
+    $('#bApply').onclick = async () => {
+      const patch = {};
+      if ($('#bStatus').value !== '') patch.status = Number($('#bStatus').value);
+      if ($('#bOrg').value) { patch.org_id = $('#bOrg').value; if (!('status' in patch)) patch.status = 2; }
+      if (!Object.keys(patch).length) return toast('Amalni tanlang');
+      const ids = [...f.sel].filter(id => { const r = state.reports.find(x => x.id === id); return r && !r.cancelled; });
+      try { mergeReports(await api.updateReports(ids, patch)); f.sel.clear(); toast(`${ids.length} ta ariza yangilandi`, 'ok'); renderReports(el); }
+      catch (e) { toast(e.message, 'err'); }
+    };
+  }
+}
+function mergeReports(list) { list.forEach(r => { const i = state.reports.findIndex(x => x.id === r.id); if (i >= 0) state.reports[i] = r; }); updateBadge(); }
+function exportReports(rows) {
+  downloadCSV(`eco-reports-${dayKey(Date.now())}.csv`, [
+    ['Raqam', 'Sana', 'Kanal', 'Kategoriya', 'Viloyat', 'Manzil', 'Kenglik', 'Uzunlik', 'Tavsif', 'Holat', 'Bekor qilingan', 'Asossiz', 'Muhimlik', 'Tashkilot', 'Javob', 'Fuqaro', 'Kontakt', 'Hal qilingan sana', 'AI turi', 'AI ishonch %', 'Transchegaraviy', 'Huquqiy asos'],
+    ...rows.map(r => [r.case_no, fmtDT(r.created_at), (CHANNELS[r.channel] || {}).t || r.channel || '', r.category, regionName(r.region), r.address || r.location_text || '', r.lat ?? '', r.lng ?? '', r.description,
+      STATUSES[r.status].t, r.cancelled ? 'ha' : '', r.rejected ? 'ha' : '', PRIORITIES[r.priority || 0], orgFull(r.org_id) || '', r.admin_note || '',
+      r.is_anonymous_report ? 'Maxfiy' : r.user ? (r.user.is_anonymous ? 'Mehmon' : r.user.full_name || '') : (r.caller_phone ? 'Qo‘ng‘iroq/SMS' : 'O‘chirilgan'),
+      r.caller_phone || contactOf(r.user), r.resolved_at ? fmtDT(r.resolved_at) : '', r.ai_category || '', r.ai_confidence != null ? Math.round(r.ai_confidence * 100) : '',
+      r.transboundary ? (r.countries || []).join(' ') || 'ha' : '', (r.legal_refs || []).map(legalLabel).join('; ')])
+  ]);
+}
+
+// ---------------- Ariza tafsilotlari (drawer) ----------------
+let drawerReport = null;
+async function openReport(id) {
+  let r = state.reports.find(x => x.id === id || x.case_no === id);
+  if (!r) { try { r = await api.report(id); } catch (e) { /* noop */ } }
+  if (!r) return toast('Ariza topilmadi', 'err');
+  drawerReport = r;
+  $('#drawerWrap').hidden = false;
+  document.body.style.overflow = 'hidden';
+  refreshDrawer();
+}
+window.openReport = openReport;
+function closeDrawer() {
+  $('#drawerWrap').hidden = true; document.body.style.overflow = ''; drawerReport = null;
+  if (state.maps.mini) { state.maps.mini.remove(); delete state.maps.mini; }
+  if (/^#reports\//.test(location.hash)) history.replaceState(null, '', '#reports');
+}
+$('#drawerWrap').addEventListener('click', e => { if (e.target.hasAttribute('data-close')) closeDrawer(); });
+
+async function refreshDrawer() {
+  const r = state.reports.find(x => x.id === drawerReport.id) || drawerReport; drawerReport = r;
+  const u = r.user, uFull = state.users.find(x => x.id === r.user_id);
+  const editable = !r.cancelled;
+  const hasGeo = r.lat != null && r.lng != null;
+  $('#drawer').innerHTML = `
+  <div class="drawer-h"><h2>${channelIcon(r)} <span class="case-no" style="font-size:15px">${esc(r.case_no)}</span></h2>${r.rejected ? '<span class="pill" style="--c:var(--danger)">Asossiz</span>' : ''}${statusPill(r)}<button class="icon-btn" data-close2 aria-label="Yopish">✕</button></div>
+  <div class="drawer-b">
+    <div class="media-box" id="dMedia">${r.media_path ? '<div class="spinner"></div>' : `<span>${LIVE ? '📭 Foto/video biriktirilmagan' : '🧪 Demo: foto Supabase Storage ulanganda ko‘rinadi'}</span>`}</div>
+
+    <div class="card"><div class="card-b">
+      <div style="font-size:15px; white-space:pre-wrap">${esc(r.description)}</div>
+      <dl class="meta mt">
+        <dt>Muammo turi</dt><dd>${catChip(r.category)}</dd>
+        <dt>Viloyat</dt><dd>${esc(regionName(r.region))}</dd>
+        <dt>Manzil / mo‘ljal</dt><dd>${esc(r.address || '—')}</dd>
+        <dt>Joylashuv</dt><dd>${hasGeo ? `${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)} · <a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" rel="noopener">Google Maps ↗</a> · <a href="https://yandex.uz/maps/?pt=${r.lng},${r.lat}&z=16&l=map" target="_blank" rel="noopener">Yandex ↗</a>` : esc(r.location_text || '—')}</dd>
+        <dt>Yuborilgan</dt><dd>${fmtDT(r.created_at)} <span class="muted">(${ago(r.created_at)})</span></dd>
+        ${r.edited_at ? `<dt>Tahrirlangan</dt><dd>${fmtDT(r.edited_at)}</dd>` : ''}
+        ${r.resolved_at ? `<dt>Hal qilingan</dt><dd>${fmtDT(r.resolved_at)} <span class="muted">(${daysBetween(r.created_at, r.resolved_at).toFixed(1)} kunda)</span></dd>` : ''}
+        ${r.cancelled ? `<dt>Bekor qilingan</dt><dd>${fmtDT(r.cancelled_at)} — fuqaro tomonidan</dd>` : ''}
+      </dl>
+      ${hasGeo ? '<div class="mini-map mt" id="miniMap"></div>' : ''}
+    </div></div>
+
+    <div id="dV2"></div>
+
+    ${r.is_anonymous_report || (!r.user_id && r.caller_phone) ? '' : `<div class="card"><div class="card-h"><h3>👤 Fuqaro</h3>${r.user_id ? `<button class="btn btn-sm" onclick="goReports({user:'${r.user_id}'}); closeDrawer()">Barcha arizalari (${state.reports.filter(x => x.user_id === r.user_id).length})</button>` : ''}</div>
+      <div class="card-b"><dl class="meta">
+        <dt>Ism</dt><dd>${userLabel(u)}</dd>
+        <dt>Kontakt</dt><dd>${u && !u.is_anonymous ? (u.phone ? `<a href="tel:+${esc(String(u.phone).replace(/^\+/, ''))}">${esc(contactOf(u))}</a>` : u.email ? `<a href="mailto:${esc(u.email)}">${esc(u.email)}</a>` : '—') : '—'}</dd>
+        ${uFull && uFull.blocked ? '<dt>Holat</dt><dd><span class="pill" style="--c:var(--danger)">Bloklangan</span></dd>' : ''}
+      </dl></div></div>`}
+
+    <div class="card"><div class="card-h"><h3>🛠 Boshqarish</h3>${r.cancelled ? '<span class="muted small">Bekor qilingan ariza — faqat ko‘rish</span>' : ''}</div><div class="card-b">
+      <div class="field"><span>Holat</span><div class="stepper" id="dStepper">${STATUSES.map((s, i) => `<button type="button" data-s="${i}" style="--c:${s.c}" class="${r.status === i ? 'on' : ''}" ${editable ? '' : 'disabled'}>${i + 1}. ${esc(s.short)}</button>`).join('')}</div></div>
+      <div class="row">
+        <label class="field"><span>Mas’ul tashkilot</span><select id="dOrg" ${editable ? '' : 'disabled'}><option value="">— Biriktirilmagan —</option>${suggestOrgs(r).map(o => `<option value="${o.id}" ${r.org_id === o.id ? 'selected' : ''}>${o._match ? '★ ' : ''}${esc(o.short_name || o.name)}</option>`).join('')}</select></label>
+        <label class="field" style="flex:0 1 160px"><span>Muhimlik</span><select id="dPrio" ${editable ? '' : 'disabled'}>${PRIORITIES.map((p, i) => `<option value="${i}" ${(r.priority || 0) === i ? 'selected' : ''}>${p}</option>`).join('')}</select></label>
+      </div>
+      <label class="field"><span>Fuqaroga javob (ilovada “Mas’ul tashkilot javobi” bo‘limida ko‘rinadi)</span>
+        <textarea id="dNote" placeholder="Masalan: Muammo joyida o‘rganildi, chiqindilar olib ketildi." ${editable ? '' : 'disabled'}>${esc(r.admin_note || '')}</textarea></label>
+      <div class="row" style="align-items:center">
+        <div class="muted small" style="flex:1 1 200px">${r.updated_at ? 'Oxirgi o‘zgarish: ' + fmtDT(r.updated_at) : ''}</div>
+        <div style="flex:0 0 auto; display:flex; gap:8px">
+          ${isAdmin() ? '<button class="btn btn-danger" id="dDelete">O‘chirish</button>' : ''}
+          <button class="btn btn-primary" id="dSave" ${editable ? '' : 'disabled'}>Saqlash</button></div>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="card-h"><h3>🕘 Tarix</h3></div><div class="card-b"><ul class="timeline" id="dHist"><li class="muted">Yuklanmoqda...</li></ul></div></div>
+  </div>`;
+  $('#drawer [data-close2]').onclick = closeDrawer;
+  v2Drawer(r);
+
+  let chosen = r.status;
+  $$('#dStepper button').forEach(b => b.onclick = () => { chosen = Number(b.dataset.s); $$('#dStepper button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#dOrg').onchange = e => { if (e.target.value && chosen < 2) { chosen = 2; $$('#dStepper button').forEach(x => x.classList.toggle('on', Number(x.dataset.s) === 2)); } };
+  $('#dSave').onclick = async () => {
+    const patch = {};
+    if (chosen !== r.status) patch.status = chosen;
+    const org = $('#dOrg').value || null; if (org !== (r.org_id || null)) patch.org_id = org;
+    const pr = Number($('#dPrio').value); if (pr !== (r.priority || 0)) patch.priority = pr;
+    const note = $('#dNote').value.trim() || null; if (note !== (r.admin_note || null)) patch.admin_note = note;
+    if (!Object.keys(patch).length) return toast('O‘zgarish yo‘q');
+    if (patch.status >= 3 && !(note || r.admin_note)) { if (!confirm('Fuqaroga javob matni yozilmagan. Baribir saqlaysizmi?')) return; }
+    $('#dSave').disabled = true;
+    try { mergeReports(await api.updateReports([r.id], patch)); toast('Saqlandi — fuqaro ilovasida darhol ko‘rinadi', 'ok'); refreshDrawer(); render(); }
+    catch (e) { toast(e.message, 'err'); $('#dSave').disabled = false; }
+  };
+  const del = $('#dDelete');
+  if (del) del.onclick = async () => {
+    if (!confirm(`${r.case_no} arizasini butunlay o‘chirasizmi? Foto ham o‘chiriladi. Bu amalni qaytarib bo‘lmaydi.`)) return;
+    try { await api.deleteReport(r); state.reports = state.reports.filter(x => x.id !== r.id); closeDrawer(); render(); toast('Ariza o‘chirildi', 'ok'); }
+    catch (e) { toast(e.message, 'err'); }
+  };
+
+  // media
+  if (r.media_path) {
+    api.mediaUrl(r.media_path).then(url => {
+      const box = $('#dMedia'); if (!box || drawerReport.id !== r.id) return;
+      if (!url) { box.innerHTML = '<span>Faylni ochib bo‘lmadi</span>'; return; }
+      box.innerHTML = r.media_type === 'video' ? `<video src="${esc(url)}" controls playsinline></video>` : `<img src="${esc(url)}" alt="Ariza fotosi">`;
+      const img = $('img', box); if (img) img.onclick = () => openLightbox(url, 'image');
+      box.insertAdjacentHTML('beforeend', '');
+    }).catch(() => { const box = $('#dMedia'); if (box) box.innerHTML = '<span>⚠️ Faylni yuklab bo‘lmadi (Storage ruxsatlarini tekshiring)</span>'; });
+  }
+  // mini map
+  if (hasGeo && window.L) {
+    if (state.maps.mini) { state.maps.mini.remove(); }
+    const m = L.map('miniMap', { zoomControl: true, attributionControl: false }).setView([r.lat, r.lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(m);
+    L.circleMarker([r.lat, r.lng], markerStyle(r)).addTo(m);
+    state.maps.mini = m; setTimeout(() => m.invalidateSize(), 150);
+  }
+  // history
+  try {
+    const hist = await api.history(r.id);
+    const box = $('#dHist'); if (!box || drawerReport.id !== r.id) return;
+    box.innerHTML = hist.length ? hist.map(h => `<li style="--c:${histColor(h)}">${histText(h)}<time>${fmtDT(h.created_at)}${h.actorName ? ' · ' + esc(h.actorName) : ''}</time></li>`).join('') : '<li class="muted">Tarix yo‘q</li>';
+  } catch (e) { $('#dHist').innerHTML = `<li class="muted">${esc(e.message)}</li>`; }
+}
+function suggestOrgs(r) {
+  return state.orgs.filter(o => o.active || o.id === r.org_id).map(o => ({ ...o, _match: o.categories && o.categories.includes(r.category) && (!o.region || o.region === r.region) }))
+    .sort((a, b) => (b._match - a._match) || ((b.region === r.region) - (a.region === r.region)) || (a.short_name || a.name).localeCompare(b.short_name || b.name));
+}
+function histColor(h) { return h.event === 'status' ? STATUSES[h.status].c : h.event === 'cancelled' ? 'var(--sx)' : h.event === 'created' ? 'var(--s0)' : 'var(--accent)'; }
+function histText(h) {
+  switch (h.event) {
+    case 'created': return '📥 Ariza qabul qilindi';
+    case 'status': return `Holat: <b>${esc(STATUSES[h.status] ? STATUSES[h.status].t : h.status)}</b>`;
+    case 'org': return `🏢 Tashkilotga yo‘naltirildi: <b>${esc(h.note)}</b>`;
+    case 'note': return `💬 Javob yozildi: <span class="muted">“${esc(h.note)}”</span>`;
+    case 'priority': return `Muhimlik: <b>${PRIORITIES[h.status] || h.status}</b>`;
+    case 'edited': return '✏️ Fuqaro arizani tahrirladi';
+    case 'cancelled': return '✖ Fuqaro arizani bekor qildi';
+    case 'rejected': return `⚠️ ${esc(h.note || 'Asossiz deb topildi')}`;
+    case 'transboundary': return `🌐 Transchegaraviy: <b>${esc(h.note || '')}</b>`;
+    case 'signal': return `📤 Qo‘shni davlatga signal: ${esc(h.note || '')}`;
+    case 'ai': return `🤖 ${esc(h.note || 'AI tahlili')}`;
+    default: return esc(h.event);
+  }
+}
+function openLightbox(url, type) {
+  const lb = $('#lightbox');
+  lb.innerHTML = type === 'video' ? `<video src="${esc(url)}" controls autoplay></video>` : `<img src="${esc(url)}" alt="">`;
+  lb.hidden = false; lb.onclick = e => { if (e.target === lb || e.target.tagName === 'IMG') closeLightbox(); };
+}
+function closeLightbox() { const lb = $('#lightbox'); lb.hidden = true; lb.innerHTML = ''; }
+
+// =====================================================================
+// 3. ECO MAP
+// =====================================================================
+function markerStyle(r) {
+  const c = resolveColor(r.cancelled ? CANCELLED.c : STATUSES[r.status].c);
+  return { radius: r.priority === 2 ? 9 : 7, color: '#fff', weight: 2, fillColor: c, fillOpacity: .95 };
+}
+function renderMap(el) {
+  const mf = state.mf;
+  if (!el.dataset.built) {
+    el.innerHTML = `
+      <div class="toolbar">
+        <div class="tabs" id="mStatus">${STATUSES.map((s, i) => `<button data-v="${i}"><span class="dot" style="background:${s.c}"></span> ${esc(s.short)}</button>`).join('')}</div>
+        <div class="tabs" id="mCat">${CATEGORIES.map(c => `<button data-v="${c.k}">${c.icon} ${c.k}</button>`).join('')}</div>
+        <select id="mPeriod">${periodOptions(mf.period || '')}</select>
+        <label class="checks"><label><input type="checkbox" id="mCancelled"> Bekor qilinganlar</label>
+          <label title="Qo‘shni davlatlar bilan bog‘liq hodisalar"><input type="checkbox" id="mTb"> 🌐 Faqat transchegaraviy</label>
+          <label title="Sun’iy yo‘ldosh / ML aniqlashlari"><input type="checkbox" id="mDet" checked> 🛰️ Aniqlashlar</label></label>
+        <span class="muted small" id="mCount"></span>
+      </div>
+      <div class="map-wrap"><div id="bigMap"></div>
+        <div class="map-legend">${STATUSES.map(s => `<div><span class="dot" style="background:${s.c}"></span>${esc(s.t)}</div>`).join('')}
+          <div><span class="dot" style="background:transparent; border:2px dashed var(--ink-3)"></span>Taxminiy (viloyat markazi)</div>
+          <div><span class="dot" style="background:transparent; border:2px solid #E11D48; border-radius:3px"></span>🛰️ Sun’iy yo‘ldosh aniqlashi</div></div></div>`;
+    el.dataset.built = '1';
+    $$('#mStatus button').forEach(b => b.onclick = () => { const v = Number(b.dataset.v); mf.status.has(v) ? mf.status.delete(v) : mf.status.add(v); drawMarkers(); });
+    $$('#mCat button').forEach(b => b.onclick = () => { const v = b.dataset.v; mf.cat.has(v) ? mf.cat.delete(v) : mf.cat.add(v); drawMarkers(); });
+    $('#mPeriod').onchange = e => { mf.period = e.target.value; drawMarkers(); };
+    $('#mCancelled').onchange = e => { mf.cancelled = e.target.checked; drawMarkers(); };
+    $('#mTb').onchange = e => { mf.tb = e.target.checked; drawMarkers(); };
+    $('#mDet').onchange = e => { mf.det = e.target.checked; drawMarkers(); };
+  }
+  if (!window.L) { $('#bigMap').innerHTML = '<div class="empty">Xarita kutubxonasi yuklanmadi</div>'; return; }
+  if (!state.maps.big) {
+    const m = L.map('bigMap', { preferCanvas: true }).setView([41.3, 64.5], 6);
+    addBaseLayers(m);
+    state.maps.big = m;
+    state.maps.detLayer = L.layerGroup().addTo(m);
+    state.maps.layer = L.markerClusterGroup ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 }) : L.layerGroup();
+    m.addLayer(state.maps.layer);
+  }
+  setTimeout(() => state.maps.big.invalidateSize(), 60);
+  drawMarkers();
+}
+function drawMarkers() {
+  const mf = state.mf, layer = state.maps.layer; if (!layer) return;
+  $$('#mStatus button').forEach(b => b.classList.toggle('on', mf.status.has(Number(b.dataset.v))));
+  $$('#mCat button').forEach(b => b.classList.toggle('on', mf.cat.has(b.dataset.v)));
+  layer.clearLayers();
+  const since = periodStart(mf.period);
+  const list = state.reports.filter(r => (mf.cancelled || !r.cancelled) && mf.status.has(r.status) && mf.cat.has(r.category) && (!since || new Date(r.created_at) >= since) && (!mf.tb || r.transboundary));
+  let approx = 0;
+  const markers = list.map(r => {
+    let ll, st = markerStyle(r);
+    if (r.lat != null && r.lng != null) ll = [r.lat, r.lng];
+    else {
+      const reg = REGIONS.find(x => x.code === r.region); if (!reg) return null;
+      approx++; const h = parseInt(r.id.replace(/\D/g, '').slice(-6) || '1', 10);
+      ll = [reg.lat + ((h % 100) / 100 - .5) * .25, reg.lng + ((Math.floor(h / 100) % 100) / 100 - .5) * .3];
+      st = { ...st, dashArray: '3 3', color: cssVar('--ink-3'), fillOpacity: .55 };
+    }
+    return L.circleMarker(ll, st).bindPopup(`<b class="case-no">${esc(r.case_no)}</b> · ${catChip(r.category)}<br>${esc(r.description.slice(0, 120))}${r.description.length > 120 ? '…' : ''}
+      <br><span style="color:${resolveColor(r.cancelled ? CANCELLED.c : STATUSES[r.status].c)}; font-weight:600">${esc(r.cancelled ? CANCELLED.t : STATUSES[r.status].t)}</span> · ${fmtDate(r.created_at)}
+      <br><a href="#" onclick="openReport('${r.id}'); return false;">Batafsil ochish →</a>`);
+  }).filter(Boolean);
+  if (layer.addLayers) layer.addLayers(markers); else markers.forEach(m => layer.addLayer(m));
+  const dets = drawDetections(state.maps.detLayer, mf.det !== false);
+  $('#mCount').textContent = `${nf(markers.length)} ta nuqta${approx ? ` (${approx} tasi taxminiy)` : ''}${dets ? ` · 🛰️ ${dets} ta aniqlash` : ''}`;
+}
+
+// =====================================================================
+// 4. TASHKILOTLAR
+// =====================================================================
+function renderOrgs(el) {
+  const stat = id => { const rs = state.reports.filter(r => r.org_id === id && !r.cancelled); const done = rs.filter(r => r.status >= 3);
+    const avg = done.filter(r => r.resolved_at).map(r => daysBetween(r.created_at, r.resolved_at));
+    return { total: rs.length, open: rs.length - done.length, done: done.length, avg: avg.length ? avg.reduce((a, b) => a + b, 0) / avg.length : null }; };
+  el.innerHTML = `
+    <div class="toolbar"><div class="grow muted">Jami: <b>${state.orgs.length}</b> ta tashkilot. ★ belgisi ariza sahifasida mos tashkilotni ko‘rsatadi (viloyat + muammo turi).</div>
+      ${isAdmin() ? '<button class="btn btn-primary" id="orgAdd">＋ Tashkilot qo‘shish</button>' : ''}</div>
+    <div class="card">${state.orgs.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Tashkilot</th><th>Hudud</th><th>Yo‘nalishlar</th><th>Aloqa</th><th class="num">Biriktirilgan</th><th class="num">Jarayonda</th><th class="num">Hal qilingan</th><th class="num">O‘rt. muddat</th><th></th></tr></thead><tbody>
+      ${state.orgs.map(o => { const s = stat(o.id); return `<tr>
+        <td><b>${esc(o.short_name || o.name)}</b>${o.short_name ? `<div class="muted small">${esc(o.name)}</div>` : ''}${o.active ? '' : ' <span class="pill" style="--c:var(--sx)">Nofaol</span>'}</td>
+        <td class="nowrap">${o.country && o.country !== 'UZ' ? esc(COUNTRIES[o.country] || o.country) : o.region ? esc(regionName(o.region)) : '🇺🇿 Respublika'}</td>
+        <td>${(o.categories || []).map(c => `<span class="chip">${catOf(c).icon} ${esc(c)}</span>`).join('')}</td>
+        <td class="small">${o.head ? esc(o.head) + '<br>' : ''}${o.phone ? esc(o.phone) + '<br>' : ''}${o.email ? `<a href="mailto:${esc(o.email)}">${esc(o.email)}</a>` : ''}</td>
+        <td class="num"><a href="#" onclick="goReports({org:'${o.id}'}); return false;">${s.total}</a></td><td class="num">${s.open}</td><td class="num">${s.done}</td>
+        <td class="num nowrap">${s.avg != null ? s.avg.toFixed(1) + ' kun' : '—'}</td>
+        <td class="nowrap">${isAdmin() ? `<button class="btn btn-sm" data-edit="${o.id}">Tahrirlash</button>` : ''}</td></tr>`; }).join('')}
+      </tbody></table></div>` : '<div class="empty">Tashkilotlar hali qo‘shilmagan</div>'}</div>`;
+  const add = $('#orgAdd'); if (add) add.onclick = () => orgModal();
+  $$('[data-edit]', el).forEach(b => b.onclick = () => orgModal(state.orgs.find(o => o.id === b.dataset.edit)));
+}
+function orgModal(o = {}) {
+  openModal(o.id ? 'Tashkilotni tahrirlash' : 'Yangi tashkilot', `
+    <label class="field"><span>To‘liq nomi *</span><input id="oName" value="${esc(o.name || '')}" required></label>
+    <div class="row"><label class="field"><span>Qisqa nomi</span><input id="oShort" value="${esc(o.short_name || '')}"></label>
+      <label class="field"><span>Hudud</span><select id="oRegion">${regionOptions(o.region || '', '🇺🇿 Respublika miqyosida')}</select></label></div>
+    <label class="field"><span>Davlat (qo‘shni davlat organi bo‘lsa — transchegaraviy signallar shu tashkilotga yuboriladi)</span>
+      <select id="oCountry">${Object.entries(COUNTRIES).map(([k, v]) => `<option value="${k}" ${(o.country || 'UZ') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <div class="field"><span>Qaysi muammolar bo‘yicha mas’ul</span><div class="checks">${CATEGORIES.map(c => `<label><input type="checkbox" value="${c.k}" ${(o.categories || []).includes(c.k) ? 'checked' : ''}> ${c.icon} ${c.k}</label>`).join('')}</div></div>
+    <div class="row"><label class="field"><span>Rahbar / mas’ul shaxs</span><input id="oHead" value="${esc(o.head || '')}"></label>
+      <label class="field"><span>Telefon</span><input id="oPhone" value="${esc(o.phone || '')}"></label></div>
+    <div class="row"><label class="field"><span>Email</span><input id="oEmail" type="email" value="${esc(o.email || '')}"></label>
+      <label class="field"><span>Manzil</span><input id="oAddr" value="${esc(o.address || '')}"></label></div>
+    <label class="checks"><label><input type="checkbox" id="oActive" ${o.active !== false ? 'checked' : ''}> Faol (arizalar yo‘naltirilishi mumkin)</label></label>
+    <div class="form-error" id="oErr"></div>`,
+  [o.id ? { label: 'O‘chirish', cls: 'btn-danger', fn: async () => {
+      const n = state.reports.filter(r => r.org_id === o.id).length;
+      if (!confirm(`“${o.short_name || o.name}” o‘chirilsinmi?${n ? ` ${n} ta arizadan biriktiruv olib tashlanadi.` : ''}`)) return false;
+      await api.deleteOrg(o.id); state.orgs = state.orgs.filter(x => x.id !== o.id); state.reports.forEach(r => { if (r.org_id === o.id) r.org_id = null; });
+      toast('Tashkilot o‘chirildi', 'ok'); render(); } } : null,
+   { label: 'Saqlash', cls: 'btn-primary', fn: async () => {
+      const data = { name: $('#oName').value.trim(), short_name: $('#oShort').value.trim() || null, region: $('#oRegion').value || null, country: $('#oCountry').value || 'UZ',
+        categories: $$('#modalBody .checks input[type=checkbox][value]:checked').map(i => i.value), head: $('#oHead').value.trim() || null,
+        phone: $('#oPhone').value.trim() || null, email: $('#oEmail').value.trim() || null, address: $('#oAddr').value.trim() || null, active: $('#oActive').checked };
+      if (!data.name) { $('#oErr').textContent = 'Nomini kiriting'; return false; }
+      if (o.id) data.id = o.id;
+      const saved = await api.saveOrg(data);
+      const i = state.orgs.findIndex(x => x.id === saved.id); if (i >= 0) state.orgs[i] = saved; else state.orgs.push(saved);
+      state.orgs.sort((a, b) => a.name.localeCompare(b.name)); toast('Saqlandi', 'ok'); render(); } }].filter(Boolean));
+}
+
+// =====================================================================
+// 5. FOYDALANUVCHILAR
+// =====================================================================
+function renderUsers(el) {
+  const uf = state.uf, q = uf.q.trim().toLowerCase();
+  const counts = {}; state.reports.forEach(r => { if (r.user_id) counts[r.user_id] = (counts[r.user_id] || 0) + 1; });
+  const tabs = {
+    all: ['Barchasi', () => true],
+    registered: ['Ro‘yxatdan o‘tgan', u => !u.is_anonymous],
+    guests: ['Mehmonlar', u => u.is_anonymous],
+    active: ['Ariza yuborgan', u => counts[u.id] > 0],
+    blocked: ['Bloklangan', u => u.blocked],
+    staff: ['Adminlar', u => u.role !== 'user']
+  };
+  const list = state.users.filter(tabs[uf.tab][1]).filter(u => !q || [u.full_name, u.phone, u.email].join(' ').toLowerCase().includes(q));
+  const week = state.users.filter(u => new Date(u.created_at) > Date.now() - 7 * 864e5 && !u.is_anonymous).length;
+  el.innerHTML = `
+    <div class="grid g-kpi">
+      <div class="card kpi"><div class="k-label">Ro‘yxatdan o‘tganlar</div><div class="k-val">${nf(state.users.filter(u => !u.is_anonymous).length)}</div><div class="k-sub">So‘nggi 7 kunda: +${week}</div></div>
+      <div class="card kpi"><div class="k-label">Mehmon (anonim) sessiyalar</div><div class="k-val">${nf(state.users.filter(u => u.is_anonymous).length)}</div><div class="k-sub">Ro‘yxatdan o‘tmasdan yuborganlar</div></div>
+      <div class="card kpi"><div class="k-label">Kamida 1 ta ariza yuborgan</div><div class="k-val">${nf(Object.keys(counts).length)}</div><div class="k-sub">faol fuqarolar</div></div>
+      <div class="card kpi"><div class="k-label">Bloklangan</div><div class="k-val">${nf(state.users.filter(u => u.blocked).length)}</div><div class="k-sub">ariza yubora olmaydi</div></div>
+    </div>
+    <div class="toolbar mt">
+      <div class="tabs" id="uTabs">${Object.entries(tabs).map(([k, [t, fn]]) => `<button data-t="${k}" class="${uf.tab === k ? 'on' : ''}">${t}<em>${state.users.filter(fn).length}</em></button>`).join('')}</div>
+      <div class="grow"><input type="search" id="uQ" placeholder="🔍 Ism, telefon yoki email..." value="${esc(uf.q)}"></div>
+      <button class="btn" id="uExport">⬇ CSV</button>
+    </div>
+    <div class="card">${list.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Foydalanuvchi</th><th>Kontakt</th><th>Turi</th><th>Ro‘yxatdan o‘tgan</th><th>So‘nggi kirish</th><th class="num">Arizalar</th><th>Rol</th><th></th></tr></thead><tbody>
+      ${list.slice(0, 500).map(u => `<tr>
+        <td><div style="display:flex; gap:8px; align-items:center"><span class="avatar" style="background:${u.is_anonymous ? 'var(--sx)' : 'var(--brand-2)'}">${esc((u.full_name || (u.is_anonymous ? '?' : 'U'))[0].toUpperCase())}</span>
+          <div><b>${esc(u.full_name || (u.is_anonymous ? 'Mehmon' : '—'))}</b>${u.blocked ? ' <span class="pill" style="--c:var(--danger)">Bloklangan</span>' : ''}${u.id === state.me.id ? ' <span class="chip">Siz</span>' : ''}</div></div></td>
+        <td class="nowrap">${u.is_anonymous ? '<span class="muted">—</span>' : esc(contactOf(u))}</td>
+        <td>${u.is_anonymous ? '<span class="chip">Mehmon</span>' : u.phone ? '<span class="chip">📱 Telefon</span>' : '<span class="chip">✉️ Email</span>'}</td>
+        <td class="nowrap">${fmtDate(u.created_at)}</td>
+        <td class="nowrap muted">${u.last_sign_in_at ? ago(u.last_sign_in_at) : '—'}</td>
+        <td class="num">${counts[u.id] ? `<a href="#" onclick="goReports({user:'${u.id}'}); return false;">${counts[u.id]}</a>` : '0'}</td>
+        <td>${u.role === 'user' ? '<span class="muted">Foydalanuvchi</span>' : `<span class="pill" style="--c:var(--s2)">${ROLES[u.role]}</span>`}</td>
+        <td class="nowrap">${u.id !== state.me.id && isAdmin() ? `<button class="btn btn-sm" data-u="${u.id}">Boshqarish</button>` : ''}</td></tr>`).join('')}
+      </tbody></table></div>${list.length > 500 ? `<div class="pager muted">Birinchi 500 tasi ko‘rsatildi — qidiruvdan foydalaning.</div>` : ''}` : '<div class="empty">Foydalanuvchilar topilmadi</div>'}</div>`;
+  $$('#uTabs button').forEach(b => b.onclick = () => { uf.tab = b.dataset.t; renderUsers(el); });
+  $('#uQ').addEventListener('input', debounce(e => { uf.q = e.target.value; renderUsers(el); const i = $('#uQ'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300));
+  $('#uExport').onclick = () => downloadCSV(`foydalanuvchilar-${dayKey(Date.now())}.csv`, [['Ism', 'Telefon', 'Email', 'Turi', 'Ro‘yxatdan o‘tgan', 'So‘nggi kirish', 'Arizalar', 'Rol', 'Bloklangan'],
+    ...list.map(u => [u.full_name || '', u.phone ? '+' + u.phone : '', u.email || '', u.is_anonymous ? 'Mehmon' : 'Ro‘yxatdan o‘tgan', fmtDT(u.created_at), fmtDT(u.last_sign_in_at), counts[u.id] || 0, ROLES[u.role], u.blocked ? 'ha' : ''])]);
+  $$('[data-u]', el).forEach(b => b.onclick = () => userModal(state.users.find(u => u.id === b.dataset.u)));
+}
+function userModal(u) {
+  const n = state.reports.filter(r => r.user_id === u.id).length;
+  openModal(u.full_name || 'Foydalanuvchi', `
+    <dl class="meta"><dt>Kontakt</dt><dd>${esc(contactOf(u))}</dd><dt>Ro‘yxatdan o‘tgan</dt><dd>${fmtDT(u.created_at)}</dd><dt>Arizalar</dt><dd>${n} ta</dd><dt>ID</dt><dd class="small muted">${esc(u.id)}</dd></dl>
+    <div class="set-list mt">
+      <div class="set-item"><div><b>Bloklash</b><p>Bloklangan foydalanuvchi yangi ariza yubora olmaydi</p></div><label class="switch"><input type="checkbox" id="uBlocked" ${u.blocked ? 'checked' : ''}><i></i></label></div>
+      <div class="set-item"><div><b>Rol</b><p>Moderator — arizalarni boshqaradi; Admin — hammasini</p></div>
+        <select id="uRole">${Object.entries(ROLES).map(([k, v]) => `<option value="${k}" ${u.role === k ? 'selected' : ''} ${u.is_anonymous && k !== 'user' ? 'disabled' : ''}>${v}</option>`).join('')}</select></div>
+    </div>
+    <label class="field mt"><span>Ichki izoh (faqat adminlar ko‘radi)</span><textarea id="uNote">${esc(u.admin_note || '')}</textarea></label>
+    <div class="form-error" id="uErr"></div>`,
+  [{ label: 'Hisobni o‘chirish', cls: 'btn-danger', fn: async () => {
+      if (!confirm('Foydalanuvchi hisobi o‘chirilsinmi? Uning arizalari statistikada anonim holda qoladi.')) return false;
+      await api.deleteUser(u.id); state.users = state.users.filter(x => x.id !== u.id); state.reports.forEach(r => { if (r.user_id === u.id) { r.user_id = null; r.user = null; } });
+      toast('Hisob o‘chirildi', 'ok'); render(); } },
+   { label: 'Arizalari', cls: '', fn: () => { goReports({ user: u.id }); } },
+   { label: 'Saqlash', cls: 'btn-primary', fn: async () => {
+      const saved = await api.updateUser(u.id, { blocked: $('#uBlocked').checked, role: $('#uRole').value, admin_note: $('#uNote').value.trim() || null });
+      Object.assign(u, saved); toast('Saqlandi', 'ok'); render(); } }]);
+}
+
+// =====================================================================
+// 6. STATISTIKA
+// =====================================================================
+function renderStats(el) {
+  const sf = state.sf, since = periodStart(sf.period);
+  const R = state.reports.filter(r => !r.cancelled && (!since || new Date(r.created_at) >= since) && (!sf.region || r.region === sf.region));
+  const matrix = REGIONS.map(reg => ({ reg, row: CATEGORIES.map(c => R.filter(r => r.region === reg.code && r.category === c.k).length) }))
+    .map(x => ({ ...x, total: x.row.reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
+  const colTotals = CATEGORIES.map((_, i) => matrix.reduce((s, x) => s + x.row[i], 0));
+  const maxCell = Math.max(1, ...matrix.flatMap(x => x.row));
+  const resolved = R.filter(r => r.resolved_at);
+  const avg = resolved.length ? resolved.reduce((s, r) => s + daysBetween(r.created_at, r.resolved_at), 0) / resolved.length : 0;
+  const topCat = CATEGORIES.map((c, i) => [c, colTotals[i]]).sort((a, b) => b[1] - a[1])[0];
+  const topReg = matrix[0];
+
+  el.innerHTML = `
+    <div class="toolbar">
+      <select id="sPeriod">${periodOptions(sf.period)}</select>
+      <select id="sRegion">${regionOptions(sf.region || '')}</select>
+      <span class="grow"></span>
+      <button class="btn" id="sExport">⬇ Jadvalni CSV</button>
+    </div>
+    <div class="grid g-kpi">
+      <div class="card kpi"><div class="k-label">Arizalar (tanlangan davr)</div><div class="k-val">${nf(R.length)}</div><div class="k-sub">bekor qilinganlarsiz</div></div>
+      <div class="card kpi"><div class="k-label">Eng ko‘p muammo</div><div class="k-val" style="font-size:22px">${topCat && topCat[1] ? topCat[0].icon + ' ' + topCat[0].k : '—'}</div><div class="k-sub">${topCat && topCat[1] ? nf(topCat[1]) + ' ta · ' + Math.round(topCat[1] / Math.max(1, R.length) * 100) + '%' : ''}</div></div>
+      <div class="card kpi"><div class="k-label">Eng faol hudud</div><div class="k-val" style="font-size:20px">${topReg && topReg.total ? esc(topReg.reg.uz) : '—'}</div><div class="k-sub">${topReg && topReg.total ? nf(topReg.total) + ' ta ariza' : ''}</div></div>
+      <div class="card kpi"><div class="k-label">Hal qilinganlar</div><div class="k-val">${R.length ? Math.round(R.filter(r => r.status >= 3).length / R.length * 100) : 0}%</div><div class="k-sub">o‘rtacha ${avg ? avg.toFixed(1) : '—'} kunda</div></div>
+    </div>
+
+    <div class="card mt"><div class="card-h"><h3>Viloyatlar bo‘yicha — muammo turlari kesimida</h3></div>
+      <div class="card-b"><div class="chart-box tall"><canvas id="chRegCat"></canvas></div></div></div>
+
+    <div class="card mt"><div class="card-h"><h3>Viloyat × muammo turi jadvali</h3><span class="muted small">Katakchani bosing — tegishli arizalar ochiladi</span></div>
+      <div class="card-b" style="padding:8px 0 0"><div class="table-wrap"><table class="tbl heat"><thead><tr><th>Viloyat</th>${CATEGORIES.map(c => `<th>${c.icon} ${c.k}</th>`).join('')}<th>Jami</th><th>Hal qilingan</th></tr></thead><tbody>
+      ${matrix.map(x => `<tr><td class="nowrap"><b>${esc(x.reg.uz)}</b></td>${x.row.map((v, i) => `<td class="h" style="background:color-mix(in srgb, ${CATEGORIES[i].color} ${Math.round(v / maxCell * 55)}%, transparent); cursor:${v ? 'pointer' : 'default'}" ${v ? `onclick="goReports({region:'${x.reg.code}', category:'${CATEGORIES[i].k}', period:'${sf.period}'})"` : ''}>${v || '<span class="muted">·</span>'}</td>`).join('')}
+        <td class="h">${x.total}</td><td>${x.total ? Math.round(R.filter(r => r.region === x.reg.code && r.status >= 3).length / x.total * 100) + '%' : '—'}</td></tr>`).join('')}
+      <tr><td><b>Jami</b></td>${colTotals.map(v => `<td class="h">${v}</td>`).join('')}<td class="h">${R.length}</td><td>${R.length ? Math.round(R.filter(r => r.status >= 3).length / R.length * 100) + '%' : '—'}</td></tr>
+      </tbody></table></div></div></div>
+
+    <div class="grid g-2 mt">
+      <div class="card"><div class="card-h"><h3>Muammo turlari ulushi</h3></div><div class="card-b"><div class="chart-box"><canvas id="chCat"></canvas></div></div></div>
+      <div class="card"><div class="card-h"><h3>Holatlar bo‘yicha</h3></div><div class="card-b">${barsHTML(STATUSES.map((s, i) => ({ label: s.t, v: R.filter(r => r.status === i).length, color: s.c })))}</div></div>
+    </div>
+
+    <div class="grid g-2 mt">
+      <div class="card"><div class="card-h"><h3>Kunlik oqim</h3></div><div class="card-b"><div class="chart-box"><canvas id="chDaily"></canvas></div></div></div>
+      <div class="card"><div class="card-h"><h3>Hafta kunlari va soatlar</h3><span class="muted small">qachon ko‘p murojaat qilinadi</span></div><div class="card-b"><div class="chart-box"><canvas id="chHour"></canvas></div></div></div>
+    </div>
+
+    ${v2StatsHTML(R)}
+
+    <div class="card mt"><div class="card-h"><h3>Tashkilotlar samaradorligi</h3></div><div class="card-b" style="padding:8px 0 0">
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Tashkilot</th><th class="num">Biriktirilgan</th><th class="num">Hal qilingan</th><th class="num">%</th><th class="num">O‘rt. muddat</th></tr></thead><tbody>
+      ${state.orgs.map(o => { const rs = R.filter(r => r.org_id === o.id), d = rs.filter(r => r.status >= 3), t = d.filter(r => r.resolved_at).map(r => daysBetween(r.created_at, r.resolved_at));
+        return { o, n: rs.length, d: d.length, avg: t.length ? t.reduce((a, b) => a + b, 0) / t.length : null }; }).filter(x => x.n).sort((a, b) => b.n - a.n)
+        .map(x => `<tr><td>${esc(x.o.short_name || x.o.name)}</td><td class="num">${x.n}</td><td class="num">${x.d}</td><td class="num">${Math.round(x.d / x.n * 100)}%</td><td class="num">${x.avg != null ? x.avg.toFixed(1) + ' kun' : '—'}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">Ma’lumot yo‘q</td></tr>'}
+      </tbody></table></div></div></div>`;
+
+  $('#sPeriod').onchange = e => { sf.period = e.target.value; renderStats(el); };
+  $('#sRegion').onchange = e => { sf.region = e.target.value; renderStats(el); };
+  v2StatsCharts(R);
+  $('#sExport').onclick = () => downloadCSV(`statistika-${dayKey(Date.now())}.csv`, [['Viloyat', ...CATEGORIES.map(c => c.k), 'Jami'], ...matrix.map(x => [x.reg.uz, ...x.row, x.total]), ['Jami', ...colTotals, R.length]]);
+
+  const regs = matrix.filter(x => x.total);
+  makeChart('regcat', $('#chRegCat'), {
+    type: 'bar',
+    data: { labels: regs.map(x => x.reg.uz.replace(' viloyati', '').replace(' Respublikasi', '')), datasets: CATEGORIES.map((c, i) => ({ label: c.icon + ' ' + c.k, data: regs.map(x => x.row[i]), backgroundColor: c.color, borderRadius: 3 })) },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }, y: { stacked: true, grid: { display: false } } } }
+  });
+  makeChart('cat', $('#chCat'), {
+    type: 'doughnut', data: { labels: CATEGORIES.map(c => c.icon + ' ' + c.k), datasets: [{ data: colTotals, backgroundColor: CATEGORIES.map(c => c.color), borderColor: cssVar('--surface'), borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, cutout: '58%', plugins: { legend: { position: 'right' } } }
+  });
+  const nDays = sf.period && sf.period !== 'today' ? Math.min(Number(sf.period), 365) : sf.period === 'today' ? 1 : 90;
+  const days = []; for (let i = nDays - 1; i >= 0; i--) days.push(dayKey(Date.now() - i * 864e5));
+  const byDay = Object.fromEntries(days.map(d => [d, 0])); R.forEach(r => { const k = dayKey(r.created_at); if (k in byDay) byDay[k]++; });
+  makeChart('daily', $('#chDaily'), {
+    type: 'line', data: { labels: days.map(d => d.slice(8) + '.' + d.slice(5, 7)), datasets: [{ label: 'Arizalar', data: days.map(d => byDay[d]), borderColor: cssVar('--accent'), backgroundColor: 'transparent', tension: .3, pointRadius: 0, borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+  const wd = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'], byWd = Array(7).fill(0), byH = Array(24).fill(0);
+  R.forEach(r => { const d = new Date(r.created_at); byWd[(d.getDay() + 6) % 7]++; byH[d.getHours()]++; });
+  makeChart('hour', $('#chHour'), {
+    type: 'bar', data: { labels: byH.map((_, h) => String(h).padStart(2, '0')), datasets: [{ label: 'Soat bo‘yicha', data: byH, backgroundColor: cssVar('--s0'), borderRadius: 3 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Hafta kunlari: ' + wd.map((w, i) => `${w} ${byWd[i]}`).join(' · '), color: cssVar('--ink-3'), font: { weight: 500 } } },
+      scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+// =====================================================================
+// 7. FAOLIYAT JURNALI
+// =====================================================================
+async function renderActivity(el) {
+  el.innerHTML = '<div class="card"><div class="empty"><div class="spinner" style="margin:auto"></div></div></div>';
+  let list = [];
+  try { list = await api.activity(300); } catch (e) { el.innerHTML = `<div class="card"><div class="empty">${esc(e.message)}</div></div>`; return; }
+  if (state.page !== 'activity') return;
+  el.innerHTML = `<div class="card">${list.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Vaqt</th><th>Ariza</th><th>Hodisa</th><th>Kim</th></tr></thead><tbody>
+    ${list.map(h => `<tr class="row-click" data-id="${h.report_id}"><td class="nowrap" title="${fmtDT(h.created_at)}">${ago(h.created_at)}</td><td class="nowrap"><span class="case-no">${esc(h.case_no || '—')}</span></td>
+      <td>${histText(h)}</td><td class="nowrap">${h.actorRole && h.actorRole !== 'user' ? `<span class="pill" style="--c:var(--s2)">${esc(h.actorName || ROLES[h.actorRole])}</span>` : `<span class="muted">${h.event === 'created' || h.event === 'edited' || h.event === 'cancelled' ? 'Fuqaro' : esc(h.actorName || 'Tizim')}</span>`}</td></tr>`).join('')}
+    </tbody></table></div><div class="pager muted">So‘nggi ${list.length} ta hodisa</div>` : '<div class="empty">Hozircha hodisalar yo‘q</div>'}</div>`;
+}
+
+// =====================================================================
+// 8. SOZLAMALAR
+// =====================================================================
+function renderSettings(el) {
+  const s = state.settings, ro = !isAdmin(), an = s.announcement || { enabled: false, uz: '', ru: '' };
+  el.innerHTML = `
+  ${ro ? '<div class="demo-banner" style="margin:0 0 16px">Sozlamalarni faqat <b>admin</b> o‘zgartira oladi.</div>' : ''}
+  <div class="grid g-2">
+    <div class="card"><div class="card-h"><h3>📱 Mobil ilova</h3></div><div class="card-b"><div class="set-list">
+      <div class="set-item"><div><b>Arizalarni qabul qilish</b><p>O‘chirilsa, ilova yangi ariza yuborishda “vaqtincha to‘xtatilgan” xabarini ko‘rsatadi</p></div>
+        <label class="switch"><input type="checkbox" data-set="accepting_reports" ${s.accepting_reports !== false ? 'checked' : ''} ${ro ? 'disabled' : ''}><i></i></label></div>
+      <div class="set-item"><div><b>Tahrirlash muddati (kun)</b><p>Fuqaro yuborgan arizasini necha kun ichida tahrirlay oladi</p></div>
+        <input type="number" min="0" max="60" data-set="edit_days" value="${Number(s.edit_days) || 5}" ${ro ? 'disabled' : ''}></div>
+      <div class="set-item"><div><b>Kunlik limit</b><p>Bir foydalanuvchi 24 soatda yubora oladigan arizalar soni (0 — cheklovsiz)</p></div>
+        <input type="number" min="0" max="500" data-set="daily_limit" value="${Number(s.daily_limit) || 0}" ${ro ? 'disabled' : ''}></div>
+      <div class="set-item"><div><b>Avtomatik yo‘naltirish</b><p>Yangi ariza viloyat va muammo turiga mos faol tashkilotga avtomatik biriktiriladi</p></div>
+        <label class="switch"><input type="checkbox" data-set="auto_assign" ${s.auto_assign === true ? 'checked' : ''} ${ro ? 'disabled' : ''}><i></i></label></div>
+    </div></div></div>
+
+    <div class="card"><div class="card-h"><h3>📢 Ilovadagi e’lon</h3></div><div class="card-b">
+      <div class="set-item" style="padding-top:0"><div><b>E’lonni ko‘rsatish</b><p>Ilova bosh sahifasida banner sifatida chiqadi</p></div>
+        <label class="switch"><input type="checkbox" id="anOn" ${an.enabled ? 'checked' : ''} ${ro ? 'disabled' : ''}><i></i></label></div>
+      <label class="field"><span>O‘zbekcha matn</span><textarea id="anUz" ${ro ? 'disabled' : ''} placeholder="Masalan: 5-iyun — Butunjahon atrof-muhit kuni! Hasharga qo‘shiling.">${esc(an.uz || '')}</textarea></label>
+      <label class="field"><span>Ruscha matn</span><textarea id="anRu" ${ro ? 'disabled' : ''}>${esc(an.ru || '')}</textarea></label>
+      <button class="btn btn-primary" id="anSave" ${ro ? 'disabled' : ''}>E’lonni saqlash</button>
+    </div></div>
+
+    ${v2SettingsHTML(ro)}
+
+    <div class="card"><div class="card-h"><h3>🔌 Supabase ulanishi</h3></div><div class="card-b"><dl class="meta">
+      <dt>Rejim</dt><dd>${LIVE ? '<span class="pill" style="--c:var(--s3)"><span class="dot"></span>Ulangan</span>' : '<span class="pill" style="--c:var(--warn)"><span class="dot"></span>DEMO</span>'}</dd>
+      <dt>Project URL</dt><dd class="small">${LIVE ? esc(CFG.SUPABASE_URL) : '<code>config.js</code> da ko‘rsatilmagan'}</dd>
+      <dt>Storage bucket</dt><dd><code>${esc(BUCKET)}</code></dd>
+      <dt>Realtime</dt><dd>${esc($('#liveText').textContent)}</dd>
+      <dt>Ma’lumotlar</dt><dd>${nf(state.reports.length)} ariza · ${nf(state.users.length)} foydalanuvchi · ${nf(state.orgs.length)} tashkilot</dd>
+    </dl><p class="small muted mt">Sozlash tartibi: <code>docs/SUPABASE_SETUP.md</code>. Jadval tuzilmasi: <code>supabase/schema.sql</code>.</p></div></div>
+
+    <div class="card"><div class="card-h"><h3>👤 Mening hisobim</h3></div><div class="card-b"><dl class="meta">
+      <dt>Ism</dt><dd>${esc(state.me.full_name || '—')}</dd><dt>Email</dt><dd>${esc(state.me.email || '—')}</dd><dt>Rol</dt><dd>${esc(ROLES[state.me.role])}</dd></dl>
+      <div class="set-item mt"><div><b>Mavzu</b><p>Panel ko‘rinishi</p></div>
+        <select id="themeSel"><option value="">Tizim bo‘yicha</option><option value="light">☀️ Yorug‘</option><option value="dark">🌙 Qorong‘i</option></select></div>
+      <p class="small muted">Yangi admin/moderator qo‘shish: “Foydalanuvchilar” bo‘limida hisobni tanlab, rolini o‘zgartiring.</p>
+    </div></div>
+  </div>`;
+  $('#themeSel').value = store('theme') || '';
+  $('#themeSel').onchange = e => { store('theme', e.target.value); applyTheme(e.target.value); render(); };
+  if (ro) return;
+  v2BindSettings(el);
+  $$('[data-set]', el).forEach(inp => inp.onchange = async () => {
+    const k = inp.dataset.set, v = inp.type === 'checkbox' ? inp.checked : Math.max(0, parseInt(inp.value, 10) || 0);
+    try { await api.saveSetting(k, v); state.settings[k] = v; toast('Sozlama saqlandi', 'ok'); }
+    catch (e) { toast(e.message, 'err'); renderSettings(el); }
+  });
+  const saveAn = async () => {
+    const v = { enabled: $('#anOn').checked, uz: $('#anUz').value.trim(), ru: $('#anRu').value.trim() };
+    try { await api.saveSetting('announcement', v); state.settings.announcement = v; toast('E’lon saqlandi', 'ok'); } catch (e) { toast(e.message, 'err'); }
+  };
+  $('#anSave').onclick = saveAn; $('#anOn').onchange = saveAn;
+}
+
+// =====================================================================
+// MODAL
+// =====================================================================
+function openModal(title, body, actions = []) {
+  $('#modalTitle').textContent = title;
+  $('#modalBody').innerHTML = body;
+  const foot = $('#modalFoot'); foot.innerHTML = '';
+  actions.forEach((a, i) => {
+    const b = document.createElement('button'); b.className = 'btn ' + (a.cls || ''); b.textContent = a.label;
+    if (i === 0 && actions.length > 2) b.style.marginRight = 'auto';
+    b.onclick = async () => {
+      b.disabled = true;
+      try { const res = await a.fn(); if (res !== false) closeModal(); }
+      catch (e) { toast(e.message, 'err'); }
+      b.disabled = false;
+    };
+    foot.appendChild(b);
+  });
+  $('#modalWrap').hidden = false;
+  const first = $('#modalBody input, #modalBody select, #modalBody textarea'); if (first) first.focus();
+}
+function closeModal() { $('#modalWrap').hidden = true; }
+$('#modalWrap').addEventListener('click', e => { if (e.target.closest('[data-close]')) closeModal(); });
+window.closeDrawer = closeDrawer;
+window.state = state;
+
+// admin-v2.js ham yuklanib bo'lgach ishga tushadi
+window.addEventListener('DOMContentLoaded', boot);
+
+</script>
+<script>/* admin-v2.js */
+/* =====================================================================
+   bbecoplatform.uz — Admin panel v2 imkoniyatlari
+   🛰️ Sun'iy yo'ldosh aniqlashlari  💰 Shaffoflik  📞 Operator qabuli
+   🕶️ Maxfiy murojaat (shifrlangan aloqani yuridik ochish)  🎙️ Ovozli
+   🤖 AI tahlili  ⚖️ Huquqiy asos  🌐 Transchegaraviy signal  🏆 Reyting
+   admin.js dan keyin yuklanadi; uning global funksiyalari va `state`idan foydalanadi.
+   ===================================================================== */
+'use strict';
+
+const CHANNELS = {
+  app:       { i: '📱', t: 'Mobil ilova' },
+  voice:     { i: '🎙️', t: 'Ovozli murojaat' },
+  anonymous: { i: '🕶️', t: 'Maxfiy murojaat' },
+  phone:     { i: '📞', t: 'Telefon qo‘ng‘irog‘i' },
+  sms:       { i: '✉️', t: 'SMS / USSD' },
+  operator:  { i: '👤', t: 'Operator (shaxsan)' },
+  satellite: { i: '🛰️', t: 'Sun’iy yo‘ldosh' }
+};
+const COUNTRIES = { UZ: '🇺🇿 O‘zbekiston', KZ: '🇰🇿 Qozog‘iston', KG: '🇰🇬 Qirg‘iziston', TJ: '🇹🇯 Tojikiston', TM: '🇹🇲 Turkmaniston', AF: '🇦🇫 Afg‘oniston' };
+const COUNTRY_RU = { KZ: 'Республика Казахстан', KG: 'Кыргызская Республика', TJ: 'Республика Таджикистан', TM: 'Туркменистан', AF: 'Афганистан' };
+const DET_STATUS = { new: ['Yangi', 'var(--s0)'], confirmed: ['Tasdiqlangan', 'var(--s1)'], converted: ['Arizaga aylantirildi', 'var(--s3)'], dismissed: ['Rad etildi', 'var(--sx)'] };
+const PROJ_STATUS = { proposed: 'Taklif', approved: 'Tasdiqlangan', in_progress: 'Amalga oshirilmoqda', done: 'Yakunlangan', cancelled: 'Bekor qilingan' };
+const FUND_SRC = { compensation: 'Kompensatsiya to‘lovlari', fine: 'Jarimalar', budget: 'Davlat byudjeti', grant: 'Grantlar', other: 'Boshqa' };
+const LAW_353 = { '4': 'Fuqarolarning huquq va majburiyatlari', '7': 'Atmosfera havosi sifati normativlari', '8': 'Doimiy manbalarning zararli ta’sir normativlari',
+  '13': 'Zararli ta’sirni cheklash, to‘xtatib turish yoki tugatish', '21': 'Chiqindilarni joylashtirish yoki ko‘mishga doir talablar',
+  '25': 'Kompensatsiya to‘lovlari', '29': 'Qonunchilikni buzganlik uchun javobgarlik' };
+const OTHER_LAWS = { chiqindi: '“Chiqindilar to‘g‘risida”gi Qonun', suv: '“Suv va suvdan foydalanish to‘g‘risida”gi Qonun',
+  osimlik: '“O‘simlik dunyosini muhofaza qilish va undan foydalanish to‘g‘risida”gi Qonun', yer: 'Yer kodeksi', tabiat: '“Tabiatni muhofaza qilish to‘g‘risida”gi Qonun' };
+
+Object.assign(state, { detections: [], funds: [], projects: [], suggestions: [], sf2: { status: 'new', source: '' } });
+state.mf.det = true;
+
+// ---------------------------------------------------------------------
+// Kichik yordamchilar (admin.js dan chaqiriladi)
+// ---------------------------------------------------------------------
+function channelIcon(r) { const c = CHANNELS[r.channel] || CHANNELS.app; return `<span title="${esc(c.t)}">${c.i}</span>`; }
+function reporterLabel(r) {
+  if (r.is_anonymous_report) return '<span class="muted">🕶️ Maxfiy</span>';
+  if (!r.user_id && r.caller_phone) return `<span class="muted">${CHANNELS[r.channel] ? CHANNELS[r.channel].i : '📞'} ${esc(r.caller_phone)}</span>`;
+  if (!r.user_id && r.channel === 'satellite') return '<span class="muted">🛰️ Avtomatik</span>';
+  return userLabel(r.user);
+}
+function aiMismatch(r) { return r.ai_category && r.ai_confidence >= 0.6 && r.ai_category !== r.category; }
+function aiCell(r) {
+  if (!r.ai_category) return '<span class="muted">—</span>';
+  const p = Math.round((r.ai_confidence || 0) * 100);
+  return `<span title="AI: ${esc(r.ai_category)} · ${p}%${r.ai_summary ? ' — ' + esc(r.ai_summary) : ''}">${catOf(r.ai_category).icon} ${p}%${aiMismatch(r) ? ' <b style="color:var(--warn)">≠</b>' : ''}</span>`;
+}
+function legalLabel(ref) {
+  if (ref.startsWith('353-I:')) { const n = ref.slice(6); return `Atmosfera havosi qonuni, ${n}-modda${LAW_353[n] ? ' (' + LAW_353[n] + ')' : ''}`; }
+  if (ref.startsWith('law:')) return OTHER_LAWS[ref.slice(4)] || ref;
+  return ref;
+}
+const channelOptions = sel => `<option value="">Barcha kanallar</option>` + Object.entries(CHANNELS).map(([k, c]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${c.i} ${c.t}</option>`).join('');
+const FLAGS = { tb: '🌐 Transchegaraviy', rejected: '⚠️ Asossiz deb topilgan', ai_mismatch: '🤖 AI turi mos kelmagan', audio: '🎙️ Ovozli yozuvi bor', legal: '⚖️ Huquqiy asosi bor', no_media: '📭 Fotosiz' };
+const flagOptions = sel => `<option value="">Barcha belgilar</option>` + Object.entries(FLAGS).map(([k, t]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${t}</option>`).join('');
+function v2Filter(r, f) {
+  if (f.channel && (r.channel || 'app') !== f.channel) return false;
+  switch (f.flag) {
+    case 'tb': return !!r.transboundary;
+    case 'rejected': return !!r.rejected;
+    case 'ai_mismatch': return aiMismatch(r);
+    case 'audio': return !!r.audio_path;
+    case 'legal': return (r.legal_refs || []).length > 0;
+    case 'no_media': return !r.media_path;
+    default: return true;
+  }
+}
+function fmtMoney(n) {
+  n = Number(n) || 0;
+  if (n >= 1e9) return (n / 1e9).toLocaleString('uz-UZ', { maximumFractionDigits: 2 }) + ' mlrd so‘m';
+  if (n >= 1e6) return (n / 1e6).toLocaleString('uz-UZ', { maximumFractionDigits: 1 }) + ' mln so‘m';
+  return n.toLocaleString('uz-UZ') + ' so‘m';
+}
+function distM(a, b) { const k = 111320; return Math.hypot((a.lat - b.lat) * k, (a.lng - b.lng) * k * Math.cos(a.lat * Math.PI / 180)); }
+
+// Xarita asoslari: OSM, sun'iy yo'ldosh (Esri) va Sentinel-2 bulutsiz mozaika (EOX)
+function addBaseLayers(m, def) {
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' });
+  const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { maxZoom: 19, attribution: 'Tasvirlar &copy; Esri, Maxar, Earthstar Geographics' });
+  const s2 = L.tileLayer('https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2021_3857/default/g/{z}/{y}/{x}.jpg',
+    { maxZoom: 17, attribution: 'Sentinel-2 cloudless 2021 — s2maps.eu, EOX IT Services (Copernicus Sentinel ma’lumotlari)' });
+  (def === 'sat' ? esri : osm).addTo(m);
+  L.control.layers({ 'Xarita (OSM)': osm, 'Sun’iy yo‘ldosh (Esri)': esri, 'Sentinel-2 (EOX, 2021)': s2 }, null, { position: 'topright' }).addTo(m);
+}
+
+// =====================================================================
+// MA'LUMOTLAR QATLAMI (v2)
+// =====================================================================
+Object.assign(liveApi, {
+  async detections() { const { data, error } = await sb.from('detections').select('*').order('created_at', { ascending: false }).limit(2000); if (error) throw error; return data; },
+  async saveDetection(id, patch) { const { data, error } = await sb.from('detections').update(patch).eq('id', id).select().single(); if (error) throw error; return data; },
+  async insertDetections(rows) { const { data, error } = await sb.from('detections').insert(rows).select(); if (error) throw error; return data; },
+  async createReport(row) { const { data, error } = await sb.from('reports').insert(row).select(REPORT_COLS).single(); if (error) throw error; return normReport(data); },
+  async funds() { const { data, error } = await sb.from('eco_funds').select('*').order('year', { ascending: false }); if (error) throw error; return data; },
+  async saveFund(f) { const q = f.id ? sb.from('eco_funds').update(f).eq('id', f.id) : sb.from('eco_funds').insert(f); const { data, error } = await q.select().single(); if (error) throw error; return data; },
+  async deleteFund(id) { const { error } = await sb.from('eco_funds').delete().eq('id', id); if (error) throw error; },
+  async projects() { const { data, error } = await sb.from('eco_projects').select('*').order('created_at', { ascending: false }); if (error) throw error; return data; },
+  async saveProject(p) { const q = p.id ? sb.from('eco_projects').update(p).eq('id', p.id) : sb.from('eco_projects').insert(p); const { data, error } = await q.select().single(); if (error) throw error; return data; },
+  async deleteProject(id) { const { error } = await sb.from('eco_projects').delete().eq('id', id); if (error) throw error; },
+  async suggestions() { const { data, error } = await sb.from('project_suggestions').select('*, profiles(full_name)').order('created_at', { ascending: false }).limit(500); if (error) throw error; return data; },
+  async updateSuggestion(id, status) { const { error } = await sb.from('project_suggestions').update({ status }).eq('id', id); if (error) throw error; },
+  async signals(reportId) { const { data, error } = await sb.from('transboundary_signals').select('*').eq('report_id', reportId).order('created_at'); if (error) throw error; return data; },
+  async addSignal(sig) {
+    const { error } = await sb.from('transboundary_signals').insert({ ...sig, sent_by: state.me.id }); if (error) throw error;
+    await sb.from('report_status_history').insert({ report_id: sig.report_id, event: 'signal', note: sig.country, actor: state.me.id });
+  },
+  async logUnlock(reportId, reason) {
+    const { error } = await sb.from('report_status_history').insert({ report_id: reportId, event: 'unlock', note: reason.slice(0, 500), actor: state.me.id });
+    if (error) throw error;
+  }
+});
+
+// --- Demo ma'lumotlar ---
+(function seedDemo() {
+  const rnd = mulberry32(777), pick = a => a[Math.floor(rnd() * a.length)], now = Date.now();
+  const legal = { Havo: ['353-I:4', '353-I:7', '353-I:8', '353-I:13', '353-I:29'], Chiqindi: ['353-I:21', '353-I:4', 'law:chiqindi'], Suv: ['law:suv', 'law:tabiat'],
+    Daraxt: ['law:osimlik', 'law:tabiat'], Tuproq: ['law:yer', 'law:tabiat'], Boshqa: ['law:tabiat'] };
+  demoDB.reports.forEach((r, i) => {
+    const x = rnd();
+    r.channel = x < 0.62 ? 'app' : x < 0.74 ? 'voice' : x < 0.82 ? 'anonymous' : x < 0.9 ? 'phone' : x < 0.95 ? 'sms' : 'operator';
+    r.legal_refs = r.channel === 'app' || r.channel === 'voice' || r.channel === 'anonymous' ? legal[r.category] : [];
+    if (r.channel === 'voice') r.audio_path = 'demo/voice.webm';
+    if (r.channel === 'anonymous') { r.is_anonymous_report = true; r.user_id = null; r.contact_cipher = rnd() < 0.4 ? 'DEMO' : null; }
+    if (r.channel === 'phone' || r.channel === 'sms' || r.channel === 'operator') { r.user_id = null; r.caller_phone = '+99890' + String(Math.floor(1e6 + rnd() * 8e6)); r.legal_refs = []; }
+    if ((r.channel === 'app' || r.channel === 'voice') && rnd() < 0.8) {
+      const ok = rnd() < 0.86; r.ai_category = ok ? r.category : pick(CATEGORIES.map(c => c.k)); r.ai_confidence = Math.round((0.62 + rnd() * 0.36) * 100) / 100;
+      r.ai_summary = 'Rasmda ' + r.category.toLowerCase() + ' bilan bog‘liq muammo ko‘rinmoqda.';
+    }
+    if (['karakalpakstan', 'khorezm', 'surkhandarya', 'fergana', 'andijan', 'namangan'].includes(r.region) && (r.category === 'Suv' || r.category === 'Havo') && rnd() < 0.5) {
+      r.transboundary = true;
+      r.countries = { karakalpakstan: ['KZ', 'TM'], khorezm: ['TM'], surkhandarya: ['TJ', 'AF'], fergana: ['KG', 'TJ'], andijan: ['KG'], namangan: ['KG'] }[r.region];
+    } else { r.transboundary = false; r.countries = []; }
+    r.rejected = rnd() < 0.04; r.reject_reason = r.rejected ? 'Foto boshqa joyga tegishli' : null;
+  });
+  const dump = [[41.206, 69.354, 'tashkent_city'], [41.382, 69.139, 'tashkent'], [39.705, 66.894, 'samarkand'], [40.43, 71.71, 'fergana'], [40.084, 65.42, 'navoi'],
+    [42.49, 59.56, 'karakalpakstan'], [41.56, 60.69, 'khorezm'], [38.83, 65.84, 'kashkadarya'], [40.77, 72.39, 'andijan'], [39.73, 64.46, 'bukhara'], [41.02, 71.61, 'namangan'], [37.28, 67.33, 'surkhandarya']];
+  demoDB.detections = dump.map(([lat, lng, region], i) => ({
+    id: demoDB.uuid(), source: i % 4 === 3 ? 'hotspot' : 'sentinel-2', model: i % 4 === 3 ? null : 'unet-dumpsite-v1', lat: lat + (rnd() - 0.5) * 0.02, lng: lng + (rnd() - 0.5) * 0.02,
+    radius_m: Math.round(40 + rnd() * 160), area_m2: Math.round(1500 + rnd() * 22000), confidence: Math.round((0.7 + rnd() * 0.29) * 100) / 100, region, category: 'Chiqindi',
+    image_url: null, captured_at: new Date(now - rnd() * 40 * 864e5).toISOString().slice(0, 10), status: i < 7 ? 'new' : i < 9 ? 'confirmed' : i < 11 ? 'converted' : 'dismissed',
+    report_id: null, notes: i % 4 === 3 ? '4 ta murojaat 1 km radiusda (60 kun)' : null, created_at: new Date(now - rnd() * 20 * 864e5).toISOString()
+  }));
+  const y = new Date().getFullYear();
+  demoDB.funds = [['tashkent_city', 'compensation', 18.4e9], ['tashkent_city', 'fine', 2.35e9], ['samarkand', 'compensation', 4.1e9], ['fergana', 'compensation', 3.6e9],
+    ['navoi', 'compensation', 9.8e9], ['karakalpakstan', 'grant', 5.2e9], ['bukhara', 'fine', 0.8e9]]
+    .map(([region, source, amount], i) => ({ id: demoDB.uuid(), region, year: y, quarter: 1 + (i % 3), source, amount, note: null, doc_url: null, created_at: new Date().toISOString() }));
+  demoDB.projects = [
+    ['tashkent_city', 'Chilonzor tumanida 3 000 tup daraxt ekish', 'Daraxt', 2.4e9, 1.65e9, 'in_progress', 214],
+    ['tashkent_city', 'Havo sifati monitoring stansiyalari (12 ta)', 'Havo', 3.1e9, 3.1e9, 'done', 388],
+    ['navoi', 'Sanoat zonasi atrofida yashil himoya belbog‘i', 'Daraxt', 4.2e9, 0.9e9, 'approved', 97],
+    ['karakalpakstan', 'Orolbo‘yida saksovul ekish', 'Tuproq', 5e9, 2.75e9, 'in_progress', 512],
+    ['samarkand', 'Noqonuniy chiqindixonalarni tugatish va rekultivatsiya', 'Chiqindi', 1.8e9, 0.4e9, 'in_progress', 143]
+  ].map(([region, title, category, budget, spent, status, vote_count]) => ({ id: demoDB.uuid(), region, title, category, budget, spent, status, vote_count, description: '', created_at: new Date().toISOString() }));
+  demoDB.suggestions = [['tashkent_city', 'Sergeli tumanidagi ariq bo‘yida ko‘kalamzorlashtirish va chiqindi konteynerlari o‘rnatish kerak.'],
+    ['samarkand', 'Kattaqo‘rg‘on suv omboridagi qirg‘oqni tozalash aksiyasiga mablag‘ ajratilsin.'],
+    ['fergana', 'Maktablar yonida havo sifati datchiklari o‘rnatish taklif qilinadi.']]
+    .map(([region, text], i) => ({ id: demoDB.uuid(), region, text, status: i ? 'new' : 'accepted', profiles: { full_name: pick(demoDB.users.filter(u => u.full_name)).full_name }, created_at: new Date(now - i * 864e5 * 2).toISOString() }));
+})();
+
+Object.assign(demoApi, {
+  async detections() { return demoDB.detections.slice(); },
+  async saveDetection(id, patch) { const d = demoDB.detections.find(x => x.id === id); Object.assign(d, patch); return { ...d }; },
+  async insertDetections(rows) { const out = rows.map(r => ({ id: demoDB.uuid(), status: 'new', created_at: new Date().toISOString(), category: 'Chiqindi', ...r })); demoDB.detections.unshift(...out); return out; },
+  async createReport(row) {
+    const r = { id: demoDB.uuid(), case_no: 'ECO-' + String(demoDB.reports.length + 1001).padStart(6, '0'), status: 0, priority: 0, cancelled: false, rejected: false,
+      transboundary: false, countries: [], legal_refs: [], created_at: new Date().toISOString(), updated_at: new Date().toISOString(), ...row };
+    if (r.status >= 3) r.resolved_at = r.created_at;
+    demoDB.reports.unshift(r);
+    demoDB.history.push({ id: demoDB.history.length + 1, report_id: r.id, event: 'created', status: r.status, created_at: r.created_at, actor: demoDB.me.id });
+    return this._withUser(r);
+  },
+  async funds() { return demoDB.funds.slice(); },
+  async saveFund(f) { if (f.id) { Object.assign(demoDB.funds.find(x => x.id === f.id), f); return f; } const n = { ...f, id: demoDB.uuid() }; demoDB.funds.push(n); return n; },
+  async deleteFund(id) { demoDB.funds = demoDB.funds.filter(x => x.id !== id); },
+  async projects() { return demoDB.projects.slice(); },
+  async saveProject(p) { if (p.id) { const x = demoDB.projects.find(z => z.id === p.id); Object.assign(x, p); return x; } const n = { vote_count: 0, ...p, id: demoDB.uuid() }; demoDB.projects.unshift(n); return n; },
+  async deleteProject(id) { demoDB.projects = demoDB.projects.filter(x => x.id !== id); },
+  async suggestions() { return demoDB.suggestions.slice(); },
+  async updateSuggestion(id, status) { demoDB.suggestions.find(x => x.id === id).status = status; },
+  async signals(reportId) { return (demoDB.signals || []).filter(s => s.report_id === reportId); },
+  async addSignal(sig) {
+    (demoDB.signals = demoDB.signals || []).push({ ...sig, id: demoDB.uuid(), created_at: new Date().toISOString() });
+    demoDB.history.push({ id: demoDB.history.length + 1, report_id: sig.report_id, event: 'signal', note: sig.country, created_at: new Date().toISOString(), actor: demoDB.me.id });
+  },
+  async logUnlock(reportId, reason) { demoDB.history.push({ id: demoDB.history.length + 1, report_id: reportId, event: 'unlock', note: reason, created_at: new Date().toISOString(), actor: demoDB.me.id }); }
+});
+
+async function v2Load() {
+  const safe = p => p.catch(e => { console.warn(e); return []; });
+  const [detections, funds, projects, suggestions] = await Promise.all([safe(api.detections()), safe(api.funds()), safe(api.projects()), safe(api.suggestions())]);
+  Object.assign(state, { detections, funds, projects, suggestions });
+  v2Badges();
+}
+function v2Badges() {
+  const n = state.detections.filter(d => d.status === 'new').length, b = $('#badgeSat'); b.hidden = !n; b.textContent = n;
+  const s = state.suggestions.filter(x => x.status === 'new').length, b2 = $('#badgeSug'); b2.hidden = !s; b2.textContent = s;
+}
+function onDetectionChange(p) {
+  if (p.eventType === 'DELETE') state.detections = state.detections.filter(d => d.id !== p.old.id);
+  else {
+    const i = state.detections.findIndex(d => d.id === p.new.id);
+    if (i >= 0) state.detections[i] = p.new; else { state.detections.unshift(p.new); toast(`🛰️ Yangi aniqlash: ${regionName(p.new.region)} · ${Math.round((p.new.confidence || 0) * 100)}%`, 'ok'); }
+  }
+  v2Badges(); if (['sat', 'map', 'dashboard'].includes(state.page)) renderSoon();
+}
+
+// =====================================================================
+// UMUMIY HOLAT: qo'shimcha ko'rsatkichlar
+// =====================================================================
+function v2Alerts() {
+  const newDet = state.detections.filter(d => d.status === 'new').length;
+  const mism = state.reports.filter(r => !r.cancelled && r.status === 0 && aiMismatch(r)).length;
+  const sug = state.suggestions.filter(s => s.status === 'new').length;
+  return (newDet ? `<div class="alert" onclick="location.hash='#sat'">🛰️ <b>${newDet}</b> ta yangi sun’iy yo‘ldosh aniqlashi ko‘rib chiqilmagan</div>` : '') +
+    (mism ? `<div class="alert" onclick="goReports({status:'0', flag:'ai_mismatch'})">🤖 <b>${mism}</b> ta yangi arizada AI turi fuqaro tanlovidan farq qiladi</div>` : '') +
+    (sug ? `<div class="alert" onclick="location.hash='#ledger'">💡 <b>${sug}</b> ta yangi loyiha taklifi</div>` : '');
+}
+function v2DashboardRow() {
+  const A = state.reports.filter(r => !r.cancelled);
+  const c = f => A.filter(f).length;
+  const tile = (icon, label, v, click) => `<div class="card kpi clickable mini-kpi" onclick="${click}"><div class="k-label">${icon} ${label}</div><div class="k-val">${nf(v)}</div></div>`;
+  return `<div class="grid g-kpi mt">
+    ${tile('🕶️', 'Maxfiy murojaatlar', c(r => r.is_anonymous_report), "goReports({channel:'anonymous'})")}
+    ${tile('🎙️', 'Ovozli / qo‘ng‘iroq / SMS', c(r => ['voice', 'phone', 'sms'].includes(r.channel)), "goReports({flag:'audio'})")}
+    ${tile('🛰️', 'Sun’iy yo‘ldosh aniqlashlari', state.detections.filter(d => d.status !== 'dismissed').length, "location.hash='#sat'")}
+    ${tile('🌐', 'Transchegaraviy', c(r => r.transboundary), "goReports({flag:'tb'})")}
+    ${tile('⚠️', 'Asossiz deb topilgan', c(r => r.rejected), "goReports({flag:'rejected'})")}
+  </div>`;
+}
+
+// =====================================================================
+// ARIZA PANELI: kanal, AI, huquqiy asos, maxfiy aloqa, belgilar
+// =====================================================================
+function v2Drawer(r) {
+  const box = $('#dV2'); if (!box) return;
+  const ch = CHANNELS[r.channel] || CHANNELS.app, editable = !r.cancelled;
+  const aiP = Math.round((r.ai_confidence || 0) * 100);
+  box.innerHTML = `
+    <div class="card"><div class="card-h"><h3>${ch.i} ${esc(ch.t)}</h3>${r.detection_id ? '<span class="chip">🛰️ Aniqlashdan yaratilgan</span>' : ''}</div><div class="card-b">
+      ${r.is_anonymous_report ? `<div class="v2-note">🕶️ <b>Maxfiy murojaat.</b> Shaxs ma’lumotlari saqlanmagan, fuqaro holatni maxsus kod orqali kuzatadi. Foto metama’lumotlari yuborishdan oldin o‘chirilgan.
+        ${r.contact_cipher ? `<div class="mt"><button class="btn btn-sm" id="dUnlock">🔐 Shifrlangan aloqani ochish (yuridik protokol)</button></div>` : '<div class="muted small mt">Fuqaro aloqa ma’lumoti qoldirmagan.</div>'}</div>` : ''}
+      ${r.caller_phone ? `<dl class="meta"><dt>Murojaatchi</dt><dd><a href="tel:${esc(r.caller_phone)}">${esc(r.caller_phone)}</a></dd></dl>` : ''}
+      ${r.audio_path ? `<div class="field mt"><span>🎙️ Ovozli xabar</span><div id="dAudio" class="muted small">Yuklanmoqda…</div></div>` : ''}
+      ${!r.is_anonymous_report && !r.caller_phone && !r.audio_path ? '<div class="muted small">Ariza mobil ilova orqali yuborilgan.</div>' : ''}
+    </div></div>
+
+    ${r.ai_category ? `<div class="card"><div class="card-h"><h3>🤖 AI tahlili</h3>${aiMismatch(r) ? '<span class="pill" style="--c:var(--warn)">Fuqaro tanlovidan farq qiladi</span>' : '<span class="pill" style="--c:var(--s3)">Mos</span>'}</div><div class="card-b">
+      <div class="ai-line"><b>${catChip(r.ai_category)}</b><span>${aiP}% ishonch</span></div>
+      <div class="bar-track" style="margin:8px 0"><span class="bar-fill" style="width:${aiP}%"></span></div>
+      ${r.ai_summary ? `<p class="small" style="margin:0">${esc(r.ai_summary)}</p>` : ''}
+      ${aiMismatch(r) && editable ? `<button class="btn btn-sm mt" id="dAiApply">Turini AI tavsiyasiga o‘zgartirish (${esc(r.ai_category)})</button>` : ''}
+      <p class="muted small mt">AI faqat yordamchi baho beradi; yakuniy qaror xodimniki.</p>
+    </div></div>` : ''}
+
+    ${(r.legal_refs || []).length ? `<div class="card"><div class="card-h"><h3>⚖️ Huquqiy asos</h3></div><div class="card-b">
+      <ul class="legal-list">${r.legal_refs.map(x => `<li>${esc(legalLabel(x))}</li>`).join('')}</ul>
+      <p class="muted small">Fuqaro ilovada kategoriya tanlaganda avtomatik biriktirilgan.</p></div></div>` : ''}
+
+    <div class="card"><div class="card-h"><h3>🏷 Belgilar</h3></div><div class="card-b">
+      <div class="set-item" style="padding-top:0"><div><b>⚠️ Asossiz / soxta murojaat</b><p>Reytingda hisoblanmaydi, fuqaroga “asossiz deb topildi” deb ko‘rsatiladi</p></div>
+        <label class="switch"><input type="checkbox" id="dRej" ${r.rejected ? 'checked' : ''} ${editable ? '' : 'disabled'}><i></i></label></div>
+      <label class="field" id="dRejReasonWrap" ${r.rejected ? '' : 'hidden'}><span>Sababi</span><input id="dRejReason" value="${esc(r.reject_reason || '')}" placeholder="Masalan: foto boshqa joyga tegishli" ${editable ? '' : 'disabled'}></label>
+      <div class="set-item"><div><b>🌐 Transchegaraviy hodisa</b><p>Umumiy daryo, chang-tuz bo‘roni, chegaraoldi ifloslanish</p></div>
+        <label class="switch"><input type="checkbox" id="dTb" ${r.transboundary ? 'checked' : ''} ${editable ? '' : 'disabled'}><i></i></label></div>
+      <div class="checks" id="dTbCountries" ${r.transboundary ? '' : 'hidden'}>${Object.entries(COUNTRIES).filter(([k]) => k !== 'UZ').map(([k, v]) => `<label><input type="checkbox" value="${k}" ${(r.countries || []).includes(k) ? 'checked' : ''} ${editable ? '' : 'disabled'}> ${v}</label>`).join('')}</div>
+      <div class="row mt" style="align-items:center">
+        ${r.transboundary ? '<button class="btn btn-sm" id="dSignal">📤 Qo‘shni davlatga signal</button>' : '<span></span>'}
+        <div style="flex:0 0 auto"><button class="btn btn-sm btn-primary" id="dFlagsSave" ${editable ? '' : 'disabled'}>Belgilarni saqlash</button></div>
+      </div>
+    </div></div>`;
+
+  if (r.audio_path) {
+    api.mediaUrl(r.audio_path).then(url => { const el = $('#dAudio'); if (el) el.innerHTML = url ? `<audio controls src="${esc(url)}" style="width:100%"></audio>` : '🧪 Demo: ovozli yozuv Supabase Storage ulanganda eshitiladi'; })
+      .catch(() => { const el = $('#dAudio'); if (el) el.textContent = 'Faylni yuklab bo‘lmadi'; });
+  }
+  const rej = $('#dRej'), tb = $('#dTb');
+  if (rej) rej.onchange = () => { $('#dRejReasonWrap').hidden = !rej.checked; };
+  if (tb) tb.onchange = () => { $('#dTbCountries').hidden = !tb.checked; };
+  const ai = $('#dAiApply');
+  if (ai) ai.onclick = async () => { try { mergeReports(await api.updateReports([r.id], { category: r.ai_category })); toast('Turi o‘zgartirildi', 'ok'); refreshDrawer(); render(); } catch (e) { toast(e.message, 'err'); } };
+  const fs = $('#dFlagsSave');
+  if (fs) fs.onclick = async () => {
+    const patch = {};
+    if (rej.checked !== !!r.rejected) patch.rejected = rej.checked;
+    const reason = rej.checked ? ($('#dRejReason').value.trim() || null) : null;
+    if (reason !== (r.reject_reason || null)) patch.reject_reason = reason;
+    const countries = tb.checked ? $$('#dTbCountries input:checked').map(i => i.value) : [];
+    if (tb.checked !== !!r.transboundary) patch.transboundary = tb.checked;
+    if (countries.join() !== (r.countries || []).join()) patch.countries = countries;
+    if (!Object.keys(patch).length) return toast('O‘zgarish yo‘q');
+    try { mergeReports(await api.updateReports([r.id], patch)); toast('Saqlandi', 'ok'); refreshDrawer(); render(); } catch (e) { toast(e.message, 'err'); }
+  };
+  const sg = $('#dSignal'); if (sg) sg.onclick = () => signalModal(r);
+  const ul = $('#dUnlock'); if (ul) ul.onclick = () => unlockModal(r);
+}
+
+// ---------- Maxfiy aloqani yuridik ochish ----------
+function unlockModal(r) {
+  openModal('🔐 Shifrlangan aloqani ochish', `
+    <div class="v2-note">Bu amal faqat <b>qonuniy tekshiruv zarur bo‘lganda</b> bajariladi va faoliyat jurnaliga (kim, qachon, sababi) yoziladi.
+      Yopiq kalit brauzerdan tashqariga chiqmaydi va saqlanmaydi.</div>
+    <label class="field mt"><span>Asos (tekshiruv raqami, qaror, so‘rov) *</span><textarea id="ulReason" placeholder="Masalan: Prokuratura so‘rovi №… , sana …"></textarea></label>
+    <label class="field"><span>Yopiq kalit fayli (whistle-private-key.json) *</span><input type="file" id="ulKey" accept=".json,application/json"></label>
+    <div class="form-error" id="ulErr"></div><div id="ulOut"></div>`,
+  [{ label: 'Ochish', cls: 'btn-primary', fn: async () => {
+    const reason = $('#ulReason').value.trim(), file = $('#ulKey').files[0], err = $('#ulErr');
+    err.textContent = '';
+    if (reason.length < 10) { err.textContent = 'Asosni batafsil yozing'; return false; }
+    if (!file) { err.textContent = 'Yopiq kalit faylini tanlang'; return false; }
+    if (r.contact_cipher === 'DEMO') { await api.logUnlock(r.id, reason); $('#ulOut').innerHTML = '<div class="v2-note">🧪 Demo: <b>+998 90 000 00 00</b></div>'; return false; }
+    try {
+      const jwk = JSON.parse(await file.text());
+      const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']);
+      const bytes = Uint8Array.from(atob(r.contact_cipher), c => c.charCodeAt(0));
+      const plain = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, bytes));
+      await api.logUnlock(r.id, reason);
+      $('#ulOut').innerHTML = `<div class="v2-note">Aloqa: <b>${esc(plain)}</b></div>`;
+    } catch (e) { err.textContent = 'Ochib bo‘lmadi: kalit mos emas yoki fayl buzilgan.'; }
+    return false;
+  } }]);
+}
+
+// ---------- Transchegaraviy signal ----------
+async function signalModal(r) {
+  const countries = (r.countries || []).length ? r.countries : ['KZ'];
+  const loc = r.lat != null ? `${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)} (https://www.google.com/maps?q=${r.lat},${r.lng})` : (r.location_text || '—');
+  const tmpl = (lang) => lang === 'en'
+    ? `Notification of a transboundary environmental incident\n\nReference: ${r.case_no}\nReported: ${fmtDT(r.created_at)}\nCategory: ${r.category}\nRegion (Uzbekistan): ${regionName(r.region)}\nLocation: ${loc}\n\nDescription:\n${r.description}\n\nCurrent status: ${STATUSES[r.status].t}\nSender: bbecoplatform.uz — environmental reporting platform (Republic of Uzbekistan).\nWe kindly ask you to review the information and inform us of any measures taken.`
+    : `Уведомление о трансграничном экологическом инциденте\n\nНомер обращения: ${r.case_no}\nДата: ${fmtDT(r.created_at)}\nКатегория: ${r.category}\nРегион (Узбекистан): ${regionName(r.region)}\nМестоположение: ${loc}\n\nОписание:\n${r.description}\n\nТекущий статус: ${STATUSES[r.status].t}\nОтправитель: платформа экологических обращений bbecoplatform.uz (Республика Узбекистан).\nПросим рассмотреть информацию и сообщить о принятых мерах.`;
+  const prev = await api.signals(r.id).catch(() => []);
+  const partnerOpts = c => state.orgs.filter(o => o.country === c).map(o => `<option value="${o.id}">${esc(o.short_name || o.name)}${o.email ? ' — ' + esc(o.email) : ''}</option>`).join('');
+  openModal('📤 Qo‘shni davlatga signal', `
+    <div class="row"><label class="field"><span>Davlat</span><select id="sgCountry">${countries.map(c => `<option value="${c}">${COUNTRIES[c] || c}</option>`).join('')}</select></label>
+      <label class="field"><span>Til</span><select id="sgLang"><option value="ru">Русский</option><option value="en">English</option></select></label></div>
+    <label class="field"><span>Hamkor tashkilot (Tashkilotlar bo‘limida “Davlat” maydoni bilan qo‘shiladi)</span><select id="sgOrg"></select></label>
+    <label class="field"><span>Xabar matni</span><textarea id="sgText" style="min-height:220px"></textarea></label>
+    ${prev.length ? `<div class="muted small">Avval yuborilgan: ${prev.map(p => `${esc(COUNTRIES[p.country] || p.country)} · ${fmtDT(p.created_at)}`).join('; ')}</div>` : ''}`,
+  [{ label: '📋 Nusxalash', cls: '', fn: () => { navigator.clipboard.writeText($('#sgText').value).then(() => toast('Nusxalandi', 'ok')); return false; } },
+   { label: '✉️ Email ochish', cls: '', fn: () => {
+      const o = state.orgs.find(x => x.id === $('#sgOrg').value);
+      location.href = `mailto:${encodeURIComponent(o && o.email || '')}?subject=${encodeURIComponent('Transboundary environmental incident ' + r.case_no)}&body=${encodeURIComponent($('#sgText').value)}`;
+      return false; } },
+   { label: 'Yuborildi deb belgilash', cls: 'btn-primary', fn: async () => {
+      await api.addSignal({ report_id: r.id, country: $('#sgCountry').value, org_id: $('#sgOrg').value || null, message: $('#sgText').value });
+      toast('Signal jurnalga yozildi', 'ok'); refreshDrawer(); } }]);
+  const upd = () => {
+    const c = $('#sgCountry').value, opts = partnerOpts(c);
+    $('#sgOrg').innerHTML = `<option value="">— tanlanmagan —</option>${opts}`;
+    $('#sgText').value = tmpl($('#sgLang').value).replace('Уведомление', `${COUNTRY_RU[c] ? COUNTRY_RU[c] + '\n' : ''}Уведомление`);
+  };
+  $('#sgCountry').onchange = upd; $('#sgLang').onchange = upd; upd();
+}
+
+// ---------- Operator qabuli (telefon / SMS / shaxsan) ----------
+function operatorModal() {
+  openModal('📞 Murojaatni qabul qilish', `
+    <p class="muted small" style="margin-top:0">Internetdan foydalana olmaydigan fuqarolar (qishloq, keksa aholi) qo‘ng‘iroq, SMS yoki shaxsan kelganda operator shu forma orqali kiritadi.
+      SMS/IVR shlyuzi ulansa, <code>inbound-report</code> funksiyasi arizani avtomatik yaratadi.</p>
+    <div class="row"><label class="field"><span>Kanal</span><select id="opCh"><option value="phone">📞 Telefon</option><option value="sms">✉️ SMS / USSD</option><option value="operator">👤 Shaxsan</option></select></label>
+      <label class="field"><span>Murojaatchi telefoni</span><input id="opPhone" placeholder="+998 90 123 45 67"></label></div>
+    <label class="field"><span>Muammo tavsifi *</span><textarea id="opDesc" placeholder="Fuqaro aytgan gaplarni yozing"></textarea></label>
+    <div class="row"><label class="field"><span>Turi *</span><select id="opCat">${CATEGORIES.map(c => `<option value="${c.k}">${c.icon} ${c.k}</option>`).join('')}</select></label>
+      <label class="field"><span>Viloyat *</span><select id="opRegion">${regionOptions('', '— tanlang —')}</select></label></div>
+    <label class="field"><span>Manzil / mo‘ljal</span><input id="opAddr" placeholder="Tuman, mahalla, mo‘ljal"></label>
+    <div class="row"><label class="field"><span>Kenglik (ixtiyoriy)</span><input id="opLat" type="number" step="any"></label><label class="field"><span>Uzunlik</span><input id="opLng" type="number" step="any"></label>
+      <label class="field"><span>Muhimlik</span><select id="opPrio">${PRIORITIES.map((p, i) => `<option value="${i}">${p}</option>`).join('')}</select></label></div>
+    <div class="form-error" id="opErr"></div>`,
+  [{ label: 'Arizani yaratish', cls: 'btn-primary', fn: async () => {
+    const desc = $('#opDesc').value.trim(), region = $('#opRegion').value;
+    if (desc.length < 5) { $('#opErr').textContent = 'Tavsifni yozing'; return false; }
+    if (!region) { $('#opErr').textContent = 'Viloyatni tanlang'; return false; }
+    const lat = parseFloat($('#opLat').value), lng = parseFloat($('#opLng').value), geo = Number.isFinite(lat) && Number.isFinite(lng);
+    const r = await api.createReport({ user_id: null, channel: $('#opCh').value, caller_phone: $('#opPhone').value.trim() || null, description: desc,
+      category: $('#opCat').value, region, address: $('#opAddr').value.trim() || null, lat: geo ? lat : null, lng: geo ? lng : null,
+      location_text: geo ? null : 'Operator orqali qabul qilingan', priority: Number($('#opPrio').value) });
+    state.reports.unshift(r); toast(`Ariza yaratildi: ${r.case_no}`, 'ok'); render(); setTimeout(() => openReport(r.id), 50);
+  } }]);
+}
+
+// =====================================================================
+// 🛰️ SUN'IY YO'LDOSH
+// =====================================================================
+function renderSat(el) {
+  const f = state.sf2;
+  const list = state.detections.filter(d => (!f.status || d.status === f.status) && (!f.source || d.source === f.source)).sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+  const cnt = s => state.detections.filter(d => d.status === s).length;
+  if (!el.dataset.built) {
+    el.innerHTML = `
+      <div class="toolbar">
+        <div class="tabs" id="satTabs"></div>
+        <select id="satSrc"><option value="">Barcha manbalar</option><option value="sentinel-2">Sentinel-2 + ML</option><option value="planet">Planet</option><option value="pleiades">Pléiades</option><option value="hotspot">Murojaatlar klasteri</option><option value="manual">Qo‘lda</option></select>
+        <span class="grow"></span>
+        <button class="btn" id="satHot" title="Bir hududda ko‘p murojaat to‘plangan joylarni nomzod sifatida belgilash">🔥 Klaster tahlili</button>
+        <label class="btn" title="GeoJSON (Point) yoki CSV: lat,lng,confidence,area_m2,captured_at,image_url">⬆ Import<input type="file" id="satFile" accept=".geojson,.json,.csv" hidden></label>
+      </div>
+      <div class="sat-grid"><div class="map-wrap"><div id="satMap"></div></div><div class="card sat-list" id="satList"></div></div>
+      <p class="muted small mt">Aniqlashlar ML pipeline’dan <code>ingest-detections</code> funksiyasi orqali avtomatik keladi (yo‘riqnoma: <code>docs/SATELLITE.md</code>).
+        Sentinel-2 mozaikasi (EOX s2cloudless) CC BY-NC-SA 4.0 litsenziyasida — tijoriy bo‘lmagan foydalanish uchun.</p>`;
+    el.dataset.built = '1';
+    $('#satSrc').onchange = e => { f.source = e.target.value; renderSat(el); };
+    $('#satHot').onclick = hotspotAnalysis;
+    $('#satFile').onchange = importDetections;
+  }
+  $('#satTabs').innerHTML = [['new', 'Yangi'], ['confirmed', 'Tasdiqlangan'], ['converted', 'Arizaga aylangan'], ['dismissed', 'Rad etilgan'], ['', 'Barchasi']]
+    .map(([k, t]) => `<button data-s="${k}" class="${f.status === k ? 'on' : ''}">${t}<em>${k ? cnt(k) : state.detections.length}</em></button>`).join('');
+  $$('#satTabs button').forEach(b => b.onclick = () => { f.status = b.dataset.s; renderSat(el); });
+  $('#satList').innerHTML = list.length ? list.map(d => {
+    const st = DET_STATUS[d.status] || DET_STATUS.new, p = Math.round((d.confidence || 0) * 100);
+    return `<div class="det-item" data-det="${d.id}">
+      <div class="det-h"><b>${esc(regionName(d.region))}</b><span class="pill" style="--c:${st[1]}">${st[0]}</span></div>
+      <div class="det-meta"><span class="det-conf" style="--p:${p}%">${p}%</span> ${d.source === 'hotspot' ? '🔥 Klaster' : '🛰️ ' + esc(d.source)}${d.model ? ' · ' + esc(d.model) : ''}${d.area_m2 ? ' · ~' + nf(d.area_m2) + ' m²' : ''}${d.captured_at ? ' · ' + esc(d.captured_at) : ''}</div>
+      ${d.notes ? `<div class="muted small">${esc(d.notes)}</div>` : ''}
+      ${d.image_url ? `<img class="det-img" src="${esc(d.image_url)}" alt="" loading="lazy">` : ''}
+      <div class="det-actions"><button class="btn btn-sm" data-act="fly">📍 Ko‘rish</button>
+        ${d.status === 'new' || d.status === 'confirmed' ? `<button class="btn btn-sm btn-primary" data-act="convert">✅ Arizaga aylantirish</button><button class="btn btn-sm btn-ghost" data-act="dismiss">✖ Rad etish</button>` : ''}
+        ${d.report_id ? `<button class="btn btn-sm" data-act="report">📥 Ariza</button>` : ''}</div>
+    </div>`;
+  }).join('') : '<div class="empty">Bu filtrda aniqlashlar yo‘q</div>';
+  $$('#satList [data-act]').forEach(b => b.onclick = () => detAction(b.closest('[data-det]').dataset.det, b.dataset.act));
+
+  if (!window.L) return;
+  if (!state.maps.sat) {
+    const m = L.map('satMap', { preferCanvas: true }).setView([41.3, 64.5], 6);
+    addBaseLayers(m, 'sat');
+    state.maps.sat = m; state.maps.satLayer = L.layerGroup().addTo(m);
+  }
+  setTimeout(() => state.maps.sat.invalidateSize(), 60);
+  drawDetections(state.maps.satLayer, true, list);
+}
+function drawDetections(layer, show, list) {
+  if (!layer) return 0;
+  layer.clearLayers();
+  if (!show) return 0;
+  const items = (list || state.detections).filter(d => d.status !== 'dismissed' || list);
+  items.forEach(d => {
+    const p = Math.round((d.confidence || 0) * 100), color = d.status === 'converted' ? '#16A34A' : d.status === 'dismissed' ? '#9CA3AF' : '#E11D48';
+    L.circle([d.lat, d.lng], { radius: Math.max(60, d.radius_m || 80), color, weight: 2, fillColor: color, fillOpacity: .18 }).addTo(layer);
+    L.circleMarker([d.lat, d.lng], { radius: 6, color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 }).addTo(layer)
+      .bindPopup(`<b>🛰️ ${esc(regionName(d.region))}</b><br>Ishonch: <b>${p}%</b>${d.area_m2 ? ' · ~' + nf(d.area_m2) + ' m²' : ''}<br>${esc((DET_STATUS[d.status] || [])[0] || '')}${d.captured_at ? ' · ' + esc(d.captured_at) : ''}
+        <br><a href="#" onclick="location.hash='#sat'; setTimeout(()=>detAction('${d.id}','fly'),300); return false;">Ko‘rib chiqish →</a>`);
+  });
+  return items.length;
+}
+window.detAction = detAction;
+async function detAction(id, act) {
+  const d = state.detections.find(x => x.id === id); if (!d) return;
+  const upd = async patch => { const n = await api.saveDetection(id, { ...patch, reviewed_by: state.me.id, reviewed_at: new Date().toISOString() }); Object.assign(d, n); v2Badges(); render(); };
+  try {
+    if (act === 'fly' && state.maps.sat) { state.maps.sat.flyTo([d.lat, d.lng], 17); $$('.det-item').forEach(x => x.classList.toggle('sel', x.dataset.det === id)); }
+    if (act === 'report' && d.report_id) openReport(d.report_id);
+    if (act === 'dismiss') { const why = prompt('Rad etish sababi (masalan: qurilish maydoni, rasmiy poligon):', ''); if (why === null) return; await upd({ status: 'dismissed', notes: why || d.notes }); toast('Rad etildi', 'ok'); }
+    if (act === 'convert') {
+      const p = Math.round((d.confidence || 0) * 100);
+      const r = await api.createReport({ user_id: null, channel: 'satellite', detection_id: d.id, category: d.category || 'Chiqindi', region: d.region, lat: d.lat, lng: d.lng,
+        description: `🛰️ Sun’iy yo‘ldosh tasviri tahlilida ehtimoliy noqonuniy chiqindixona aniqlandi (ishonch ${p}%${d.area_m2 ? ', maydon ~' + nf(d.area_m2) + ' m²' : ''}${d.captured_at ? ', tasvir sanasi ' + d.captured_at : ''}). Joyida tekshirish talab etiladi.`,
+        status: 1, priority: p >= 90 ? 1 : 0, ai_category: d.category || 'Chiqindi', ai_confidence: d.confidence, ai_summary: 'ML modeli: ' + (d.model || d.source) });
+      state.reports.unshift(r);
+      await upd({ status: 'converted', report_id: r.id });
+      toast(`Ariza yaratildi: ${r.case_no}`, 'ok'); openReport(r.id);
+    }
+  } catch (e) { toast(e.message, 'err'); }
+}
+async function hotspotAnalysis() {
+  const since = Date.now() - 60 * 864e5;
+  const pts = state.reports.filter(r => !r.cancelled && !r.rejected && r.lat != null && new Date(r.created_at) >= since);
+  const used = new Set(), cands = [];
+  pts.forEach(p => {
+    if (used.has(p.id)) return;
+    const near = pts.filter(q => !used.has(q.id) && distM(p, q) <= 1000);
+    if (near.length >= 3) {
+      near.forEach(q => used.add(q.id));
+      const lat = near.reduce((s, q) => s + q.lat, 0) / near.length, lng = near.reduce((s, q) => s + q.lng, 0) / near.length;
+      const top = Object.entries(near.reduce((m, q) => (m[q.category] = (m[q.category] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1])[0][0];
+      if (!state.detections.some(d => d.status !== 'dismissed' && distM(d, { lat, lng }) < 500))
+        cands.push({ source: 'hotspot', lat, lng, radius_m: 500, confidence: Math.min(0.95, 0.5 + near.length * 0.08), region: near[0].region, category: top,
+          notes: `${near.length} ta murojaat 1 km radiusda (so‘nggi 60 kun): ${near.map(q => q.case_no).slice(0, 6).join(', ')}` });
+    }
+  });
+  if (!cands.length) return toast('Yangi klaster topilmadi (≥3 murojaat / 1 km / 60 kun)');
+  try { const rows = await api.insertDetections(cands); state.detections.unshift(...rows); v2Badges(); render(); toast(`${rows.length} ta klaster nomzodi qo‘shildi`, 'ok'); }
+  catch (e) { toast(e.message, 'err'); }
+}
+async function importDetections(e) {
+  const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+  let rows = [];
+  try {
+    const text = await file.text();
+    if (/\.csv$/i.test(file.name)) {
+      const [head, ...lines] = text.trim().split(/\r?\n/); const cols = head.split(',').map(s => s.trim().toLowerCase());
+      rows = lines.map(l => { const v = l.split(','); const o = {}; cols.forEach((c, i) => { o[c] = (v[i] || '').trim(); }); return o; });
+    } else {
+      const j = JSON.parse(text);
+      rows = (j.features || []).filter(f => f.geometry && f.geometry.type === 'Point').map(f => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], ...(f.properties || {}) }));
+    }
+    const clean = rows.map(o => {
+      const lat = Number(o.lat), lng = Number(o.lng); let c = o.confidence === undefined || o.confidence === '' ? null : Number(o.confidence); if (c != null && c > 1) c /= 100;
+      return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng, confidence: c, area_m2: o.area_m2 ? Number(o.area_m2) : null, radius_m: o.radius_m ? Number(o.radius_m) : null,
+        captured_at: o.captured_at || null, image_url: o.image_url || null, source: o.source || 'sentinel-2', model: o.model || null, region: guessRegionAdmin(lat, lng), category: o.category || 'Chiqindi' } : null;
+    }).filter(Boolean);
+    if (!clean.length) return toast('Faylda koordinatali nuqtalar topilmadi', 'err');
+    const out = await api.insertDetections(clean); state.detections.unshift(...out); v2Badges(); render(); toast(`${out.length} ta aniqlash import qilindi`, 'ok');
+  } catch (err) { toast('Import xatosi: ' + err.message, 'err'); }
+}
+function guessRegionAdmin(lat, lng) {
+  if (Math.hypot(lat - 41.3111, (lng - 69.2797) * 0.75) < 0.16) return 'tashkent_city';
+  let best = null, bd = 1e9; REGIONS.forEach(r => { if (r.code === 'tashkent_city') return; const d = Math.hypot(lat - r.lat, (lng - r.lng) * 0.75); if (d < bd) { bd = d; best = r.code; } });
+  return best;
+}
+
+// =====================================================================
+// 💰 SHAFFOFLIK
+// =====================================================================
+function renderLedgerAdmin(el) {
+  const ro = !isAdmin();
+  const F = state.funds, Pj = state.projects.filter(p => p.status !== 'cancelled');
+  const sum = (a, k) => a.reduce((s, x) => s + Number(x[k] || 0), 0);
+  const regs = [...new Set(F.map(f => f.region || '').concat(Pj.map(p => p.region || '')))];
+  const byReg = regs.map(code => { const f = F.filter(x => (x.region || '') === code), p = Pj.filter(x => (x.region || '') === code);
+    return { code, collected: sum(f, 'amount'), allocated: sum(p, 'budget'), spent: sum(p, 'spent'), n: p.length }; }).sort((a, b) => b.collected - a.collected);
+  const newSug = state.suggestions.filter(s => s.status === 'new').length;
+  el.innerHTML = `
+    ${ro ? '<div class="demo-banner" style="margin:0 0 16px">Ma’lumot kiritishni faqat <b>admin</b> bajaradi.</div>' : ''}
+    <div class="grid g-kpi">
+      <div class="card kpi"><div class="k-label">Yig‘ilgan mablag‘</div><div class="k-val" style="font-size:22px">${fmtMoney(sum(F, 'amount'))}</div><div class="k-sub">kompensatsiya, jarima, grant</div></div>
+      <div class="card kpi"><div class="k-label">Loyihalarga ajratilgan</div><div class="k-val" style="font-size:22px">${fmtMoney(sum(Pj, 'budget'))}</div><div class="k-sub">${Pj.length} ta loyiha</div></div>
+      <div class="card kpi"><div class="k-label">Sarflangan</div><div class="k-val" style="font-size:22px">${fmtMoney(sum(Pj, 'spent'))}</div><div class="k-sub">${sum(Pj, 'budget') ? Math.round(sum(Pj, 'spent') / sum(Pj, 'budget') * 100) : 0}% byudjetdan</div></div>
+      <div class="card kpi"><div class="k-label">Fuqarolar ovozlari</div><div class="k-val">${nf(sum(state.projects, 'vote_count'))}</div><div class="k-sub">${newSug} ta yangi taklif</div></div>
+    </div>
+    <p class="muted small mt">Bu ma’lumotlar mobil ilovadagi “💰 Shaffoflik” bo‘limida hammaga ochiq ko‘rinadi. Qonuniy asos: Atmosfera havosini muhofaza qilish to‘g‘risidagi Qonun, 25-modda.</p>
+
+    <div class="card mt"><div class="card-h"><h3>Hududlar kesimida</h3></div><div class="card-b" style="padding:8px 0 0"><div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Hudud</th><th class="num">Yig‘ilgan</th><th class="num">Ajratilgan</th><th class="num">Sarflangan</th><th>Yo‘naltirilgan ulush</th></tr></thead><tbody>
+      ${byReg.map(x => { const p = x.collected ? Math.min(100, Math.round(x.allocated / x.collected * 100)) : 0;
+        return `<tr><td>${esc(x.code ? regionName(x.code) : 'Respublika')}</td><td class="num">${fmtMoney(x.collected)}</td><td class="num">${fmtMoney(x.allocated)}</td><td class="num">${fmtMoney(x.spent)}</td>
+        <td style="min-width:160px"><div class="bar-track"><span class="bar-fill" style="width:${p}%; background:${p < 30 ? 'var(--warn)' : 'var(--accent)'}"></span></div><span class="small muted">${p}%</span></td></tr>`; }).join('') || '<tr><td colspan="5" class="empty">Ma’lumot yo‘q</td></tr>'}
+      </tbody></table></div></div></div>
+
+    <div class="grid g-2 mt">
+      <div class="card"><div class="card-h"><h3>Tushumlar</h3>${ro ? '' : '<button class="btn btn-sm btn-primary" id="fundAdd">＋ Tushum</button>'}</div><div class="card-b" style="padding:8px 0 0"><div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Hudud</th><th>Davr</th><th>Manba</th><th class="num">Summa</th><th></th></tr></thead><tbody>
+        ${F.map(f => `<tr><td>${esc(f.region ? regionName(f.region) : 'Respublika')}</td><td class="nowrap">${f.year}${f.quarter ? ' · ' + f.quarter + '-chorak' : ''}</td><td>${esc(FUND_SRC[f.source] || f.source)}${f.doc_url ? ` <a href="${esc(f.doc_url)}" target="_blank" rel="noopener">↗</a>` : ''}</td>
+          <td class="num nowrap">${fmtMoney(f.amount)}</td><td>${ro ? '' : `<button class="btn btn-sm btn-ghost" data-fund="${f.id}">✎</button>`}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">Tushumlar kiritilmagan</td></tr>'}
+        </tbody></table></div></div></div>
+      <div class="card"><div class="card-h"><h3>Fuqarolar takliflari</h3></div><div class="card-b">
+        ${state.suggestions.length ? state.suggestions.map(s => `<div class="sug-item"><div class="small muted">${esc(s.region ? regionName(s.region) : 'Hudud ko‘rsatilmagan')} · ${fmtDate(s.created_at)} · ${esc((s.profiles && s.profiles.full_name) || 'Fuqaro')}</div>
+          <div>${esc(s.text)}</div><div class="row" style="align-items:center; margin-top:6px"><span class="pill" style="flex:0 0 auto; --c:${s.status === 'new' ? 'var(--s0)' : s.status === 'accepted' ? 'var(--s3)' : 'var(--sx)'}">${s.status === 'new' ? 'Yangi' : s.status === 'accepted' ? 'Qabul qilingan' : 'Rad etilgan'}</span>
+          ${s.status === 'new' ? `<span style="flex:0 0 auto"><button class="btn btn-sm" data-sug="${s.id}" data-st="accepted">✓ Qabul</button> <button class="btn btn-sm btn-ghost" data-sug="${s.id}" data-st="rejected">✕</button></span>` : ''}</div></div>`).join('') : '<div class="empty">Takliflar yo‘q</div>'}
+      </div></div>
+    </div>
+
+    <div class="card mt"><div class="card-h"><h3>Loyihalar</h3>${ro ? '' : '<button class="btn btn-sm btn-primary" id="projAdd">＋ Loyiha</button>'}</div><div class="card-b" style="padding:8px 0 0"><div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Loyiha</th><th>Hudud</th><th>Holat</th><th class="num">Byudjet</th><th class="num">Sarflangan</th><th class="num">👍</th><th></th></tr></thead><tbody>
+      ${state.projects.map(p => `<tr><td><b>${esc(p.title)}</b>${p.category ? ` <span class="chip">${catOf(p.category).icon} ${esc(p.category)}</span>` : ''}</td><td class="nowrap">${esc(p.region ? regionName(p.region) : 'Respublika')}</td>
+        <td><span class="chip">${esc(PROJ_STATUS[p.status] || p.status)}</span></td><td class="num nowrap">${fmtMoney(p.budget)}</td><td class="num nowrap">${fmtMoney(p.spent)}</td><td class="num">${nf(p.vote_count)}</td>
+        <td>${ro ? '' : `<button class="btn btn-sm" data-proj="${p.id}">Tahrirlash</button>`}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">Loyihalar yo‘q</td></tr>'}
+      </tbody></table></div></div></div>`;
+  if (ro) return;
+  $('#fundAdd').onclick = () => fundModal();
+  $('#projAdd').onclick = () => projectModal();
+  $$('[data-fund]', el).forEach(b => b.onclick = () => fundModal(state.funds.find(f => f.id === b.dataset.fund)));
+  $$('[data-proj]', el).forEach(b => b.onclick = () => projectModal(state.projects.find(p => p.id === b.dataset.proj)));
+  $$('[data-sug]', el).forEach(b => b.onclick = async () => {
+    try { await api.updateSuggestion(b.dataset.sug, b.dataset.st); state.suggestions.find(s => s.id === b.dataset.sug).status = b.dataset.st; v2Badges(); render(); } catch (e) { toast(e.message, 'err'); }
+  });
+}
+function fundModal(f = {}) {
+  openModal(f.id ? 'Tushumni tahrirlash' : 'Yangi tushum', `
+    <div class="row"><label class="field"><span>Hudud</span><select id="fdReg">${regionOptions(f.region || '', 'Respublika')}</select></label>
+      <label class="field"><span>Manba</span><select id="fdSrc">${Object.entries(FUND_SRC).map(([k, v]) => `<option value="${k}" ${f.source === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
+    <div class="row"><label class="field"><span>Yil *</span><input id="fdYear" type="number" value="${f.year || new Date().getFullYear()}"></label>
+      <label class="field"><span>Chorak</span><select id="fdQ"><option value="">—</option>${[1, 2, 3, 4].map(q => `<option ${f.quarter === q ? 'selected' : ''}>${q}</option>`).join('')}</select></label>
+      <label class="field"><span>Summa (so‘m) *</span><input id="fdAmt" type="number" min="0" value="${f.amount || ''}"></label></div>
+    <label class="field"><span>Asos hujjat havolasi</span><input id="fdDoc" value="${esc(f.doc_url || '')}" placeholder="https://"></label>
+    <label class="field"><span>Izoh</span><input id="fdNote" value="${esc(f.note || '')}"></label><div class="form-error" id="fdErr"></div>`,
+  [f.id ? { label: 'O‘chirish', cls: 'btn-danger', fn: async () => { if (!confirm('O‘chirilsinmi?')) return false; await api.deleteFund(f.id); state.funds = state.funds.filter(x => x.id !== f.id); render(); } } : null,
+   { label: 'Saqlash', cls: 'btn-primary', fn: async () => {
+    const amount = Math.round(Number($('#fdAmt').value)), year = Number($('#fdYear').value);
+    if (!(amount >= 0) || !year) { $('#fdErr').textContent = 'Yil va summani kiriting'; return false; }
+    const data = { region: $('#fdReg').value || null, source: $('#fdSrc').value, year, quarter: $('#fdQ').value ? Number($('#fdQ').value) : null, amount, doc_url: $('#fdDoc').value.trim() || null, note: $('#fdNote').value.trim() || null };
+    if (f.id) data.id = f.id;
+    const saved = await api.saveFund(data); const i = state.funds.findIndex(x => x.id === saved.id); if (i >= 0) state.funds[i] = { ...state.funds[i], ...saved }; else state.funds.unshift(saved);
+    toast('Saqlandi', 'ok'); render(); } }].filter(Boolean));
+}
+function projectModal(p = {}) {
+  openModal(p.id ? 'Loyihani tahrirlash' : 'Yangi loyiha', `
+    <label class="field"><span>Nomi *</span><input id="pjTitle" value="${esc(p.title || '')}"></label>
+    <label class="field"><span>Tavsif</span><textarea id="pjDesc">${esc(p.description || '')}</textarea></label>
+    <div class="row"><label class="field"><span>Hudud</span><select id="pjReg">${regionOptions(p.region || '', 'Respublika')}</select></label>
+      <label class="field"><span>Yo‘nalish</span><select id="pjCat"><option value="">—</option>${CATEGORIES.map(c => `<option value="${c.k}" ${p.category === c.k ? 'selected' : ''}>${c.icon} ${c.k}</option>`).join('')}</select></label>
+      <label class="field"><span>Holat</span><select id="pjSt">${Object.entries(PROJ_STATUS).map(([k, v]) => `<option value="${k}" ${(p.status || 'proposed') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
+    <div class="row"><label class="field"><span>Byudjet (so‘m)</span><input id="pjBud" type="number" min="0" value="${p.budget || 0}"></label>
+      <label class="field"><span>Sarflangan (so‘m)</span><input id="pjSp" type="number" min="0" value="${p.spent || 0}"></label></div>
+    <div class="row"><label class="field"><span>Boshlanish</span><input id="pjStart" type="date" value="${esc(p.start_date || '')}"></label>
+      <label class="field"><span>Tugash</span><input id="pjEnd" type="date" value="${esc(p.end_date || '')}"></label>
+      <label class="field"><span>Ijrochi tashkilot</span><select id="pjOrg"><option value="">—</option>${state.orgs.map(o => `<option value="${o.id}" ${p.org_id === o.id ? 'selected' : ''}>${esc(o.short_name || o.name)}</option>`).join('')}</select></label></div>
+    <label class="field"><span>Hujjat havolasi (shartnoma, hisobot)</span><input id="pjDoc" value="${esc(p.doc_url || '')}" placeholder="https://"></label><div class="form-error" id="pjErr"></div>`,
+  [p.id ? { label: 'O‘chirish', cls: 'btn-danger', fn: async () => { if (!confirm('Loyiha o‘chirilsinmi?')) return false; await api.deleteProject(p.id); state.projects = state.projects.filter(x => x.id !== p.id); render(); } } : null,
+   { label: 'Saqlash', cls: 'btn-primary', fn: async () => {
+    const title = $('#pjTitle').value.trim(); if (!title) { $('#pjErr').textContent = 'Nomini kiriting'; return false; }
+    const data = { title, description: $('#pjDesc').value.trim() || null, region: $('#pjReg').value || null, category: $('#pjCat').value || null, status: $('#pjSt').value,
+      budget: Math.round(Number($('#pjBud').value) || 0), spent: Math.round(Number($('#pjSp').value) || 0), start_date: $('#pjStart').value || null, end_date: $('#pjEnd').value || null,
+      org_id: $('#pjOrg').value || null, doc_url: $('#pjDoc').value.trim() || null };
+    if (p.id) data.id = p.id;
+    const saved = await api.saveProject(data); const i = state.projects.findIndex(x => x.id === saved.id); if (i >= 0) state.projects[i] = { ...state.projects[i], ...saved }; else state.projects.unshift(saved);
+    toast('Saqlandi', 'ok'); render(); } }].filter(Boolean));
+}
+
+// =====================================================================
+// STATISTIKA: kanallar, AI aniqligi, transchegaraviy, reyting
+// =====================================================================
+function v2StatsHTML(R) {
+  const withAi = R.filter(r => r.ai_category), agree = withAi.filter(r => r.ai_category === r.category).length;
+  const avgConf = withAi.length ? withAi.reduce((s, r) => s + (r.ai_confidence || 0), 0) / withAi.length : 0;
+  const tbc = {}; R.filter(r => r.transboundary).forEach(r => (r.countries.length ? r.countries : ['?']).forEach(c => { tbc[c] = (tbc[c] || 0) + 1; }));
+  // Faol fuqarolar: faqat real natija (hal qilingan = 10, ishga olingan = 2)
+  const pts = {}; R.filter(r => r.user_id && !r.rejected).forEach(r => { const u = pts[r.user_id] = pts[r.user_id] || { p: 0, done: 0 }; if (r.status >= 3) { u.p += 10; u.done++; } else if (r.status >= 1) u.p += 2; });
+  const top = Object.entries(pts).filter(([, v]) => v.p > 0).sort((a, b) => b[1].p - a[1].p).slice(0, 10);
+  const rejRate = state.reports.length ? Math.round(state.reports.filter(r => r.rejected).length / state.reports.length * 100) : 0;
+  return `
+    <div class="grid g-2 mt">
+      <div class="card"><div class="card-h"><h3>Murojaat kanallari</h3><span class="muted small">internetsiz kanallar qamrovi</span></div><div class="card-b"><div class="chart-box"><canvas id="chChannel"></canvas></div></div></div>
+      <div class="card"><div class="card-h"><h3>🤖 AI tahlili sifati</h3></div><div class="card-b">
+        <div class="grid g-kpi" style="grid-template-columns:repeat(3,1fr)">
+          <div><div class="k-label">AI tahlil qilgan</div><div class="k-val" style="font-size:24px">${nf(withAi.length)}</div></div>
+          <div><div class="k-label">Yakuniy tur bilan mos</div><div class="k-val" style="font-size:24px">${withAi.length ? Math.round(agree / withAi.length * 100) : 0}%</div></div>
+          <div><div class="k-label">O‘rtacha ishonch</div><div class="k-val" style="font-size:24px">${Math.round(avgConf * 100)}%</div></div></div>
+        <p class="muted small">Moslik — AI taxmini va xodim tasdiqlagan yakuniy tur bir xil bo‘lgan arizalar ulushi. Asossiz deb topilganlar: ${rejRate}%.</p>
+        <h4 class="mt" style="font-size:13px">🌐 Transchegaraviy hodisalar</h4>
+        ${Object.keys(tbc).length ? barsHTML(Object.entries(tbc).map(([c, v]) => ({ label: COUNTRIES[c] || c, v, onclick: "goReports({flag:'tb'})" })), 'var(--s2)') : '<p class="muted small">Tanlangan davrda yo‘q</p>'}
+      </div></div>
+    </div>
+    <div class="card mt"><div class="card-h"><h3>🏆 Faol fuqarolar (real natija bo‘yicha)</h3><span class="muted small">hal qilingan — 10 ball, ishga olingan — 2 ball; asossizlar hisoblanmaydi</span></div>
+      <div class="card-b" style="padding:8px 0 0"><div class="table-wrap"><table class="tbl"><thead><tr><th>#</th><th>Fuqaro</th><th class="num">Hal qilingan</th><th class="num">Ball</th><th>Ilovada reytingda</th></tr></thead><tbody>
+      ${top.map(([id, v], i) => { const u = state.users.find(x => x.id === id) || {}; return `<tr><td>${i + 1}</td><td>${esc(u.full_name || '—')}</td><td class="num">${v.done}</td><td class="num"><b>${v.p}</b></td><td>${u.show_in_rating ? '✅ ko‘rinadi' : '<span class="muted">yashirin</span>'}</td></tr>`; }).join('') || '<tr><td colspan="5" class="empty">Ma’lumot yo‘q</td></tr>'}
+      </tbody></table></div></div></div>`;
+}
+function v2StatsCharts(R) {
+  const keys = Object.keys(CHANNELS), colors = ['#2563EB', '#7C3AED', '#111827', '#D97706', '#0F766E', '#DB2777', '#E11D48'];
+  makeChart('channel', $('#chChannel'), {
+    type: 'doughnut',
+    data: { labels: keys.map(k => CHANNELS[k].i + ' ' + CHANNELS[k].t), datasets: [{ data: keys.map(k => R.filter(r => (r.channel || 'app') === k).length), backgroundColor: colors, borderColor: cssVar('--surface'), borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, cutout: '58%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } } }
+  });
+}
+
+// =====================================================================
+// SOZLAMALAR: v2 kalitlari va maxfiy murojaat shifrlash kaliti
+// =====================================================================
+function v2SettingsHTML(ro) {
+  const s = state.settings, pk = s.whistle_pubkey;
+  const sw = (key, title, desc, on) => `<div class="set-item"><div><b>${title}</b><p>${desc}</p></div><label class="switch"><input type="checkbox" data-set="${key}" ${on ? 'checked' : ''} ${ro ? 'disabled' : ''}><i></i></label></div>`;
+  return `
+    <div class="card"><div class="card-h"><h3>🧩 Yangi imkoniyatlar</h3></div><div class="card-b"><div class="set-list">
+      ${sw('anon_reports_enabled', '🕶️ Maxfiy murojaat', 'Fuqaro ismsiz, kuzatuv kodi bilan murojaat yubora oladi', s.anon_reports_enabled !== false)}
+      ${sw('ai_enabled', '🤖 AI tahlili va AI yordamchi', 'Foto avtomatik tahlil qilinadi (Edge Function “eco-ai”, ANTHROPIC_API_KEY kerak)', s.ai_enabled !== false)}
+      <div class="set-item"><div><b>AI kunlik limiti</b><p>Bir foydalanuvchi uchun kunlik AI so‘rovlari (0 — cheklovsiz)</p></div>
+        <input type="number" min="0" max="500" data-set="ai_daily_limit" value="${Number(s.ai_daily_limit ?? 20)}" ${ro ? 'disabled' : ''}></div>
+      ${sw('transparency_enabled', '💰 Shaffoflik bo‘limi', 'Ilovada tushumlar va loyihalar hammaga ko‘rinadi', s.transparency_enabled !== false)}
+      ${sw('rating_enabled', '🏆 Eko-reyting', 'Hududlar va faol fuqarolar reytingi (faqat real natija bo‘yicha)', s.rating_enabled !== false)}
+    </div></div></div>
+
+    <div class="card"><div class="card-h"><h3>🔐 Maxfiy murojaat shifrlash kaliti</h3></div><div class="card-b">
+      <p class="small" style="margin-top:0">Fuqaro ixtiyoriy qoldirgan aloqa ma’lumoti telefonning o‘zida <b>ochiq kalit</b> bilan shifrlanadi. Uni faqat <b>yopiq kalit</b> egasi —
+        yuridik mas’ul — qonuniy zarurat bo‘lganda ocha oladi. Yopiq kalit serverga yuklanmaydi; yo‘qolsa, shifrlangan aloqalarni tiklab bo‘lmaydi.</p>
+      <dl class="meta"><dt>Holat</dt><dd>${pk ? `<span class="pill" style="--c:var(--s3)"><span class="dot"></span>O‘rnatilgan</span> <code id="pkFp">…</code>` : '<span class="pill" style="--c:var(--sx)">O‘rnatilmagan</span> — ilovada aloqa maydoni ko‘rinmaydi'}</dd></dl>
+      ${ro ? '' : `<div class="row mt"><button class="btn" id="pkGen">${pk ? 'Kalitni almashtirish' : 'Kalit juftligini yaratish'}</button>${pk ? '<button class="btn btn-danger" id="pkDel">O‘chirish</button>' : ''}</div>`}
+    </div></div>`;
+}
+function v2BindSettings(el) {
+  const pk = state.settings.whistle_pubkey;
+  if (pk && pk.n && crypto.subtle) crypto.subtle.digest('SHA-256', new TextEncoder().encode(pk.n)).then(b => {
+    const fp = $('#pkFp'); if (fp) fp.textContent = Array.from(new Uint8Array(b)).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join(':'); });
+  const gen = $('#pkGen', el);
+  if (gen) gen.onclick = async () => {
+    if (pk && !confirm('Yangi kalit yaratilsa, eski kalit bilan shifrlangan aloqalar faqat ESKI yopiq kalit bilan ochiladi. Davom etasizmi?')) return;
+    try {
+      const kp = await crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 3072, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['encrypt', 'decrypt']);
+      const pub = await crypto.subtle.exportKey('jwk', kp.publicKey), priv = await crypto.subtle.exportKey('jwk', kp.privateKey);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(priv, null, 2)], { type: 'application/json' }));
+      a.download = `whistle-private-key-${dayKey(Date.now())}.json`; a.click();
+      if (!confirm('Yopiq kalit fayli yuklab olindi. Uni xavfsiz joyda (shifrlangan flesh, seyf) saqlaganingizni tasdiqlang. Endi ochiq kalit serverga saqlanadi.')) return;
+      await api.saveSetting('whistle_pubkey', { kty: pub.kty, n: pub.n, e: pub.e, alg: pub.alg });
+      state.settings.whistle_pubkey = { kty: pub.kty, n: pub.n, e: pub.e, alg: pub.alg }; toast('Kalit o‘rnatildi', 'ok'); render();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+  const del = $('#pkDel', el);
+  if (del) del.onclick = async () => {
+    if (!confirm('Ochiq kalit o‘chirilsinmi? Ilovada shifrlangan aloqa maydoni yashiriladi.')) return;
+    try { await api.saveSetting('whistle_pubkey', null); state.settings.whistle_pubkey = null; render(); } catch (e) { toast(e.message, 'err'); }
+  };
+}
+
+</script>
+</body>
+</html>
