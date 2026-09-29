@@ -1,0 +1,123 @@
+/* bbecoplatform.uz — v2 komponentlari (asosiy dizayn tokenlaridan foydalanadi) */
+.mini-note{font-size:12px; color:var(--ink-soft); line-height:1.5; margin:6px 0 0;}
+.link-btn{border:none; background:none; color:var(--red); font-weight:700; font-size:13px; cursor:pointer; padding:6px;}
+
+/* Bosh sahifa kartalari */
+.svc-plus{gap:10px;}
+.svc-emoji{font-size:28px; line-height:1;}
+
+/* Ovozli murojaat */
+.voice-box{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+.voice-btn{min-height:46px; font-size:15px;}
+.voice-btn.recording{border-color:var(--red); color:var(--red); animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(198,80,63,.15);}}
+.voice-status{font-size:12px; color:var(--ink-soft); line-height:1.5;}
+.voice-rec{align-items:center; gap:8px;}
+.voice-rec audio{flex:1; min-width:0; height:40px;}
+
+/* AI kartasi */
+.ai-card{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--leaf); border-radius:14px; padding:14px; margin-top:14px;}
+.ai-loading{font-size:13px; color:var(--ink-soft); animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{50%{opacity:.45;}}
+.ai-h{font-size:12px; font-weight:700; color:var(--leaf-dim); margin-bottom:6px;}
+.ai-res{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+.ai-cat{font-family:var(--font-head); font-weight:800; font-size:17px;}
+.ai-conf{font-size:12px; font-weight:700; color:var(--ink-soft); white-space:nowrap;}
+.ai-bar{height:6px; background:var(--line); border-radius:6px; overflow:hidden; margin:8px 0;}
+.ai-bar i{display:block; height:100%; background:var(--leaf); border-radius:6px;}
+.ai-sum{font-size:13px; line-height:1.5; margin:6px 0;}
+.ai-warn{font-size:12px; color:var(--amber); font-weight:600; line-height:1.5; margin:6px 0;}
+.ai-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+.ai-btn{min-height:40px; padding:8px 12px; font-size:13px; width:auto; flex:1 1 140px;}
+.sev{display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:var(--line); color:var(--ink-soft);}
+.sev2{background:#FCEFD9; color:var(--amber);} .sev3{background:#F6E4E0; color:var(--red);}
+.cat{position:relative;}
+.ai-badge{position:absolute; top:-8px; left:50%; transform:translateX(-50%); white-space:nowrap; font-style:normal; font-size:10px; font-weight:700;
+  background:var(--moss); color:#fff; padding:2px 8px; border-radius:20px;}
+
+/* Huquqiy asos */
+.legal-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin-top:14px;}
+.legal-h{display:block; font-size:13px; margin-bottom:8px;}
+.legal-item{border-top:1px solid var(--line); padding:10px 0; cursor:pointer;}
+.legal-item:first-of-type{border-top:none;}
+.legal-n{font-size:11px; font-weight:700; color:var(--leaf-dim);}
+.legal-t{font-size:13px; font-weight:700; margin-top:2px; line-height:1.4;}
+.legal-x{font-size:12px; color:var(--ink-soft); line-height:1.5; margin-top:4px;}
+.legal-more{display:inline-block; font-size:12px; font-weight:700; color:var(--leaf-dim); margin-top:4px; text-decoration:none;}
+.chip-row{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 12px;}
+.law-chip{display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-size:12px; font-weight:600;
+  padding:6px 10px; border-radius:20px; cursor:pointer; text-decoration:none; font-family:var(--font-body);}
+.law-chip.static{cursor:default;}
+.art-flash{box-shadow:0 0 0 3px var(--leaf);}
+
+/* Transchegaraviy / belgilash kataklari */
+.tb-check{display:flex; gap:12px; align-items:flex-start; cursor:pointer; font-size:13px; line-height:1.45;}
+.tb-check input{width:20px; height:20px; margin-top:2px; accent-color:var(--moss); flex-shrink:0;}
+.tb-check small{color:var(--ink-soft);}
+
+/* Maxfiy rejim */
+.anon-pill{display:none; margin-left:auto; font-size:11px; font-weight:700; background:var(--ink); color:var(--sand); padding:4px 10px; border-radius:20px; white-space:nowrap;}
+body.anon-mode .anon-pill{display:inline-block;}
+.anon-note{background:var(--ink); color:var(--sand); border-radius:12px; padding:10px 12px; font-size:12.5px; font-weight:600; margin-bottom:12px;}
+.anon-hero{text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px;}
+.anon-hero .anon-ico{font-size:40px;}
+.anon-hero b{font-family:var(--font-head); font-size:16px;}
+.anon-hero p{font-size:13px; color:var(--ink-soft);}
+.anon-list{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+.anon-list div{display:flex; gap:10px; font-size:13px; line-height:1.5;}
+.anon-list span{color:var(--leaf-dim); font-weight:800;}
+.track-row{display:flex; gap:8px;}
+.track-row input{flex:1; text-transform:uppercase; letter-spacing:.06em;}
+.track-btn{width:56px; flex-shrink:0;}
+.token-box{background:var(--card); border:1.5px dashed var(--leaf); border-radius:16px; padding:14px; max-width:320px; width:100%; display:flex; flex-direction:column; gap:8px;}
+.token{font-family:ui-monospace,Menlo,monospace; font-size:19px; font-weight:800; letter-spacing:.08em; color:var(--moss); word-break:break-all;}
+:root[data-theme="dark"] .token{color:var(--leaf);}
+.rej-note{background:#F6E4E0; color:var(--red); border-radius:12px; padding:10px 12px; font-size:13px; font-weight:600; margin-bottom:12px;}
+
+/* Shaffoflik */
+.ledger-flow{display:flex; align-items:center; gap:10px;}
+.ledger-flow div{flex:1; min-width:0;}
+.ledger-flow small{display:block; font-size:11px; color:var(--ink-soft); line-height:1.3;}
+.ledger-flow b{display:block; font-family:var(--font-head); font-size:18px; margin-top:4px;}
+.ledger-flow span{font-size:20px; color:var(--leaf-dim);}
+.src-list{border-top:1px solid var(--line); margin-top:10px; padding-top:8px; display:flex; flex-direction:column; gap:4px;}
+.src-list div{display:flex; justify-content:space-between; gap:10px; font-size:12.5px;}
+.src-list span{color:var(--ink-soft);}
+.proj-h{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.proj-h b{font-size:14px; line-height:1.4;}
+.proj-st{font-size:11px; font-weight:700; padding:4px 9px; border-radius:20px; background:var(--line); color:var(--ink-soft); white-space:nowrap;}
+.st-in_progress{background:#FCEFD9; color:var(--amber);} .st-done{background:#DDEFE4; color:#2D6A4F;} .st-approved{background:#E4EEE9; color:var(--moss);}
+.proj-d{font-size:13px; line-height:1.5; margin:8px 0;}
+.proj-f{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+.vote-btn{border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:20px; padding:7px 12px; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; font-family:var(--font-body);}
+.vote-btn.on{background:var(--moss); border-color:var(--moss); color:#fff;}
+
+/* Reyting */
+.rank-row{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:8px;}
+.rank-row.me{border-color:var(--leaf);}
+.rank-n{width:26px; height:26px; border-radius:50%; background:var(--sand); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0;}
+.rank-b{flex:1; min-width:0;}
+.rank-b b{font-size:14px;}
+.rank-b small{font-size:11.5px; color:var(--ink-soft);}
+.rank-b .ai-bar{margin:6px 0 4px;}
+.rank-medal{font-size:20px;}
+.rank-pts{font-family:var(--font-head); font-weight:800; font-size:17px; white-space:nowrap;}
+.rank-pts small{font-size:11px; color:var(--ink-soft); font-weight:600;}
+.me-card{text-align:center;}
+.me-pts{font-family:var(--font-head); font-weight:800; font-size:42px; color:var(--moss); line-height:1;}
+:root[data-theme="dark"] .me-pts{color:var(--leaf);}
+.badge-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;}
+.badge{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; display:flex; flex-direction:column; gap:3px; opacity:.45; filter:grayscale(1);}
+.badge.ok{opacity:1; filter:none; border-color:var(--leaf);}
+.badge span{font-size:26px;} .badge b{font-size:13px;} .badge small{font-size:11px; color:var(--ink-soft);}
+
+/* AI chat: rasm biriktirish */
+.ai-attach{width:44px; height:44px; border-radius:50%; background:var(--card); border:1px solid var(--line); font-size:17px; flex-shrink:0; cursor:pointer;}
+.ai-attach-chip{align-items:center; gap:8px; padding:6px 20px;}
+.ai-attach-chip img{width:52px; height:52px; object-fit:cover; border-radius:10px; border:1px solid var(--line);}
+.ai-attach-chip button{border:none; background:var(--card); border-radius:50%; width:28px; height:28px; cursor:pointer; color:var(--ink);}
+
+body.has-bg .mini-note{color:rgba(255,255,255,.78);}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .token, :root:not([data-theme="light"]) .me-pts{color:var(--leaf);}
+}

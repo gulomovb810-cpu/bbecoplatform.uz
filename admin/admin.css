@@ -248,3 +248,23 @@ table.tbl{width:100%; border-collapse:collapse; font-size:13px}
   .live span{display:none}
   .meta{grid-template-columns:100px 1fr}
 }
+
+/* ---------- v2: sun'iy yo'ldosh, shaffoflik, AI, maxfiy ---------- */
+.mini-kpi .k-val{font-size:22px}
+.v2-note{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px}
+.ai-line{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.legal-list{margin:0; padding-left:18px; font-size:13px; line-height:1.6}
+.sat-grid{display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:16px}
+.sat-grid .map-wrap{height:calc(100vh - 260px); min-height:460px}
+#satMap{position:absolute; inset:0}
+.sat-list{height:calc(100vh - 260px); min-height:460px; overflow:auto; padding:6px}
+.det-item{border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:6px; display:flex; flex-direction:column; gap:6px; font-size:13px}
+.det-item.sel{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.det-h{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.det-meta{color:var(--ink-2); font-size:12px}
+.det-conf{display:inline-block; font-weight:700; padding:1px 8px; border-radius:20px; color:#fff; background:linear-gradient(90deg, #E11D48 var(--p), #9CA3AF var(--p))}
+.det-img{width:100%; border-radius:8px; border:1px solid var(--line)}
+.det-actions{display:flex; flex-wrap:wrap; gap:6px}
+.sug-item{border-bottom:1px solid var(--line); padding:10px 0; font-size:13px}
+.sug-item:last-child{border-bottom:none}
+@media (max-width: 1100px){ .sat-grid{grid-template-columns:1fr} .sat-list{height:auto; max-height:520px} }

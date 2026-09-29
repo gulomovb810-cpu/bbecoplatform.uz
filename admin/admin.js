@@ -48,10 +48,13 @@ const PAGE_TITLES = {
   orgs:      ['🏢 Tashkilotlar', 'Mas’ul tashkilotlar ro‘yxati'],
   users:     ['👥 Foydalanuvchilar', 'Mobil ilovada ro‘yxatdan o‘tgan foydalanuvchilar'],
   stats:     ['📊 Statistika', 'Viloyatlar va muammo turlari bo‘yicha tahlil'],
+  sat:       ['🛰️ Sun’iy yo‘ldosh', 'Xabar qilinmagan noqonuniy chiqindixonalarni proaktiv aniqlash'],
+  ledger:    ['💰 Shaffoflik', 'Kompensatsiya va jarimalar qaysi loyihalarga sarflanmoqda'],
   activity:  ['🧾 Faoliyat jurnali', 'Arizalar bo‘yicha barcha o‘zgarishlar tarixi'],
   settings:  ['⚙️ Sozlamalar', 'Ilova va panel sozlamalari']
 };
-const DEFAULT_SETTINGS = { accepting_reports: true, edit_days: 5, daily_limit: 10, auto_assign: false, announcement: { enabled: false, uz: '', ru: '' } };
+const DEFAULT_SETTINGS = { accepting_reports: true, edit_days: 5, daily_limit: 10, auto_assign: false, announcement: { enabled: false, uz: '', ru: '' },
+  anon_reports_enabled: true, whistle_pubkey: null, ai_enabled: true, ai_daily_limit: 20, rating_enabled: true, transparency_enabled: true };
 
 const CFG = window.ECO_CONFIG || {};
 const BUCKET = CFG.MEDIA_BUCKET || 'report-media';
@@ -124,7 +127,7 @@ const orgFull = id => (state.orgs.find(o => o.id === id) || {}).name || null;
 // =====================================================================
 // MA'LUMOTLAR QATLAMI
 // =====================================================================
-const REPORT_COLS = 'id,case_no,user_id,description,category,region,address,lat,lng,location_text,media_path,media_type,status,priority,org_id,admin_note,cancelled,cancelled_at,edited_at,status_changed_at,resolved_at,created_at,updated_at,profiles!reports_user_id_fkey(full_name,phone,email,is_anonymous)';
+const REPORT_COLS = 'id,case_no,user_id,description,category,region,address,lat,lng,location_text,media_path,media_type,status,priority,org_id,admin_note,cancelled,cancelled_at,edited_at,status_changed_at,resolved_at,created_at,updated_at,channel,is_anonymous_report,contact_cipher,caller_phone,audio_path,transboundary,countries,ai_category,ai_confidence,ai_summary,legal_refs,rejected,reject_reason,detection_id,profiles!reports_user_id_fkey(full_name,phone,email,is_anonymous)';
 const normReport = r => { const { profiles, ...rest } = r; return { ...rest, user: profiles || null }; };
 
 async function fetchAll(build) {
@@ -207,6 +210,7 @@ const liveApi = {
     const ch = sb.channel('admin-live')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, p => handlers.report(p))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, p => handlers.profile(p))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'detections' }, p => handlers.detection && handlers.detection(p))
       .subscribe(status => handlers.status(status));
     return () => sb.removeChannel(ch);
   }
@@ -379,13 +383,14 @@ async function startApp(me) {
   try { await loadAll(); } catch (e) { toast('Ma’lumotlarni yuklab bo‘lmadi: ' + e.message, 'err'); console.error(e); }
   $('#boot').hidden = true;
   if (unsubscribe) unsubscribe();
-  unsubscribe = api.subscribe({ report: onReportChange, profile: onProfileChange, status: onLiveStatus });
+  unsubscribe = api.subscribe({ report: onReportChange, profile: onProfileChange, detection: onDetectionChange, status: onLiveStatus });
   route();
 }
 
 async function loadAll() {
   const [reports, orgs, users, settings] = await Promise.all([api.reports(), api.orgs(), api.users(), api.settings()]);
   Object.assign(state, { reports, orgs, users, settings });
+  await v2Load();
   updateBadge();
 }
 
@@ -424,7 +429,7 @@ function route() {
 }
 
 function render() {
-  const fn = { dashboard: renderDashboard, reports: renderReports, map: renderMap, orgs: renderOrgs, users: renderUsers, stats: renderStats, activity: renderActivity, settings: renderSettings }[state.page];
+  const fn = { dashboard: renderDashboard, reports: renderReports, map: renderMap, sat: renderSat, ledger: renderLedgerAdmin, orgs: renderOrgs, users: renderUsers, stats: renderStats, activity: renderActivity, settings: renderSettings }[state.page];
   if (fn) fn($(`.page[data-page="${state.page}"]`));
 }
 const renderSoon = debounce(render, 400);
@@ -490,9 +495,10 @@ function filterReports(f) {
     if (f.region && r.region !== f.region) return false;
     if (f.org === 'none' ? r.org_id : (f.org && r.org_id !== f.org)) return false;
     if (f.user && r.user_id !== f.user) return false;
+    if (!v2Filter(r, f)) return false;
     if (since && new Date(r.created_at).getTime() < since) return false;
     if (q) {
-      const hay = [r.case_no, r.description, r.address, r.location_text, regionName(r.region), r.user && r.user.full_name, r.user && r.user.phone, r.user && r.user.email].join(' ').toLowerCase();
+      const hay = [r.case_no, r.description, r.address, r.location_text, regionName(r.region), r.user && r.user.full_name, r.user && r.user.phone, r.user && r.user.email, r.caller_phone].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -515,7 +521,7 @@ function barsHTML(items, color) {
     <span class="bar-track"><span class="bar-fill" style="width:${(i.v / max * 100).toFixed(1)}%; background:${i.color || color || 'var(--accent)'}"></span></span>
     <span class="v">${nf(i.v)}</span></div>`).join('')}</div>`;
 }
-function goReports(patch) { Object.assign(state.rf, { q: '', status: '', category: '', region: '', org: '', period: '', user: '', page: 1 }, patch); location.hash = '#reports'; if (state.page === 'reports') render(); }
+function goReports(patch) { Object.assign(state.rf, { q: '', status: '', category: '', region: '', org: '', period: '', user: '', channel: '', flag: '', page: 1 }, patch); location.hash = '#reports'; if (state.page === 'reports') render(); }
 window.goReports = goReports;
 
 // =====================================================================
@@ -556,7 +562,9 @@ function renderDashboard(el) {
     ${urgent ? `<div class="alert" onclick="goReports({status:'open'}); state.rf.sort='prio'">🔥 <b>${urgent}</b> ta shoshilinch ariza</div>` : ''}
     ${!stale && !noOrg && !urgent ? `<div class="alert ok">✅ Kechikkan yoki biriktirilmagan arizalar yo‘q</div>` : ''}
     ${state.settings.accepting_reports === false ? `<div class="alert" onclick="location.hash='#settings'">⛔ Arizalarni qabul qilish to‘xtatilgan</div>` : ''}
+    ${v2Alerts()}
   </div>
+  ${v2DashboardRow()}
 
   <div class="grid g-3 mt">
     <div class="card"><div class="card-h"><h3>So‘nggi 30 kun dinamikasi</h3><span class="muted small">kelgan / hal qilingan</span></div>
@@ -596,16 +604,16 @@ function reportTable(rows, opts = {}) {
   const sel = state.rf.sel;
   return `<div class="table-wrap"><table class="tbl"><thead><tr>
     ${opts.compact ? '' : `<th style="width:32px"><input type="checkbox" id="selAll" ${rows.every(r => sel.has(r.id)) ? 'checked' : ''}></th>`}
-    <th>№</th><th>Sana</th><th>Tur</th><th>Viloyat</th><th>Tavsif</th>${opts.compact ? '' : '<th>Fuqaro</th><th>Tashkilot</th>'}<th>Holat</th></tr></thead><tbody>
+    <th>№</th><th>Sana</th><th>Tur</th><th>Viloyat</th><th>Tavsif</th>${opts.compact ? '' : '<th>Fuqaro</th><th>Tashkilot</th><th title="AI tahlili: taxmin qilingan tur va ishonch">AI</th>'}<th>Holat</th></tr></thead><tbody>
     ${rows.map(r => `<tr class="row-click" data-id="${r.id}">
       ${opts.compact ? '' : `<td onclick="event.stopPropagation()"><input type="checkbox" class="selOne" value="${r.id}" ${sel.has(r.id) ? 'checked' : ''}></td>`}
-      <td class="nowrap"><span class="case-no">${esc(r.case_no)}</span>${r.priority ? ` <span class="prio-${r.priority}" title="${PRIORITIES[r.priority]}">${r.priority === 2 ? '🔥' : '▲'}</span>` : ''}</td>
+      <td class="nowrap">${channelIcon(r)} <span class="case-no">${esc(r.case_no)}</span>${r.transboundary ? ' <span title="Transchegaraviy">🌐</span>' : ''}${r.priority ? ` <span class="prio-${r.priority}" title="${PRIORITIES[r.priority]}">${r.priority === 2 ? '🔥' : '▲'}</span>` : ''}</td>
       <td class="nowrap" title="${fmtDT(r.created_at)}">${fmtDate(r.created_at)}<div class="muted small">${ago(r.created_at)}</div></td>
       <td>${catChip(r.category)}</td>
       <td class="nowrap">${esc(regionName(r.region))}</td>
-      <td class="desc" title="${esc(r.description)}">${r.media_path || r.media_type ? (r.media_type === 'video' ? '🎬 ' : '📷 ') : ''}${esc(r.description)}</td>
-      ${opts.compact ? '' : `<td class="nowrap">${userLabel(r.user)}</td><td class="nowrap">${r.org_id ? esc(orgName(r.org_id)) : '<span class="muted">—</span>'}</td>`}
-      <td>${statusPill(r)}</td></tr>`).join('')}
+      <td class="desc" title="${esc(r.description)}">${r.media_path || r.media_type ? (r.media_type === 'video' ? '🎬 ' : '📷 ') : ''}${r.audio_path ? '🎙️ ' : ''}${esc(r.description)}</td>
+      ${opts.compact ? '' : `<td class="nowrap">${reporterLabel(r)}</td><td class="nowrap">${r.org_id ? esc(orgName(r.org_id)) : '<span class="muted">—</span>'}</td><td class="nowrap">${aiCell(r)}</td>`}
+      <td>${statusPill(r)}${r.rejected ? ' <span class="pill" style="--c:var(--danger)">Asossiz</span>' : ''}</td></tr>`).join('')}
     </tbody></table></div>`;
 }
 document.addEventListener('click', e => {
@@ -641,9 +649,12 @@ function renderReports(el) {
     <select id="fRegion">${regionOptions(f.region)}</select>
     <select id="fOrg">${orgOptions(f.org)}</select>
     <select id="fPeriod">${periodOptions(f.period)}</select>
+    <select id="fChannel">${channelOptions(f.channel)}</select>
+    <select id="fFlag">${flagOptions(f.flag)}</select>
     <select id="fSort"><option value="new">Avval yangilari</option><option value="old">Avval eskilari</option><option value="prio">Muhimligi bo‘yicha</option><option value="upd">Oxirgi o‘zgargan</option></select>
     <button class="btn" id="fReset">Tozalash</button>
     <button class="btn" id="fExport">⬇ CSV</button>
+    <button class="btn btn-primary" id="fOperator" title="Telefon, SMS yoki shaxsan kelgan murojaatni kiritish">📞 Murojaat qabul qilish</button>
   </div>
   ${f.user ? `<div class="bulk">👤 Faqat <b>${esc(userName)}</b> arizalari <button class="btn btn-sm" onclick="goReports({})">✕ Olib tashlash</button></div>` : ''}
   ${f.sel.size ? `<div class="bulk"><b>${f.sel.size}</b> ta tanlandi:
@@ -668,6 +679,9 @@ function renderReports(el) {
   $('#fRegion').onchange = e => set('region', e.target.value);
   $('#fOrg').onchange = e => set('org', e.target.value);
   $('#fPeriod').onchange = e => set('period', e.target.value);
+  $('#fChannel').onchange = e => set('channel', e.target.value);
+  $('#fFlag').onchange = e => set('flag', e.target.value);
+  $('#fOperator').onclick = () => operatorModal();
   $('#fSort').onchange = e => set('sort', e.target.value);
   $('#fPer').onchange = e => set('per', Number(e.target.value));
   $('#fReset').onclick = () => goReports({});
@@ -693,10 +707,12 @@ function renderReports(el) {
 function mergeReports(list) { list.forEach(r => { const i = state.reports.findIndex(x => x.id === r.id); if (i >= 0) state.reports[i] = r; }); updateBadge(); }
 function exportReports(rows) {
   downloadCSV(`eco-reports-${dayKey(Date.now())}.csv`, [
-    ['Raqam', 'Sana', 'Kategoriya', 'Viloyat', 'Manzil', 'Kenglik', 'Uzunlik', 'Tavsif', 'Holat', 'Bekor qilingan', 'Muhimlik', 'Tashkilot', 'Javob', 'Fuqaro', 'Kontakt', 'Hal qilingan sana'],
-    ...rows.map(r => [r.case_no, fmtDT(r.created_at), r.category, regionName(r.region), r.address || r.location_text || '', r.lat ?? '', r.lng ?? '', r.description,
-      STATUSES[r.status].t, r.cancelled ? 'ha' : '', PRIORITIES[r.priority || 0], orgFull(r.org_id) || '', r.admin_note || '',
-      r.user ? (r.user.is_anonymous ? 'Mehmon' : r.user.full_name || '') : 'O‘chirilgan', contactOf(r.user), r.resolved_at ? fmtDT(r.resolved_at) : ''])
+    ['Raqam', 'Sana', 'Kanal', 'Kategoriya', 'Viloyat', 'Manzil', 'Kenglik', 'Uzunlik', 'Tavsif', 'Holat', 'Bekor qilingan', 'Asossiz', 'Muhimlik', 'Tashkilot', 'Javob', 'Fuqaro', 'Kontakt', 'Hal qilingan sana', 'AI turi', 'AI ishonch %', 'Transchegaraviy', 'Huquqiy asos'],
+    ...rows.map(r => [r.case_no, fmtDT(r.created_at), (CHANNELS[r.channel] || {}).t || r.channel || '', r.category, regionName(r.region), r.address || r.location_text || '', r.lat ?? '', r.lng ?? '', r.description,
+      STATUSES[r.status].t, r.cancelled ? 'ha' : '', r.rejected ? 'ha' : '', PRIORITIES[r.priority || 0], orgFull(r.org_id) || '', r.admin_note || '',
+      r.is_anonymous_report ? 'Maxfiy' : r.user ? (r.user.is_anonymous ? 'Mehmon' : r.user.full_name || '') : (r.caller_phone ? 'Qo‘ng‘iroq/SMS' : 'O‘chirilgan'),
+      r.caller_phone || contactOf(r.user), r.resolved_at ? fmtDT(r.resolved_at) : '', r.ai_category || '', r.ai_confidence != null ? Math.round(r.ai_confidence * 100) : '',
+      r.transboundary ? (r.countries || []).join(' ') || 'ha' : '', (r.legal_refs || []).map(legalLabel).join('; ')])
   ]);
 }
 
@@ -725,7 +741,7 @@ async function refreshDrawer() {
   const editable = !r.cancelled;
   const hasGeo = r.lat != null && r.lng != null;
   $('#drawer').innerHTML = `
-  <div class="drawer-h"><h2><span class="case-no" style="font-size:15px">${esc(r.case_no)}</span></h2>${statusPill(r)}<button class="icon-btn" data-close2 aria-label="Yopish">✕</button></div>
+  <div class="drawer-h"><h2>${channelIcon(r)} <span class="case-no" style="font-size:15px">${esc(r.case_no)}</span></h2>${r.rejected ? '<span class="pill" style="--c:var(--danger)">Asossiz</span>' : ''}${statusPill(r)}<button class="icon-btn" data-close2 aria-label="Yopish">✕</button></div>
   <div class="drawer-b">
     <div class="media-box" id="dMedia">${r.media_path ? '<div class="spinner"></div>' : `<span>${LIVE ? '📭 Foto/video biriktirilmagan' : '🧪 Demo: foto Supabase Storage ulanganda ko‘rinadi'}</span>`}</div>
 
@@ -744,12 +760,14 @@ async function refreshDrawer() {
       ${hasGeo ? '<div class="mini-map mt" id="miniMap"></div>' : ''}
     </div></div>
 
-    <div class="card"><div class="card-h"><h3>👤 Fuqaro</h3>${r.user_id ? `<button class="btn btn-sm" onclick="goReports({user:'${r.user_id}'}); closeDrawer()">Barcha arizalari (${state.reports.filter(x => x.user_id === r.user_id).length})</button>` : ''}</div>
+    <div id="dV2"></div>
+
+    ${r.is_anonymous_report || (!r.user_id && r.caller_phone) ? '' : `<div class="card"><div class="card-h"><h3>👤 Fuqaro</h3>${r.user_id ? `<button class="btn btn-sm" onclick="goReports({user:'${r.user_id}'}); closeDrawer()">Barcha arizalari (${state.reports.filter(x => x.user_id === r.user_id).length})</button>` : ''}</div>
       <div class="card-b"><dl class="meta">
         <dt>Ism</dt><dd>${userLabel(u)}</dd>
         <dt>Kontakt</dt><dd>${u && !u.is_anonymous ? (u.phone ? `<a href="tel:+${esc(String(u.phone).replace(/^\+/, ''))}">${esc(contactOf(u))}</a>` : u.email ? `<a href="mailto:${esc(u.email)}">${esc(u.email)}</a>` : '—') : '—'}</dd>
         ${uFull && uFull.blocked ? '<dt>Holat</dt><dd><span class="pill" style="--c:var(--danger)">Bloklangan</span></dd>' : ''}
-      </dl></div></div>
+      </dl></div></div>`}
 
     <div class="card"><div class="card-h"><h3>🛠 Boshqarish</h3>${r.cancelled ? '<span class="muted small">Bekor qilingan ariza — faqat ko‘rish</span>' : ''}</div><div class="card-b">
       <div class="field"><span>Holat</span><div class="stepper" id="dStepper">${STATUSES.map((s, i) => `<button type="button" data-s="${i}" style="--c:${s.c}" class="${r.status === i ? 'on' : ''}" ${editable ? '' : 'disabled'}>${i + 1}. ${esc(s.short)}</button>`).join('')}</div></div>
@@ -770,6 +788,7 @@ async function refreshDrawer() {
     <div class="card"><div class="card-h"><h3>🕘 Tarix</h3></div><div class="card-b"><ul class="timeline" id="dHist"><li class="muted">Yuklanmoqda...</li></ul></div></div>
   </div>`;
   $('#drawer [data-close2]').onclick = closeDrawer;
+  v2Drawer(r);
 
   let chosen = r.status;
   $$('#dStepper button').forEach(b => b.onclick = () => { chosen = Number(b.dataset.s); $$('#dStepper button').forEach(x => x.classList.toggle('on', x === b)); });
@@ -832,6 +851,10 @@ function histText(h) {
     case 'priority': return `Muhimlik: <b>${PRIORITIES[h.status] || h.status}</b>`;
     case 'edited': return '✏️ Fuqaro arizani tahrirladi';
     case 'cancelled': return '✖ Fuqaro arizani bekor qildi';
+    case 'rejected': return `⚠️ ${esc(h.note || 'Asossiz deb topildi')}`;
+    case 'transboundary': return `🌐 Transchegaraviy: <b>${esc(h.note || '')}</b>`;
+    case 'signal': return `📤 Qo‘shni davlatga signal: ${esc(h.note || '')}`;
+    case 'ai': return `🤖 ${esc(h.note || 'AI tahlili')}`;
     default: return esc(h.event);
   }
 }
@@ -857,23 +880,29 @@ function renderMap(el) {
         <div class="tabs" id="mStatus">${STATUSES.map((s, i) => `<button data-v="${i}"><span class="dot" style="background:${s.c}"></span> ${esc(s.short)}</button>`).join('')}</div>
         <div class="tabs" id="mCat">${CATEGORIES.map(c => `<button data-v="${c.k}">${c.icon} ${c.k}</button>`).join('')}</div>
         <select id="mPeriod">${periodOptions(mf.period || '')}</select>
-        <label class="checks"><label><input type="checkbox" id="mCancelled"> Bekor qilinganlar</label></label>
+        <label class="checks"><label><input type="checkbox" id="mCancelled"> Bekor qilinganlar</label>
+          <label title="Qo‘shni davlatlar bilan bog‘liq hodisalar"><input type="checkbox" id="mTb"> 🌐 Faqat transchegaraviy</label>
+          <label title="Sun’iy yo‘ldosh / ML aniqlashlari"><input type="checkbox" id="mDet" checked> 🛰️ Aniqlashlar</label></label>
         <span class="muted small" id="mCount"></span>
       </div>
       <div class="map-wrap"><div id="bigMap"></div>
         <div class="map-legend">${STATUSES.map(s => `<div><span class="dot" style="background:${s.c}"></span>${esc(s.t)}</div>`).join('')}
-          <div><span class="dot" style="background:transparent; border:2px dashed var(--ink-3)"></span>Taxminiy (viloyat markazi)</div></div></div>`;
+          <div><span class="dot" style="background:transparent; border:2px dashed var(--ink-3)"></span>Taxminiy (viloyat markazi)</div>
+          <div><span class="dot" style="background:transparent; border:2px solid #E11D48; border-radius:3px"></span>🛰️ Sun’iy yo‘ldosh aniqlashi</div></div></div>`;
     el.dataset.built = '1';
     $$('#mStatus button').forEach(b => b.onclick = () => { const v = Number(b.dataset.v); mf.status.has(v) ? mf.status.delete(v) : mf.status.add(v); drawMarkers(); });
     $$('#mCat button').forEach(b => b.onclick = () => { const v = b.dataset.v; mf.cat.has(v) ? mf.cat.delete(v) : mf.cat.add(v); drawMarkers(); });
     $('#mPeriod').onchange = e => { mf.period = e.target.value; drawMarkers(); };
     $('#mCancelled').onchange = e => { mf.cancelled = e.target.checked; drawMarkers(); };
+    $('#mTb').onchange = e => { mf.tb = e.target.checked; drawMarkers(); };
+    $('#mDet').onchange = e => { mf.det = e.target.checked; drawMarkers(); };
   }
   if (!window.L) { $('#bigMap').innerHTML = '<div class="empty">Xarita kutubxonasi yuklanmadi</div>'; return; }
   if (!state.maps.big) {
     const m = L.map('bigMap', { preferCanvas: true }).setView([41.3, 64.5], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(m);
+    addBaseLayers(m);
     state.maps.big = m;
+    state.maps.detLayer = L.layerGroup().addTo(m);
     state.maps.layer = L.markerClusterGroup ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 }) : L.layerGroup();
     m.addLayer(state.maps.layer);
   }
@@ -886,7 +915,7 @@ function drawMarkers() {
   $$('#mCat button').forEach(b => b.classList.toggle('on', mf.cat.has(b.dataset.v)));
   layer.clearLayers();
   const since = periodStart(mf.period);
-  const list = state.reports.filter(r => (mf.cancelled || !r.cancelled) && mf.status.has(r.status) && mf.cat.has(r.category) && (!since || new Date(r.created_at) >= since));
+  const list = state.reports.filter(r => (mf.cancelled || !r.cancelled) && mf.status.has(r.status) && mf.cat.has(r.category) && (!since || new Date(r.created_at) >= since) && (!mf.tb || r.transboundary));
   let approx = 0;
   const markers = list.map(r => {
     let ll, st = markerStyle(r);
@@ -902,7 +931,8 @@ function drawMarkers() {
       <br><a href="#" onclick="openReport('${r.id}'); return false;">Batafsil ochish →</a>`);
   }).filter(Boolean);
   if (layer.addLayers) layer.addLayers(markers); else markers.forEach(m => layer.addLayer(m));
-  $('#mCount').textContent = `${nf(markers.length)} ta nuqta${approx ? ` (${approx} tasi taxminiy)` : ''}`;
+  const dets = drawDetections(state.maps.detLayer, mf.det !== false);
+  $('#mCount').textContent = `${nf(markers.length)} ta nuqta${approx ? ` (${approx} tasi taxminiy)` : ''}${dets ? ` · 🛰️ ${dets} ta aniqlash` : ''}`;
 }
 
 // =====================================================================
@@ -918,7 +948,7 @@ function renderOrgs(el) {
     <div class="card">${state.orgs.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Tashkilot</th><th>Hudud</th><th>Yo‘nalishlar</th><th>Aloqa</th><th class="num">Biriktirilgan</th><th class="num">Jarayonda</th><th class="num">Hal qilingan</th><th class="num">O‘rt. muddat</th><th></th></tr></thead><tbody>
       ${state.orgs.map(o => { const s = stat(o.id); return `<tr>
         <td><b>${esc(o.short_name || o.name)}</b>${o.short_name ? `<div class="muted small">${esc(o.name)}</div>` : ''}${o.active ? '' : ' <span class="pill" style="--c:var(--sx)">Nofaol</span>'}</td>
-        <td class="nowrap">${o.region ? esc(regionName(o.region)) : '🇺🇿 Respublika'}</td>
+        <td class="nowrap">${o.country && o.country !== 'UZ' ? esc(COUNTRIES[o.country] || o.country) : o.region ? esc(regionName(o.region)) : '🇺🇿 Respublika'}</td>
         <td>${(o.categories || []).map(c => `<span class="chip">${catOf(c).icon} ${esc(c)}</span>`).join('')}</td>
         <td class="small">${o.head ? esc(o.head) + '<br>' : ''}${o.phone ? esc(o.phone) + '<br>' : ''}${o.email ? `<a href="mailto:${esc(o.email)}">${esc(o.email)}</a>` : ''}</td>
         <td class="num"><a href="#" onclick="goReports({org:'${o.id}'}); return false;">${s.total}</a></td><td class="num">${s.open}</td><td class="num">${s.done}</td>
@@ -933,6 +963,8 @@ function orgModal(o = {}) {
     <label class="field"><span>To‘liq nomi *</span><input id="oName" value="${esc(o.name || '')}" required></label>
     <div class="row"><label class="field"><span>Qisqa nomi</span><input id="oShort" value="${esc(o.short_name || '')}"></label>
       <label class="field"><span>Hudud</span><select id="oRegion">${regionOptions(o.region || '', '🇺🇿 Respublika miqyosida')}</select></label></div>
+    <label class="field"><span>Davlat (qo‘shni davlat organi bo‘lsa — transchegaraviy signallar shu tashkilotga yuboriladi)</span>
+      <select id="oCountry">${Object.entries(COUNTRIES).map(([k, v]) => `<option value="${k}" ${(o.country || 'UZ') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <div class="field"><span>Qaysi muammolar bo‘yicha mas’ul</span><div class="checks">${CATEGORIES.map(c => `<label><input type="checkbox" value="${c.k}" ${(o.categories || []).includes(c.k) ? 'checked' : ''}> ${c.icon} ${c.k}</label>`).join('')}</div></div>
     <div class="row"><label class="field"><span>Rahbar / mas’ul shaxs</span><input id="oHead" value="${esc(o.head || '')}"></label>
       <label class="field"><span>Telefon</span><input id="oPhone" value="${esc(o.phone || '')}"></label></div>
@@ -946,7 +978,7 @@ function orgModal(o = {}) {
       await api.deleteOrg(o.id); state.orgs = state.orgs.filter(x => x.id !== o.id); state.reports.forEach(r => { if (r.org_id === o.id) r.org_id = null; });
       toast('Tashkilot o‘chirildi', 'ok'); render(); } } : null,
    { label: 'Saqlash', cls: 'btn-primary', fn: async () => {
-      const data = { name: $('#oName').value.trim(), short_name: $('#oShort').value.trim() || null, region: $('#oRegion').value || null,
+      const data = { name: $('#oName').value.trim(), short_name: $('#oShort').value.trim() || null, region: $('#oRegion').value || null, country: $('#oCountry').value || 'UZ',
         categories: $$('#modalBody .checks input[type=checkbox][value]:checked').map(i => i.value), head: $('#oHead').value.trim() || null,
         phone: $('#oPhone').value.trim() || null, email: $('#oEmail').value.trim() || null, address: $('#oAddr').value.trim() || null, active: $('#oActive').checked };
       if (!data.name) { $('#oErr').textContent = 'Nomini kiriting'; return false; }
@@ -1072,6 +1104,8 @@ function renderStats(el) {
       <div class="card"><div class="card-h"><h3>Hafta kunlari va soatlar</h3><span class="muted small">qachon ko‘p murojaat qilinadi</span></div><div class="card-b"><div class="chart-box"><canvas id="chHour"></canvas></div></div></div>
     </div>
 
+    ${v2StatsHTML(R)}
+
     <div class="card mt"><div class="card-h"><h3>Tashkilotlar samaradorligi</h3></div><div class="card-b" style="padding:8px 0 0">
       <div class="table-wrap"><table class="tbl"><thead><tr><th>Tashkilot</th><th class="num">Biriktirilgan</th><th class="num">Hal qilingan</th><th class="num">%</th><th class="num">O‘rt. muddat</th></tr></thead><tbody>
       ${state.orgs.map(o => { const rs = R.filter(r => r.org_id === o.id), d = rs.filter(r => r.status >= 3), t = d.filter(r => r.resolved_at).map(r => daysBetween(r.created_at, r.resolved_at));
@@ -1081,6 +1115,7 @@ function renderStats(el) {
 
   $('#sPeriod').onchange = e => { sf.period = e.target.value; renderStats(el); };
   $('#sRegion').onchange = e => { sf.region = e.target.value; renderStats(el); };
+  v2StatsCharts(R);
   $('#sExport').onclick = () => downloadCSV(`statistika-${dayKey(Date.now())}.csv`, [['Viloyat', ...CATEGORIES.map(c => c.k), 'Jami'], ...matrix.map(x => [x.reg.uz, ...x.row, x.total]), ['Jami', ...colTotals, R.length]]);
 
   const regs = matrix.filter(x => x.total);
@@ -1150,6 +1185,8 @@ function renderSettings(el) {
       <button class="btn btn-primary" id="anSave" ${ro ? 'disabled' : ''}>E’lonni saqlash</button>
     </div></div>
 
+    ${v2SettingsHTML(ro)}
+
     <div class="card"><div class="card-h"><h3>🔌 Supabase ulanishi</h3></div><div class="card-b"><dl class="meta">
       <dt>Rejim</dt><dd>${LIVE ? '<span class="pill" style="--c:var(--s3)"><span class="dot"></span>Ulangan</span>' : '<span class="pill" style="--c:var(--warn)"><span class="dot"></span>DEMO</span>'}</dd>
       <dt>Project URL</dt><dd class="small">${LIVE ? esc(CFG.SUPABASE_URL) : '<code>config.js</code> da ko‘rsatilmagan'}</dd>
@@ -1168,6 +1205,7 @@ function renderSettings(el) {
   $('#themeSel').value = store('theme') || '';
   $('#themeSel').onchange = e => { store('theme', e.target.value); applyTheme(e.target.value); render(); };
   if (ro) return;
+  v2BindSettings(el);
   $$('[data-set]', el).forEach(inp => inp.onchange = async () => {
     const k = inp.dataset.set, v = inp.type === 'checkbox' ? inp.checked : Math.max(0, parseInt(inp.value, 10) || 0);
     try { await api.saveSetting(k, v); state.settings[k] = v; toast('Sozlama saqlandi', 'ok'); }
@@ -1206,4 +1244,5 @@ $('#modalWrap').addEventListener('click', e => { if (e.target.closest('[data-clo
 window.closeDrawer = closeDrawer;
 window.state = state;
 
-boot();
+// admin-v2.js ham yuklanib bo'lgach ishga tushadi
+window.addEventListener('DOMContentLoaded', boot);

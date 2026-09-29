@@ -266,6 +266,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 .law-foot{font-size:12px; color:var(--ink-soft); line-height:1.6; text-align:center; margin-top:14px;}
 .law-foot b{display:block; color:var(--ink); font-size:13px; margin-bottom:4px;}
 </style>
+<link rel="stylesheet" href="eco-plus.css">
 </head>
 <body>
 <div id="bgLayer" class="bg-layer"></div>
@@ -358,6 +359,9 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
         <div><div class="t" data-i18n="card_ai_t">🤖 AI Yordamchi</div><div class="d" data-i18n="card_ai_d">Ekologiya bo‘yicha savol bering</div></div>
         <div class="arrow-circ">→</div>
       </div>
+      <div class="svc svc-plus" id="cardAnon" onclick="app.goto('anon')"><div class="svc-emoji">🕶️</div><div class="t" data-i18n="card_anon_t">Maxfiy murojaat</div><div class="soon" data-i18n="card_anon_d">Ismingiz hech kimga ko‘rinmaydi</div></div>
+      <div class="svc svc-plus" id="cardLedger" onclick="app.goto('ledger')"><div class="svc-emoji">💰</div><div class="t" data-i18n="card_ledger_t">Shaffoflik</div><div class="soon" data-i18n="card_ledger_d">Jarima va kompensatsiya qayerga sarflandi</div></div>
+      <div class="svc svc-plus" id="cardRating" onclick="app.goto('rating')"><div class="svc-emoji">🏆</div><div class="t" data-i18n="card_rating_t">Eko-reyting</div><div class="soon" data-i18n="card_rating_d">Real hal qilingan murojaatlar bo‘yicha</div></div>
       <div class="svc"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><path d="M12 3v18M5 8h14M5 16h14"/></svg><div class="t" data-i18n="card_clean_t">Tozalash aksiyalari</div><div class="soon" data-i18n="card_soon">Tez orada</div></div>
       <div class="svc" onclick="app.goto('maps')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><div class="t" data-i18n="card_maps_t">Ekologik xaritalar</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_maps_d">2 ta xarita →</div></div>
       <div class="svc" onclick="app.goto('info')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><path d="M4 19h16M6 19V9l6-5 6 5v10"/></svg><div class="t" data-i18n="card_info_t">Ma’lumot markazi</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_info_d">Qonunlar va hujjatlar →</div></div>
@@ -370,6 +374,11 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     <div class="step-track"><i class="done"></i><i></i><i></i><i></i></div>
     <div class="field-label" data-i18n="step1_label">Nima sodir bo‘lyapti?</div>
     <textarea id="descInput" placeholder="Masalan: hovuz bo‘yida chiqindilar tashlanmoqda, hid keladi..." data-i18n-ph="step1_ph"></textarea>
+    <div class="voice-box" id="voiceBox">
+      <button type="button" class="btn btn-outline voice-btn" id="voiceBtn" onclick="app.toggleVoice()"><span id="voiceBtnLbl" data-i18n="voice_start">🎙️ Ovoz bilan aytib berish</span></button>
+      <div class="voice-status" id="voiceStatus" data-i18n="voice_hint">Yozish qiyinmi? Muammoni gapirib bering — matnga aylantiramiz, ovozli yozuv ham arizaga biriktiriladi.</div>
+      <div class="voice-rec" id="voiceRec" style="display:none;"><audio id="voiceAudio" controls></audio><button type="button" class="link-btn" onclick="app.clearVoice()" data-i18n="voice_delete">O‘chirish</button></div>
+    </div>
     <div class="spacer"></div>
     <div class="footer-btn"><button class="btn btn-primary" id="descNext" onclick="app.toStep2()" disabled><span data-i18n="btn_continue">Davom etish</span></button></div>
   </div>
@@ -403,6 +412,8 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     </div>
     <input id="mediaInput" type="file" accept="image/*,video/*" capture="environment" style="display:none" onchange="app.onMedia(event)">
     <img id="mediaPreview" class="media-preview" style="display:none">
+    <div class="ai-card" id="aiCard" style="display:none;"></div>
+    <button type="button" class="btn btn-ghost" id="skipPhotoBtn" style="display:none; margin-top:8px;" onclick="app.goto('report-4')"><span data-i18n="skip_photo">Fotosiz davom etish (ovozli xabar bor)</span></button>
     <div class="spacer"></div>
     <div class="footer-btn"><button class="btn btn-primary" id="mediaNext" onclick="app.goto('report-4')" disabled><span data-i18n="btn_continue">Davom etish</span></button></div>
   </div>
@@ -419,6 +430,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
       <div class="cat" data-v="Tuproq"><span>🪨</span><b data-i18n="cat_tuproq">Tuproq</b></div>
       <div class="cat" data-v="Boshqa"><span>❗</span><b data-i18n="cat_boshqa">Boshqa</b></div>
     </div>
+    <div class="legal-card" id="legalCard" style="display:none;"></div>
     <div class="spacer"></div>
     <div class="footer-btn"><button class="btn btn-primary" id="catNext" onclick="app.goto('report-5')" disabled><span data-i18n="btn_review">Ko‘rib chiqish</span></button></div>
   </div>
@@ -432,7 +444,11 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
       <div class="review-row"><div class="k" data-i18n="rev_loc">Joylashuv</div><div class="v" id="revLoc">—</div></div>
       <div class="review-row"><div class="k" data-i18n="rev_media">Dalil</div><div class="v" id="revMedia">—</div></div>
       <div class="review-row"><div class="k" data-i18n="rev_cat">Kategoriya</div><div class="v" id="revCat">—</div></div>
+      <div class="review-row" id="revAiRow" style="display:none;"><div class="k" data-i18n="rev_ai">AI tahlili</div><div class="v" id="revAi">—</div></div>
+      <div class="review-row" id="revVoiceRow" style="display:none;"><div class="k" data-i18n="rev_voice">Ovozli xabar</div><div class="v" data-i18n="rev_voice_v">🎙️ Biriktirilgan</div></div>
+      <div class="review-row" id="revLegalRow" style="display:none;"><div class="k" data-i18n="rev_legal">Huquqiy asos</div><div class="v" id="revLegal">—</div></div>
     </div>
+    <label class="tb-check card-block"><input type="checkbox" id="tbCheck" onchange="app.draft.transboundary=this.checked"><span><b data-i18n="tb_title">🌐 Qo‘shni davlat bilan bog‘liq muammo</b><br><small data-i18n="tb_desc">Umumiy daryo yoki kanal, chang-tuz bo‘ronlari, chegaraoldi hududdagi ifloslanish (Qozog‘iston, Qirg‘iziston, Tojikiston, Turkmaniston, Afg‘oniston)</small></span></label>
     <p style="font-size:12px; color:var(--ink-soft); text-align:center;" data-i18n="review_disclaimer">Yuborilgach, murojaat to‘g‘ridan-to‘g‘ri O‘zbekiston Respublikasi ekologik organlariga yetkaziladi.</p>
     <div class="spacer"></div>
     <p id="submitError" style="color:var(--red); font-size:13px; text-align:center; min-height:16px; margin:8px 0 0;"></p>
@@ -459,6 +475,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
       <video id="caseVideo" class="case-media" style="display:none;" controls playsinline></video>
     </div>
     <div class="case-reply" id="caseReply" style="display:none;"></div>
+    <div id="caseExtra"></div>
     <div id="caseCancelledNote" style="display:none; background:#F6E4E0; color:var(--red); border-radius:12px; padding:12px 14px; font-size:13px; font-weight:600; margin-bottom:4px;" data-i18n="case_cancelled_note">Bu murojaat bekor qilingan.</div>
     <div class="timeline" id="caseTimeline"></div>
     <div class="spacer"></div>
@@ -492,7 +509,10 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
   <div id="screen-ai" class="screen" style="padding:0;">
     <div class="topbar" style="padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_ai_t">🤖 AI Yordamchi</h2></div>
     <div id="aiMessages" class="ai-messages"></div>
+    <div class="ai-attach-chip" id="aiAttachChip" style="display:none;"></div>
     <div class="ai-input-row" style="padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));">
+      <button id="aiAttachBtn" class="ai-attach" onclick="document.getElementById('aiFile').click()" title="Rasm">📎</button>
+      <input id="aiFile" type="file" accept="image/*" style="display:none" onchange="app.onAiFile(event)">
       <input id="aiInput" type="text" placeholder="Savolingizni yozing..." data-i18n-ph="ai_ph" onkeydown="if(event.key==='Enter'){app.sendAI();}">
       <button id="aiSendBtn" class="ai-send" onclick="app.sendAI()">➤</button>
     </div>
@@ -548,7 +568,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 
   <!-- LAW -->
   <div id="screen-law" class="screen">
-    <div class="topbar"><div class="back" onclick="app.goto('info')">←</div><h2 data-i18n="law_short">Atmosfera havosi qonuni</h2></div>
+    <div class="topbar"><div class="back" onclick="app.lawBack()">←</div><h2 data-i18n="law_short">Atmosfera havosi qonuni</h2></div>
     <div class="card-block law-head">
       <div class="law-kind" id="lawKind"></div>
       <div class="law-title" id="lawTitle"></div>
@@ -675,6 +695,60 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
       <div class="review-row"><div class="k" data-i18n="about_field_label">Yo‘nalish</div><div class="v" data-i18n="about_field_val">Ekologiya va atrof-muhitni muhofaza qilish</div></div>
     </div>
     <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; padding:4px 2px;" data-i18n="about_desc">bbecoplatform.uz — fuqarolar ekologik muammolar (chiqindi, havo, suv, daraxt, tuproq va boshqa buzilishlar) haqida tezkor xabar berishi, murojaat holatini kuzatib borishi va sun’iy intellekt yordamchisidan ekologiya bo‘yicha maslahat olishi mumkin bo‘lgan platforma. Loyiha Toshkent Kimyo Texnologiyalar Instituti talabasi tomonidan ekologik ekspertiza va atrof-muhitni muhofaza qilish sohasidagi tajriba asosida yaratilgan.</p>
+  </div>
+
+  <!-- MAXFIY MUROJAAT -->
+  <div id="screen-anon" class="screen">
+    <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_anon_t">Maxfiy murojaat</h2></div>
+    <div class="card-block anon-hero">
+      <div class="anon-ico">🕶️</div>
+      <b data-i18n="anon_hero_t">Kimligingiz hech kimga ma’lum bo‘lmaydi</b>
+      <p data-i18n="anon_hero_d">Ish beruvchingiz yoki nufuzli shaxs aybdor bo‘lsa ham, xavfsiz xabar bering.</p>
+    </div>
+    <div class="anon-list">
+      <div><span>✓</span><p data-i18n="anon_g1">Arizaga ismingiz, telefoningiz yoki hisobingiz bog‘lanmaydi — administrator ham ko‘ra olmaydi.</p></div>
+      <div><span>✓</span><p data-i18n="anon_g2">Fotodagi yashirin ma’lumotlar (EXIF, GPS, qurilma modeli) yuborishdan oldin o‘chiriladi.</p></div>
+      <div><span>✓</span><p data-i18n="anon_g3">Sizga faqat bir marta ko‘rsatiladigan kuzatuv kodi beriladi — holatni shu kod orqali bilasiz.</p></div>
+      <div><span>✓</span><p data-i18n="anon_g4">AI tahlili maxfiy rejimda ishlatilmaydi — foto uchinchi tomonga yuborilmaydi.</p></div>
+    </div>
+    <label class="tb-check card-block"><input type="checkbox" id="anonFuzz" checked><span><b data-i18n="anon_fuzz_t">Joylashuvni ~500 m aniqlikda yuborish</b><br><small data-i18n="anon_fuzz_d">Aniq nuqta sizni fosh qilishi mumkin bo‘lsa, yoqilgan holda qoldiring.</small></span></label>
+    <div class="card-block" id="anonContactBox" style="display:none;">
+      <div class="field-label" data-i18n="anon_contact_t">Shifrlangan aloqa (ixtiyoriy)</div>
+      <input id="anonContact" type="text" class="name-input" style="width:100%;" maxlength="120" placeholder="Telefon yoki email" data-i18n-ph="anon_contact_ph">
+      <p class="mini-note" data-i18n="anon_contact_d">Telefoningizda shifrlanadi. Uni faqat qonuniy tekshiruv zarur bo‘lganda maxsus kalitga ega yuridik mas’ul ocha oladi.</p>
+    </div>
+    <button class="btn btn-primary" onclick="app.startAnon()"><span data-i18n="anon_start">Maxfiy murojaatni boshlash</span></button>
+    <div class="section-title" data-i18n="anon_track_t">KOD BO‘YICHA KUZATISH</div>
+    <div class="track-row"><input id="trackInput" type="text" class="name-input" placeholder="Masalan: 3FA9C21B7D04E6A1B2C3" maxlength="40" autocapitalize="characters"><button class="btn btn-outline track-btn" onclick="app.trackAnon()">🔎</button></div>
+    <div id="trackResult"></div>
+  </div>
+
+  <!-- SHAFFOFLIK -->
+  <div id="screen-ledger" class="screen">
+    <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_ledger_t">Shaffoflik</h2></div>
+    <select id="ledgerRegion" class="name-input" style="margin-bottom:14px;" onchange="app.renderLedger()"></select>
+    <div id="ledgerSummary"></div>
+    <div class="section-title" data-i18n="ledger_projects">LOYIHALAR</div>
+    <div id="ledgerProjects"></div>
+    <div class="section-title" data-i18n="ledger_suggest_t">TAKLIF BERISH</div>
+    <div class="card-block">
+      <textarea id="suggestInput" style="min-height:90px;" maxlength="2000" placeholder="Hududingizda qaysi ekologik loyihaga mablag‘ ajratilishini xohlaysiz?" data-i18n-ph="ledger_suggest_ph"></textarea>
+      <p id="suggestMsg" class="mini-note"></p>
+      <button class="btn btn-primary" onclick="app.sendSuggestion()"><span data-i18n="ledger_suggest_btn">Taklifni yuborish</span></button>
+    </div>
+    <p class="mini-note" id="ledgerLaw"></p>
+  </div>
+
+  <!-- REYTING -->
+  <div id="screen-rating" class="screen">
+    <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_rating_t">Eko-reyting</h2></div>
+    <div class="tab-switch" style="margin-bottom:14px;">
+      <button class="tab-btn active" data-rt="regions" onclick="app.ratingTab('regions')"><span data-i18n="rating_regions">Viloyatlar</span></button>
+      <button class="tab-btn" data-rt="users" onclick="app.ratingTab('users')"><span data-i18n="rating_users">Fuqarolar</span></button>
+      <button class="tab-btn" data-rt="me" onclick="app.ratingTab('me')"><span data-i18n="rating_me">Mening natijam</span></button>
+    </div>
+    <div id="ratingBody"></div>
+    <p class="mini-note" data-i18n="rating_rule">Ball faqat mas’ul tashkilot tasdiqlab hal qilgan murojaatlar uchun beriladi: hal qilingan — 10 ball, ishga olingan — 2 ball. Asossiz yoki bekor qilingan arizalar hisoblanmaydi.</p>
   </div>
 
   <div class="bottomnav">
@@ -1055,7 +1129,7 @@ const app = {
     const { data:{ session } } = await sb.auth.getSession();
     if(!session) return;
     const { data, error } = await sb.from('reports')
-      .select('id,case_no,description,category,region,address,lat,lng,location_text,media_path,media_type,status,cancelled,cancelled_at,edited_at,created_at,admin_note,organizations(name),report_status_history(event,status,created_at)')
+      .select('id,case_no,description,category,region,address,lat,lng,location_text,media_path,media_type,status,cancelled,cancelled_at,edited_at,created_at,admin_note,channel,audio_path,legal_refs,ai_category,ai_confidence,ai_summary,rejected,reject_reason,transboundary,organizations(name),report_status_history(event,status,created_at)')
       .eq('user_id', session.user.id)
       .order('created_at', {ascending:false});
     if(error){ console.warn('loadCases', error.message); return; }
@@ -1665,5 +1739,6 @@ const app = {
 };
 app.init();
 </script>
+<script src="eco-plus.js"></script>
 </body>
 </html>
