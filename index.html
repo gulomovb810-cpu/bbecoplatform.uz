@@ -137,10 +137,13 @@ textarea{min-height:130px;}
 
 /* ---- Bottom nav ---- */
 .bottomnav{position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; z-index:5;}
-.bottomnav-inner{width:100%; max-width:460px; background:var(--card); border-top:1px solid var(--line); display:flex; padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px)); gap:6px;}
-.nav-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; color:var(--ink-soft); font-size:11px; font-family:var(--font-body); font-weight:600; padding:4px;}
-.nav-btn.active{color:var(--moss);}
-.nav-btn span{font-size:20px;}
+.bottomnav-inner{width:100%; max-width:460px; background:var(--card); border-top:1px solid var(--line); box-shadow:0 -4px 16px rgba(0,0,0,.05); display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); gap:2px;}
+.nav-btn{flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:none; border:none; cursor:pointer; color:var(--ink-soft); font-family:var(--font-body); padding:2px 0;}
+.nav-btn .ni{font-size:20px; line-height:1; width:52px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:15px; transition:background .15s;}
+.nav-btn .nl{font-size:11px; font-weight:600; line-height:1.2; max-width:100%; padding:0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.nav-btn.active{color:var(--leaf-dim);}
+.nav-btn.active .ni{background:rgba(82,183,136,.18);}
+.nav-btn.active .nl{font-weight:800;}
 
 /* ---- Profile ---- */
 .profile-head{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
@@ -698,10 +701,10 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 
   <div class="bottomnav">
     <div class="bottomnav-inner">
-      <button class="nav-btn active" data-nav="home" onclick="app.goto('home')"><span>🏠</span><span data-i18n="nav_home">Bosh sahifa</span></button>
-      <button class="nav-btn" data-nav="report-1" onclick="app.goto('report-1')"><span>📝</span><span data-i18n="nav_report">Xabar berish</span></button>
-      <button class="nav-btn" data-nav="payments" onclick="app.goto('payments')"><span>💳</span><span data-i18n="nav_pay">To‘lovlar va jarimalar</span></button>
-      <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')"><span>👤</span><span data-i18n="profil_word">Profil</span></button>
+      <button class="nav-btn active" data-nav="home" onclick="app.goto('home')"><span class="ni">🏠</span><span class="nl" data-i18n="nav_home">Bosh sahifa</span></button>
+      <button class="nav-btn" data-nav="report-1" onclick="app.goto('report-1')"><span class="ni">📝</span><span class="nl" data-i18n="nav_report">Xabar berish</span></button>
+      <button class="nav-btn" data-nav="payments" onclick="app.goto('payments')"><span class="ni">💳</span><span class="nl" data-i18n="nav_pay">To‘lovlar</span></button>
+      <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')"><span class="ni">👤</span><span class="nl" data-i18n="profil_word">Profil</span></button>
     </div>
   </div>
 </div>
@@ -816,7 +819,7 @@ const LANG = {
     card_info_t:'Информационный центр',
     card_edu_d:'Экологические знания →', edu_soon:'Обучающие материалы скоро появятся.',
     card_news_t:'Экологические новости', card_news_d:'Последние новости →', news_soon:'Экологические новости скоро появятся.',
-    card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи и штрафы',
+    card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи',
     region_label:'Область', region_ph:'— Выберите область —', address_label:'Ориентир / адрес (необязательно)',
     address_ph:'Например: Чиланзар 9-квартал, за базаром', rev_region:'Область',
     loc_detected:'Местоположение определено ✓', loc_denied:'Нет разрешения. Выберите область вручную.',
