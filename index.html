@@ -112,6 +112,14 @@ textarea{min-height:130px;}
 .loc-box{display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:30px 16px;}
 .loc-box .pin{font-size:34px;}
 .loc-result{font-size:14px; color:var(--leaf-dim); font-weight:600; word-break:break-word;}
+.fan-hero{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px;}
+.fan-ico{width:72px; height:72px; border-radius:22px; background:rgba(82,183,136,.16); display:flex; align-items:center; justify-content:center; font-size:38px;}
+.fan-hero p{margin:0; font-size:15px; line-height:1.6; color:var(--ink);}
+.fan-chips{display:flex; flex-wrap:wrap; justify-content:center; gap:8px;}
+.fan-chips span{font-size:13px; font-weight:600; padding:6px 12px; border-radius:20px; background:var(--sand); border:1px solid var(--line); color:var(--ink);}
+.fan-soon{margin:16px auto 0; display:inline-flex; align-self:center; align-items:center; gap:8px; padding:10px 18px; border-radius:24px; background:var(--leaf-dim); color:#fff; font-size:14px; font-weight:700;}
+.fan-dot{width:8px; height:8px; border-radius:50%; background:#B7E4C7; animation:fanPulse 1.6s ease-in-out infinite;}
+@keyframes fanPulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.35; transform:scale(.7);}}
 .pay-intro{font-size:14px; color:var(--ink-soft); margin:-4px 2px 16px; line-height:1.5;}
 .pay-panel{position:relative; overflow:hidden; display:flex; align-items:center; gap:14px; padding:22px 16px; min-height:108px; margin-bottom:14px; border-radius:20px; cursor:pointer; color:#fff; touch-action:manipulation; -webkit-user-select:none; user-select:none; transition:transform .12s; box-shadow:0 8px 22px rgba(27,67,50,.18);}
 .pay-panel:active{transform:scale(.98);}
@@ -628,6 +636,12 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 
   <div id="screen-fandomat" class="screen">
     <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="nav_fandomat">Fandomatlar</h2></div>
+    <div class="fan-hero">
+      <div class="fan-ico">♻️</div>
+      <p data-i18n="fan_desc">Fandomatlar — plastik, shisha va alyuminiy (tunuka) ichimlik idishlarini qabul qilib, evaziga pul to‘laydigan avtomatlashtirilgan maxsus ekologik qurilmalardir.</p>
+      <div class="fan-chips"><span data-i18n="fan_plastic">🧴 Plastik</span><span data-i18n="fan_glass">🍾 Shisha</span><span data-i18n="fan_can">🥫 Alyuminiy</span></div>
+    </div>
+    <div class="fan-soon"><span class="fan-dot"></span><span data-i18n="fan_soon">Tez orada ulanadi</span></div>
   </div>
 
   <div id="screen-pay-person" class="screen">
@@ -874,7 +888,7 @@ const LANG = {
     card_info_t:'Информационный центр',
     card_edu_d:'Экологические знания →', edu_soon:'Обучающие материалы скоро появятся.',
     card_news_t:'Экологические новости', card_news_d:'Последние новости →', news_soon:'Экологические новости скоро появятся.',
-    card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи', nav_fandomat:'Фандоматы', pay_intro:'Выберите тип плательщика.', pay_person_t:'Физические лица', pay_person_tag:'Население', pay_org_t:'Юридические лица', pay_org_tag:'Предприятия и организации', pay_soon:'Этот раздел скоро заработает.',
+    card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи', nav_fandomat:'Фандоматы', fan_desc:'Фандоматы — автоматизированные экологические устройства, которые принимают пластиковые, стеклянные и алюминиевые (жестяные) ёмкости из-под напитков и платят за них деньги.', fan_plastic:'🧴 Пластик', fan_glass:'🍾 Стекло', fan_can:'🥫 Алюминий', fan_soon:'Скоро подключится', pay_intro:'Выберите тип плательщика.', pay_person_t:'Физические лица', pay_person_tag:'Население', pay_org_t:'Юридические лица', pay_org_tag:'Предприятия и организации', pay_soon:'Этот раздел скоро заработает.',
     region_label:'Область', region_ph:'— Выберите область —', address_label:'Ориентир / адрес (необязательно)',
     address_ph:'Например: Чиланзар 9-квартал, за базаром', rev_region:'Область',
     loc_detected:'Местоположение определено ✓', loc_denied:'Нет разрешения. Выберите область вручную.',
