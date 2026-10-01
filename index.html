@@ -568,14 +568,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
   <!-- ECO EDUCATION -->
   <div id="screen-edu" class="screen">
     <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2>EcoEducation</h2></div>
-    <p class="loose-text" style="font-size:13px; color:var(--ink-soft); margin:0 2px 14px;" data-i18n="edu_intro">Atrof-muhitni asrash bo‘yicha qisqa va foydali darslar.</p>
-    <div id="eduList">
-      <div class="art"><div class="art-h" onclick="this.parentElement.classList.toggle('open')"><span class="art-n">♻️</span><span class="art-t" data-i18n="edu1_t">Chiqindilarni saralash</span><span class="art-chev">›</span></div><div class="art-b" data-i18n="edu1_b"><p class="art-p">Chiqindilarni turiga qarab ajratish ularni qayta ishlash imkonini beradi va axlatxonalardagi yukni kamaytiradi.</p><p class="art-i">Qog‘oz va karton, plastik, shisha va metallni alohida yig‘ing.</p><p class="art-i">Oziq-ovqat qoldiqlaridan kompost tayyorlash mumkin.</p><p class="art-i">Batareyka, lampochka va dori-darmonlarni oddiy axlatga tashlamang: ular maxsus yig‘ish punktlariga topshiriladi.</p></div></div>
-      <div class="art"><div class="art-h" onclick="this.parentElement.classList.toggle('open')"><span class="art-n">💨</span><span class="art-t" data-i18n="edu2_t">Havo sifati</span><span class="art-chev">›</span></div><div class="art-b" data-i18n="edu2_b"><p class="art-p">Ifloslangan havo nafas olish va yurak-qon tomir kasalliklari xavfini oshiradi.</p><p class="art-i">Havo sifati indeksini (AQI) kuzatib boring: 100 dan yuqori bo‘lsa, ochiq havoda uzoq vaqt jismoniy mashq qilmang.</p><p class="art-i">Barg va axlatni yoqmang: bu havoni zararli tutun bilan ifloslantiradi.</p><p class="art-i">Iloji bo‘lsa, jamoat transporti, velosiped yoki piyoda yurishni tanlang.</p></div></div>
-      <div class="art"><div class="art-h" onclick="this.parentElement.classList.toggle('open')"><span class="art-n">💧</span><span class="art-t" data-i18n="edu3_t">Suvni tejash</span><span class="art-chev">›</span></div><div class="art-b" data-i18n="edu3_b"><p class="art-p">Toza ichimlik suvi cheklangan resurs, ayniqsa Markaziy Osiyoda.</p><p class="art-i">Tish yuvayotganda jo‘mrakni yopib qo‘ying.</p><p class="art-i">Oqayotgan jo‘mrak va quvurlarni o‘z vaqtida tuzating: bir tomchilab oqish yiliga minglab litr suvni isrof qiladi.</p><p class="art-i">Bog‘ va ekinlarni ertalab yoki kechqurun sug‘oring, shunda suv kamroq bug‘lanadi.</p></div></div>
-      <div class="art"><div class="art-h" onclick="this.parentElement.classList.toggle('open')"><span class="art-n">🛍️</span><span class="art-t" data-i18n="edu4_t">Plastikdan voz kechish</span><span class="art-chev">›</span></div><div class="art-b" data-i18n="edu4_b"><p class="art-p">Plastik tabiatda yuzlab yillar davomida parchalanmaydi va mikroplastikka aylanib, suv va tuproqqa tushadi.</p><p class="art-i">Do‘konga o‘z sumkangiz bilan boring.</p><p class="art-i">Bir martalik idish va butilkalar o‘rniga qayta ishlatiladiganlaridan foydalaning.</p><p class="art-i">Plastik chiqindini tabiatda qoldirmang, uni saralash konteyneriga tashlang.</p></div></div>
-      <div class="art"><div class="art-h" onclick="this.parentElement.classList.toggle('open')"><span class="art-n">🌳</span><span class="art-t" data-i18n="edu5_t">Daraxt va yashil hududlar</span><span class="art-chev">›</span></div><div class="art-b" data-i18n="edu5_b"><p class="art-p">Daraxtlar havoni tozalaydi, shaharni salqinlatadi va changni ushlab qoladi.</p><p class="art-i">Daraxtlarni noqonuniy kesish holatini ko‘rsangiz, ECO REPORT orqali xabar bering.</p><p class="art-i">Ko‘chat ekish aksiyalarida qatnashing va ekilgan ko‘chatlarni parvarish qiling.</p></div></div>
-    </div>
+    <p class="loose-text" style="font-size:12px; color:var(--ink-soft); text-align:center; margin-top:18px;" data-i18n="edu_soon">Ta’limiy materiallar tez orada qo‘shiladi.</p>
   </div>
 
   <!-- MAPS -->
@@ -808,18 +801,7 @@ const LANG = {
     law_notes_show:'Примечания к редакциям', law_notes_hide:'Скрыть примечания', law_note_lang:'Текст документа приведён на узбекском языке.',
     map_note:'Карты открываются во новой вкладке из внешних источников (WAQI, Яндекс).',
     card_info_t:'Информационный центр',
-    card_edu_d:'Экологические знания →',
-    edu_intro:'Короткие и полезные уроки о защите окружающей среды.',
-    edu1_t:'Сортировка отходов',
-    edu1_b:'<p class="art-p">Разделение отходов по видам позволяет их перерабатывать и снижает нагрузку на свалки.</p><p class="art-i">Собирайте отдельно бумагу и картон, пластик, стекло и металл.</p><p class="art-i">Из пищевых остатков можно делать компост.</p><p class="art-i">Не выбрасывайте батарейки, лампы и лекарства в обычный мусор: их сдают в специальные пункты приёма.</p>',
-    edu2_t:'Качество воздуха',
-    edu2_b:'<p class="art-p">Загрязнённый воздух повышает риск заболеваний органов дыхания и сердечно-сосудистой системы.</p><p class="art-i">Следите за индексом качества воздуха (AQI): если он выше 100, избегайте долгих тренировок на улице.</p><p class="art-i">Не сжигайте листья и мусор: это загрязняет воздух вредным дымом.</p><p class="art-i">По возможности выбирайте общественный транспорт, велосипед или пешие прогулки.</p>',
-    edu3_t:'Экономия воды',
-    edu3_b:'<p class="art-p">Чистая питьевая вода — ограниченный ресурс, особенно в Центральной Азии.</p><p class="art-i">Закрывайте кран, пока чистите зубы.</p><p class="art-i">Вовремя чините протекающие краны и трубы: одна капающая течь тратит тысячи литров воды в год.</p><p class="art-i">Поливайте сад и посадки утром или вечером, тогда вода меньше испаряется.</p>',
-    edu4_t:'Отказ от пластика',
-    edu4_b:'<p class="art-p">Пластик не разлагается в природе сотни лет и, превращаясь в микропластик, попадает в воду и почву.</p><p class="art-i">Ходите в магазин со своей сумкой.</p><p class="art-i">Вместо одноразовой посуды и бутылок используйте многоразовые.</p><p class="art-i">Не оставляйте пластиковый мусор на природе, выбрасывайте его в контейнер для сортировки.</p>',
-    edu5_t:'Деревья и зелёные зоны',
-    edu5_b:'<p class="art-p">Деревья очищают воздух, охлаждают город и задерживают пыль.</p><p class="art-i">Если увидите незаконную вырубку деревьев, сообщите через ECO REPORT.</p><p class="art-i">Участвуйте в акциях по посадке деревьев и ухаживайте за посаженными саженцами.</p>',
+    card_edu_d:'Экологические знания →', edu_soon:'Обучающие материалы скоро появятся.',
     region_label:'Область', region_ph:'— Выберите область —', address_label:'Ориентир / адрес (необязательно)',
     address_ph:'Например: Чиланзар 9-квартал, за базаром', rev_region:'Область',
     loc_detected:'Местоположение определено ✓', loc_denied:'Нет разрешения. Выберите область вручную.',
