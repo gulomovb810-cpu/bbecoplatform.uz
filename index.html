@@ -177,6 +177,55 @@ textarea{min-height:130px;}
 .nav-btn.active .nl{font-weight:700;}
 
 /* ---- Profile ---- */
+.prof-screen{position:relative; overflow:hidden; background:linear-gradient(180deg,#0C1B1F 0%,#0E2420 45%,#0B1915 100%);
+  --card:rgba(255,255,255,.06); --ink:#EEF3EF; --ink-soft:#A9B8AE; --line:rgba(255,255,255,.12); color:var(--ink);}
+.prof-screen > *{position:relative; z-index:1;}
+.prof-screen > .prof-bg{position:absolute; z-index:0; left:-20%; right:-20%; top:-60px; height:420px; pointer-events:none;
+  background:linear-gradient(162deg, transparent 34%, rgba(0,153,181,.55) 34%, rgba(0,153,181,.55) 49%, rgba(206,17,38,.7) 49%, rgba(206,17,38,.7) 50.2%, rgba(255,255,255,.32) 50.2%, rgba(255,255,255,.32) 62%, rgba(206,17,38,.7) 62%, rgba(206,17,38,.7) 63.2%, rgba(30,181,58,.45) 63.2%, rgba(30,181,58,.45) 78%, transparent 78%);
+  filter:blur(5px); -webkit-mask-image:linear-gradient(180deg,#000 35%,transparent 100%); mask-image:linear-gradient(180deg,#000 35%,transparent 100%);}
+.prof-top{display:flex; justify-content:space-between; margin-bottom:18px;}
+.prof-top .back{width:44px; height:44px; border-radius:14px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+.prof-head{display:flex; align-items:center; gap:18px; margin-bottom:22px;}
+.prof-ava-wrap{position:relative; flex-shrink:0; padding:4px; border-radius:50%; border:2px solid rgba(82,183,136,.8); box-shadow:0 0 22px rgba(82,183,136,.35);}
+.prof-ava{width:76px; height:76px; font-size:32px; background:linear-gradient(145deg,#2D6A4F,#1B4332);}
+.prof-online{position:absolute; right:2px; bottom:4px; width:16px; height:16px; border-radius:50%; background:#22C55E; border:3px solid #0E2420;}
+.prof-id{min-width:0;}
+.prof-screen .profile-name{font-size:22px; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.prof-screen .profile-phone{font-size:14px; color:var(--ink-soft); margin-top:2px;}
+.prof-sub{font-size:12.5px; color:var(--ink-soft); margin-top:4px; opacity:.85;}
+.prof-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px;}
+.prof-stat{position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:12px; border-radius:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); cursor:pointer; min-width:0;}
+.prof-stat:nth-child(1){background:linear-gradient(145deg,rgba(45,106,79,.45),rgba(255,255,255,.04)); border-color:rgba(82,183,136,.35);}
+.prof-stat:nth-child(2){background:linear-gradient(145deg,rgba(29,78,137,.45),rgba(255,255,255,.04)); border-color:rgba(96,165,250,.3);}
+.prof-stat:nth-child(3){background:linear-gradient(145deg,rgba(76,61,130,.45),rgba(255,255,255,.04)); border-color:rgba(167,139,250,.3);}
+.ps-ico{flex-shrink:0; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;}
+.ps-ico.g{background:#2F9E5B;} .ps-ico.b{background:#2F6FD6;} .ps-ico.p{background:#6D5BD0;}
+.ps-ico.lg{width:46px; height:46px; font-size:22px;}
+.ps-txt{width:100%; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.ps-txt b{font-family:var(--font-head); font-size:22px; color:#fff; line-height:1.1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ps-txt span{font-size:12px; color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ps-chev{color:var(--ink-soft); font-size:20px; flex-shrink:0;}
+.prof-stat .ps-chev{position:absolute; right:10px; top:14px;}
+.prof-card{display:flex; align-items:center; gap:14px; padding:16px 14px; border-radius:20px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); margin-bottom:12px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+.prof-row{cursor:pointer;}
+.pc-art{position:relative; flex-shrink:0; width:58px; height:58px; border-radius:18px; background:linear-gradient(145deg,#1F6F78,#1B4332); display:flex; align-items:center; justify-content:center; font-size:28px;}
+.pc-art span{position:absolute; right:-6px; bottom:-6px; font-size:20px;}
+.pc-body{flex:1; min-width:0;}
+.pc-t{font-family:var(--font-head); font-weight:800; font-size:16px; color:#fff;}
+.pc-d{font-size:12.5px; color:var(--ink-soft); margin-top:3px; line-height:1.45;}
+.pc-btn{margin-top:12px; display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer; padding:10px 12px; border-radius:22px; background:linear-gradient(135deg,#2F9E5B,#1B7A45); color:#fff; font-weight:700; font-size:13px; font-family:var(--font-body); box-shadow:0 4px 14px rgba(47,158,91,.35);}
+.prof-quote{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; margin:26px 0 22px;}
+.pq-line{display:flex; align-items:center; gap:12px;}
+.pq-line i{flex:0 0 34px; height:2px; background:#52B788; border-radius:2px;}
+.pq-line p{margin:0; font-size:15px; font-weight:700; color:#fff; line-height:1.45;}
+.pq-tag{font-size:10.5px; letter-spacing:2.5px; color:var(--ink-soft);}
+.prof-logout{display:flex; align-items:center; justify-content:center; gap:10px; width:72%; margin:0 auto; padding:14px; border-radius:16px; background:rgba(239,68,68,.12); border:1.5px solid rgba(239,68,68,.55); color:#F87171; font-size:16px; font-weight:700; font-family:var(--font-body); cursor:pointer;}
+.prof-full-logout{display:block; margin:12px auto 0; background:none; border:none; color:var(--ink-soft); font-size:12px; text-decoration:underline; cursor:pointer; font-family:var(--font-body);}
+.prof-screen .empty{display:none;}
+.prof-cases{align-items:flex-start;}
+.prof-screen .case-item > div:first-child{flex:1; min-width:0;}
+.prof-screen .case-item .desc{max-width:none;}
+.prof-screen .case-item .pill{flex-shrink:0;}
 .profile-head{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
 .avatar{width:54px; height:54px; border-radius:50%; background:var(--leaf); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:800; font-size:20px; flex-shrink:0;}
 .profile-name{font-family:var(--font-head); font-weight:800; font-size:17px;}
@@ -541,31 +590,50 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
   </div>
 
   <!-- PROFILE -->
-  <div id="screen-profile" class="screen">
-    <div class="topbar"><h2 data-i18n="profil_word">Profil</h2></div>
-    <div class="profile-head">
-      <div class="avatar" id="profAvatar">B</div>
-      <div>
+  <div id="screen-profile" class="screen prof-screen">
+    <div class="prof-bg" aria-hidden="true"></div>
+    <div class="prof-top">
+      <div class="back" onclick="app.goto('home')">←</div>
+      <div class="back" onclick="app.goto('settings')" aria-label="Sozlamalar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></div>
+    </div>
+    <div class="prof-head">
+      <div class="prof-ava-wrap"><div class="avatar prof-ava" id="profAvatar">B</div><span class="prof-online"></span></div>
+      <div class="prof-id">
         <div class="profile-name" id="profName">Foydalanuvchi</div>
         <div class="profile-phone" id="profPhone">—</div>
+        <div class="prof-sub" data-i18n="prof_sub">Profilingiz ma’lumotlari</div>
       </div>
     </div>
-    <div class="stat-row">
-      <div class="stat-chip"><b id="pStatTotal">0</b><span data-i18n="stat_murojaat">Murojaat</span></div>
-      <div class="stat-chip"><b id="pStatDone">0</b><span data-i18n="stat_hal">Hal qilindi</span></div>
-      <div class="stat-chip"><b id="pStatTop">—</b><span data-i18n="stat_top">Ko‘p uchragan</span></div>
+    <div class="prof-stats">
+      <div class="prof-stat" onclick="app.scrollToCases()"><span class="ps-ico g">👥</span><div class="ps-txt"><b id="pStatTotal">0</b><span data-i18n="stat_murojaat">Murojaat</span></div><span class="ps-chev">›</span></div>
+      <div class="prof-stat" onclick="app.scrollToCases()"><span class="ps-ico b">📄</span><div class="ps-txt"><b id="pStatDone">0</b><span data-i18n="stat_hal">Hal qilindi</span></div><span class="ps-chev">›</span></div>
+      <div class="prof-stat"><span class="ps-ico p">💬</span><div class="ps-txt"><b id="pStatTop">—</b><span data-i18n="stat_top">Ko‘p uchragan</span></div><span class="ps-chev">›</span></div>
     </div>
-    <div class="section-title" data-i18n="section_arizalarim">MENING ARIZALARIM</div>
+    <div class="prof-card prof-cases" id="profCasesCard">
+      <div class="pc-art">📋<span>🌿</span></div>
+      <div class="pc-body">
+        <div class="pc-t" data-i18n="prof_my_cases">Mening arizalarim</div>
+        <div class="pc-d" id="profCasesSub"></div>
+        <button class="pc-btn" onclick="app.goto('report-1')"><span>➤</span><span data-i18n="nav_report">Xabar berish</span><span>›</span></button>
+      </div>
+    </div>
     <div id="caseList"></div>
-    <div class="history-link" id="profileHistoryLink" style="display:none; margin-top:14px;" onclick="app.goto('history')">
+    <div class="history-link" id="profileHistoryLink" style="display:none; margin-top:4px;" onclick="app.goto('history')">
       <span data-i18n="hist_link_label">🕘 Bekor qilingan / tahrirlangan arizalar</span>
       <b id="profileHistoryCount">0</b>
     </div>
-    <div style="margin-top:22px; display:flex; flex-direction:column; gap:10px;">
-      <button class="btn btn-outline" onclick="app.goto('settings')"><span data-i18n="settings_entry">⚙️ Sozlamalar</span></button>
-      <button class="btn btn-ghost" onclick="app.logout()"><span data-i18n="btn_logout">Chiqish</span></button>
-      <button class="btn btn-ghost" style="color:var(--red);" onclick="app.fullLogout()"><span data-i18n="btn_full_logout">Butunlay chiqish (barcha ma’lumotlarni o‘chirish)</span></button>
+    <div class="prof-card prof-row" onclick="app.goto('settings')">
+      <span class="ps-ico p lg">⚙️</span>
+      <div class="pc-body"><div class="pc-t" data-i18n="settings_title">Sozlamalar</div><div class="pc-d" data-i18n="prof_settings_d">Ilova sozlamalari va boshqa parametrlar</div></div>
+      <span class="ps-chev">›</span>
     </div>
+    <div class="prof-quote">
+      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#52B788" stroke-width="1.5" stroke-linecap="round"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>
+      <div class="pq-line"><i></i><p data-i18n="prof_quote">“Kichik harakatlar ham katta o‘zgarishlarga olib keladi.”</p><i></i></div>
+      <div class="pq-tag" data-i18n="prof_quote_tag">TOZA TABIAT — YORQIN KELAJAK</div>
+    </div>
+    <button class="prof-logout" onclick="app.logout()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span data-i18n="btn_logout">Chiqish</span></button>
+    <button class="prof-full-logout" onclick="app.fullLogout()"><span data-i18n="btn_full_logout">Butunlay chiqish (barcha ma’lumotlarni o‘chirish)</span></button>
   </div>
 
   <!-- HISTORY (cancelled + edited) -->
@@ -921,7 +989,7 @@ const LANG = {
     stat_hal:'Решено', stat_top:'Чаще всего', section_arizalarim:'МОИ ЗАЯВКИ', stat_murojaat:'Обращение',
     btn_logout:'Выйти', btn_full_logout:'Полный выход (удалить все данные)',
     history_title:'Отменённые / изменённые',
-    settings_entry:'⚙️ Настройки', settings_title:'Настройки',
+    settings_entry:'⚙️ Настройки', prof_sub:'Данные вашего профиля', prof_my_cases:'Мои заявки', prof_settings_d:'Настройки приложения и другие параметры', prof_quote:'«Даже маленькие шаги ведут к большим переменам.»', prof_quote_tag:'ЧИСТАЯ ПРИРОДА — СВЕТЛОЕ БУДУЩЕЕ', prof_cases_count:'Всего обращений: {n}. Следите за статусом ниже.', settings_title:'Настройки',
     settings_personal:'Личные данные', settings_personal_d:'Имя, фамилия и контактные данные',
     settings_lang:'Язык', settings_lang_d:'Выберите узбекский или русский язык',
     settings_theme:'Режим', settings_theme_d:'Светлый или тёмный режим',
@@ -959,6 +1027,7 @@ const app = {
       region_ph:'— Viloyatni tanlang —', loc_detected:'Joylashuv aniqlandi ✓', loc_denied:'Ruxsat berilmadi. Viloyatni qo‘lda tanlang.',
       loc_unknown:'Aniqlanmadi', loc_detecting:'Aniqlanmoqda...', loc_retry:'Qayta aniqlash', loc_pick_map:'Ruxsat berilmadi. Joyni xaritada belgilang yoki viloyatni qo‘lda tanlang.', loc_map_set:'Joy xaritada belgilandi ✓', region_guessed:'Viloyat taxminan aniqlandi — tekshirib oling.',
       ai_privacy:'🔒 Telefon, pasport yoki karta raqami kabi shaxsiy ma’lumotlarni yozmang. Ular avtomatik yashiriladi.', ai_err_limit:'Bugungi savollar limiti tugadi. Ertaga yana urinib ko‘ring.', ai_err_auth:'AI yordamchidan foydalanish uchun hisobingizga kiring yoki mehmon sifatida kiring.', ai_err_busy:'AI yordamchi hozir band. Birozdan so‘ng qayta urinib ko‘ring.', ai_err_refusal:'Bu savolga javob bera olmayman. Iltimos, savolni boshqacha yozing.', ai_err_off:'AI yordamchi hozircha ulanmagan.', ai_err_net:'Javob olib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
+      prof_cases_count:'Jami {n} ta murojaat. Holatini quyida kuzating.',
       submit_sending:'Yuborilmoqda...', submit_err_net:'Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_err_auth:'Ariza yuborish uchun hisobingizga kiring yoki mehmon sifatida qayta kiring.',
       submit_err_big:'Fayl juda katta (maks. 50 MB).', submit_err_closed:'Arizalarni qabul qilish vaqtincha to‘xtatilgan.',
@@ -1703,6 +1772,7 @@ const app = {
     box.textContent = txt ? '📢 ' + txt : '';
   },
 
+  scrollToCases(){ const el=document.getElementById(this.cases.length ? 'caseList' : 'profCasesCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); },
   renderProfile(){
     if(this.user){
       document.getElementById('profName').textContent = this.user.name;
@@ -1715,11 +1785,13 @@ const app = {
     this.cases.forEach(c=> counts[c.category] = (counts[c.category]||0)+1 );
     let top='—', max=0;
     Object.keys(counts).forEach(k=>{ if(counts[k]>max){max=counts[k]; top=k;} });
-    document.getElementById('pStatTop').textContent = top;
+    document.getElementById('pStatTop').textContent = top==='—' ? top : ((CAT_LABEL[this.lang] && CAT_LABEL[this.lang][top]) || top);
 
     const list = document.getElementById('caseList');
+    document.getElementById('profCasesSub').innerHTML = this.cases.length===0 ? this.t('empty_no_cases') : this.t('prof_cases_count').replace('{n}', this.cases.length);
     if(this.cases.length===0){
-      list.innerHTML = '<div class="empty">' + this.t('empty_no_cases') + '</div>';
+      list.innerHTML = '';
+      document.getElementById('profileHistoryLink').style.display='none';
       return;
     }
     list.innerHTML = this.cases.map((c,i)=>{
@@ -1727,7 +1799,7 @@ const app = {
       const catLabel = (CAT_LABEL[this.lang] && CAT_LABEL[this.lang][c.category]) || c.category;
       const pillHtml = c.cancelled ? `<div class="pill p6">${this.t('pill_cancelled')}</div>` : `<div class="pill p${c.statusIndex+1}">${st.t}</div>`;
       return `<div class="case-item" onclick="app.openCase(${i})">
-        <div><div class="id">${c.id} · ${CAT_ICON[c.category]||''} ${catLabel}</div><div class="desc">${c.description}</div></div>
+        <div><div class="id">${this.esc(String(c.id||''))} · ${CAT_ICON[c.category]||''} ${catLabel}</div><div class="desc">${this.esc(String(c.description||''))}</div></div>
         ${pillHtml}
       </div>`;
     }).join('');
@@ -1749,7 +1821,7 @@ const app = {
       const catLabel = (CAT_LABEL[this.lang] && CAT_LABEL[this.lang][c.category]) || c.category;
       const tag = c.cancelled ? `<div class="pill p6">${this.t('pill_cancelled')}</div>` : `<div class="pill p3">${this.t('pill_edited')}</div>`;
       return `<div class="hist-item" onclick="app.openCase(${i})">
-        <div><div class="desc">${c.description}</div><div class="id">${c.id} · ${CAT_ICON[c.category]||''} ${catLabel}</div></div>
+        <div><div class="desc">${this.esc(String(c.description||''))}</div><div class="id">${this.esc(String(c.id||''))} · ${CAT_ICON[c.category]||''} ${catLabel}</div></div>
         ${tag}
       </div>`;
     }).join('');
