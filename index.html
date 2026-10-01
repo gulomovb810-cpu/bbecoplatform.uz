@@ -112,6 +112,13 @@ textarea{min-height:130px;}
 .loc-box{display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:30px 16px;}
 .loc-box .pin{font-size:34px;}
 .loc-result{font-size:14px; color:var(--leaf-dim); font-weight:600; word-break:break-word;}
+.loc-map-wrap{width:100%; display:none; flex-direction:column; gap:8px;}
+.loc-map-wrap.on{display:flex;}
+.loc-box.has-map .pin{display:none;}
+.loc-box.has-map{padding-top:18px;}
+.loc-map{width:100%; height:280px; border-radius:14px; overflow:hidden; border:1px solid var(--line); background:var(--sand); position:relative; z-index:0;}
+.loc-hint{font-size:12px; color:var(--ink-soft); line-height:1.45;}
+.loc-gmaps{align-self:center; border:none; background:transparent; color:var(--leaf-dim); font-size:13px; font-weight:700; font-family:var(--font-body); cursor:pointer; padding:4px 8px;}
 .spacer{flex:1;}
 .footer-btn{padding-top:14px;}
 
@@ -387,6 +394,11 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
       <div class="pin">📍</div>
       <p id="locStatus" style="color:var(--ink-soft); font-size:14px;" data-i18n="loc_status_default">Muammo joylashuvini aniqlash uchun ruxsat bering</p>
       <div class="loc-result" id="locResult"></div>
+      <div class="loc-map-wrap" id="locMapWrap">
+        <div class="loc-map" id="locMap"></div>
+        <div class="loc-hint" data-i18n="loc_map_hint">Aniq joyni ko‘rsatish uchun xaritani bosing yoki 📍 belgini suring.</div>
+        <button type="button" class="loc-gmaps" id="locGmaps" style="display:none;" onclick="app.openInGoogleMaps()"><span data-i18n="loc_open_gmaps">Google Maps’da ko‘rish ↗</span></button>
+      </div>
       <button class="btn btn-outline" id="locBtn" onclick="app.getLocation()"><span data-i18n="btn_get_location">Joriy joylashuvni aniqlash</span></button>
     </div>
     <div class="field-label" data-i18n="region_label">Viloyat</div>
@@ -833,6 +845,8 @@ const LANG = {
     btn_continue:'Продолжить',
     step2_title:'Определение местоположения', loc_status_default:'Разрешите определить местоположение проблемы',
     btn_get_location:'Определить текущее местоположение',
+    loc_map_hint:'Чтобы указать точное место, нажмите на карту или перетащите метку 📍.', loc_open_gmaps:'Открыть в Google Maps ↗',
+    loc_pick_map:'Нет разрешения. Укажите место на карте или выберите область вручную.', loc_map_set:'Место указано на карте ✓',
     step3_title:'Прикрепить доказательство', media_title:'Сделать фото или видео', media_sub:'Камера откроется автоматически',
     step4_title:'Категория проблемы', btn_review:'Просмотреть',
     cat_chiqindi:'Отходы', cat_havo:'Воздух', cat_suv:'Вода', cat_daraxt:'Дерево', cat_tuproq:'Почва', cat_boshqa:'Другое',
@@ -884,7 +898,7 @@ const app = {
     document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(LANG.uz[k]===undefined) LANG.uz[k]=el.placeholder; });
     Object.assign(LANG.uz, {
       region_ph:'— Viloyatni tanlang —', loc_detected:'Joylashuv aniqlandi ✓', loc_denied:'Ruxsat berilmadi. Viloyatni qo‘lda tanlang.',
-      loc_unknown:'Aniqlanmadi', loc_detecting:'Aniqlanmoqda...', loc_retry:'Qayta aniqlash', region_guessed:'Viloyat taxminan aniqlandi — tekshirib oling.',
+      loc_unknown:'Aniqlanmadi', loc_detecting:'Aniqlanmoqda...', loc_retry:'Qayta aniqlash', loc_pick_map:'Ruxsat berilmadi. Joyni xaritada belgilang yoki viloyatni qo‘lda tanlang.', loc_map_set:'Joy xaritada belgilandi ✓', region_guessed:'Viloyat taxminan aniqlandi — tekshirib oling.',
       submit_sending:'Yuborilmoqda...', submit_err_net:'Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_err_auth:'Ariza yuborish uchun hisobingizga kiring yoki mehmon sifatida qayta kiring.',
       submit_err_big:'Fayl juda katta (maks. 50 MB).', submit_err_closed:'Arizalarni qabul qilish vaqtincha to‘xtatilgan.',
@@ -1389,34 +1403,105 @@ const app = {
   toStep2(){ this.draft.description = document.getElementById('descInput').value.trim(); this.draftInProgress=true; this.goto('report-2'); },
 
   getLocation(){
-    const status=document.getElementById('locStatus'), result=document.getElementById('locResult'), btn=document.getElementById('locBtn');
+    const status=document.getElementById('locStatus'), btn=document.getElementById('locBtn');
     const fail = ()=>{
-      status.textContent=this.t('loc_denied');
-      this.draft.lat=null; this.draft.lng=null;
-      this.draft.location = this.t('loc_unknown');
+      status.textContent=this.t('loc_pick_map');
+      if(this.draft.lat==null){ this.draft.location = this.t('loc_unknown'); document.getElementById('locResult').textContent=''; }
       this.draft.locDone = true;
-      result.textContent = '';
       btn.textContent=this.t('loc_retry'); btn.disabled=false;
+      this.showLocMap(this.draft.lat, this.draft.lng, false);
       this.checkLocNext();
     };
     if(!navigator.geolocation){ fail(); return; }
     btn.textContent=this.t('loc_detecting'); btn.disabled=true;
     navigator.geolocation.getCurrentPosition(pos=>{
       const {latitude, longitude} = pos.coords;
-      this.draft.lat = latitude; this.draft.lng = longitude;
-      this.draft.location = latitude.toFixed(5)+', '+longitude.toFixed(5);
-      this.draft.locDone = true;
-      status.textContent=this.t('loc_detected');
-      result.textContent = this.draft.location;
-      if(!this.draft.region){
-        const g = guessRegion(latitude, longitude);
-        if(g){ this.draft.region=g; document.getElementById('regionSelect').value=g; status.textContent += ' ' + this.t('region_guessed'); }
-      }
+      this.setLocPoint(latitude, longitude, 'loc_detected');
       btn.textContent=this.t('loc_retry'); btn.disabled=false;
-      this.checkLocNext();
+      this.showLocMap(latitude, longitude, true);
     }, fail, {enableHighAccuracy:true, timeout:10000, maximumAge:0});
   },
-  onRegion(){ this.draft.region = document.getElementById('regionSelect').value || null; this.checkLocNext(); },
+
+  // Nuqta tanlandi (GPS yoki xaritada bosish/surish orqali)
+  setLocPoint(lat, lng, msgKey){
+    this.draft.lat = lat; this.draft.lng = lng;
+    this.draft.location = lat.toFixed(5)+', '+lng.toFixed(5);
+    this.draft.locDone = true;
+    const status=document.getElementById('locStatus');
+    status.textContent=this.t(msgKey||'loc_map_set');
+    document.getElementById('locResult').textContent = this.draft.location;
+    document.getElementById('locGmaps').style.display='block';
+    if(!this.draft.regionManual){
+      const g = guessRegion(lat, lng);
+      if(g && g!==this.draft.region){ this.draft.region=g; document.getElementById('regionSelect').value=g; }
+      if(g) status.textContent += ' ' + this.t('region_guessed');
+    }
+    this.checkLocNext();
+  },
+
+  openInGoogleMaps(){
+    if(this.draft.lat==null) return;
+    window.open('https://www.google.com/maps/search/?api=1&query='+this.draft.lat+','+this.draft.lng, '_blank');
+  },
+
+  // Xarita: config.js da GOOGLE_MAPS_API_KEY bo'lsa Google Maps, bo'lmasa OpenStreetMap (Leaflet)
+  loadScript(src){ return new Promise((ok,err)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=ok; s.onerror=err; document.head.appendChild(s); }); },
+  loadMapLib(){
+    if(this._mapLib) return this._mapLib;
+    const gkey = window.ECO_CONFIG && window.ECO_CONFIG.GOOGLE_MAPS_API_KEY;
+    if(gkey && !/YOUR/i.test(gkey)){
+      this._mapLib = new Promise((ok,err)=>{
+        window.__ecoGmInit = ()=>ok('google');
+        this.loadScript('https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(gkey)+'&callback=__ecoGmInit&language='+(this.lang==='ru'?'ru':'uz')).catch(err);
+      });
+    } else {
+      const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
+      this._mapLib = this.loadScript('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js').then(()=>'leaflet');
+    }
+    this._mapLib.catch(()=>{ this._mapLib=null; });
+    return this._mapLib;
+  },
+  showLocMap(lat, lng, hasPoint){
+    document.getElementById('locMapWrap').classList.add('on');
+    document.querySelector('.loc-box').classList.add('has-map');
+    const center = hasPoint ? [lat,lng] : [41.3111, 69.2797];
+    const zoom = hasPoint ? 17 : 11;
+    const onPick = (a,b)=>this.setLocPoint(a,b);
+    this.loadMapLib().then(kind=>{
+      const el=document.getElementById('locMap');
+      if(kind==='google'){
+        const g=window.google.maps;
+        if(!this._gm){
+          this._gm = new g.Map(el,{center:{lat:center[0],lng:center[1]}, zoom, mapTypeControl:false, streetViewControl:false, fullscreenControl:false, gestureHandling:'greedy', clickableIcons:false});
+          this._gmMarker = new g.Marker({draggable:true});
+          this._gm.addListener('click', e=>{ this._gmMarker.setPosition(e.latLng); this._gmMarker.setMap(this._gm); onPick(e.latLng.lat(), e.latLng.lng()); });
+          this._gmMarker.addListener('dragend', e=>onPick(e.latLng.lat(), e.latLng.lng()));
+        }
+        this._gm.setCenter({lat:center[0],lng:center[1]}); this._gm.setZoom(zoom);
+        if(hasPoint){ this._gmMarker.setPosition({lat,lng}); this._gmMarker.setMap(this._gm); } else if(this.draft.lat==null){ this._gmMarker.setMap(null); }
+      } else {
+        const L=window.L;
+        if(!this._lm){
+          this._lm = L.map(el,{zoomControl:true, attributionControl:true});
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'© OpenStreetMap'}).addTo(this._lm);
+          this._lmMarker = L.marker(center,{draggable:true});
+          this._lm.on('click', e=>{ this._lmMarker.setLatLng(e.latlng).addTo(this._lm); onPick(e.latlng.lat, e.latlng.lng); });
+          this._lmMarker.on('dragend', ()=>{ const p=this._lmMarker.getLatLng(); onPick(p.lat, p.lng); });
+        }
+        this._lm.setView(center, zoom);
+        if(hasPoint) this._lmMarker.setLatLng([lat,lng]).addTo(this._lm); else if(this.draft.lat==null) this._lmMarker.remove();
+        setTimeout(()=>this._lm.invalidateSize(), 60);
+      }
+    }).catch(()=>{ document.getElementById('locMapWrap').classList.remove('on'); document.querySelector('.loc-box').classList.remove('has-map'); });
+  },
+  hideLocMap(){
+    document.querySelector('.loc-box').classList.remove('has-map');
+    document.getElementById('locMapWrap').classList.remove('on');
+    document.getElementById('locGmaps').style.display='none';
+    if(this._lmMarker) this._lmMarker.remove();
+    if(this._gmMarker) this._gmMarker.setMap(null);
+  },
+  onRegion(){ this.draft.region = document.getElementById('regionSelect').value || null; this.draft.regionManual = !!this.draft.region; this.checkLocNext(); },
   checkLocNext(){ document.getElementById('locNext').disabled = !(this.draft.locDone && this.draft.region); },
 
   onMedia(e){
@@ -1445,6 +1530,7 @@ const app = {
     document.getElementById('locResult').textContent='';
     document.getElementById('locNext').disabled=true;
     document.getElementById('locBtn').textContent=this.t('btn_get_location');
+    this.hideLocMap();
     this.fillRegionSelect();
     document.getElementById('addressInput').value='';
     document.getElementById('submitError').textContent='';
