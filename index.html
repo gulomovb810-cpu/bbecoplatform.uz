@@ -166,14 +166,70 @@ textarea{min-height:130px;}
 .done-circ{width:84px; height:84px; border-radius:50%; background:var(--leaf); display:flex; align-items:center; justify-content:center; font-size:40px; color:#fff;}
 .case-id{font-family:var(--font-head); font-weight:800; font-size:17px; color:var(--leaf-dim);}
 
-/* ---- Bottom nav ---- */
+/* ---- Home (yangi dizayn) ---- */
+.home-screen{position:relative; overflow:hidden; background:linear-gradient(180deg,#123526 0%,#0F2C20 40%,#0B2118 100%); color:#EEF3EF;}
+.home-screen > *{position:relative; z-index:1;}
+.home-screen > .home-scene{position:absolute; z-index:0; left:0; right:0; top:0; height:300px; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20200%22%20preserveAspectRatio%3D%22xMidYMax%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23F3D9A4%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23A9CDB8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%233E7A61%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22400%22%20height%3D%22200%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Ccircle%20cx%3D%22292%22%20cy%3D%2262%22%20r%3D%2216%22%20fill%3D%22%23FFF4CC%22%20opacity%3D%22.95%22%2F%3E%3Cpath%20d%3D%22M0%20118L55%2072L105%20108L168%2050L238%20112L298%2070L356%20102L400%2082V200H0Z%22%20fill%3D%22%236E9C88%22%20opacity%3D%22.85%22%2F%3E%3Cpath%20d%3D%22M0%20142L48%20112L98%20138L160%20100L222%20138L288%20106L350%20136L400%20116V200H0Z%22%20fill%3D%22%2333705A%22%2F%3E%3Cpath%20d%3D%22M0%20168Q110%20148%20210%20162T400%20156V200H0Z%22%20fill%3D%22%238CC3D2%22%20opacity%3D%22.75%22%2F%3E%3Cpath%20d%3D%22M0%20200V172L10%20150L20%20172L30%20140L42%20174L54%20146L66%20176L78%20152L90%20178L100%20200ZM300%20200L310%20168L320%20146L330%20170L342%20136L354%20168L366%20142L378%20172L390%20150L400%20166V200Z%22%20fill%3D%22%23163A2B%22%2F%3E%3C%2Fsvg%3E") center bottom/cover no-repeat; pointer-events:none;}
+.home-screen > .home-scene::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,30,22,.15) 0%,rgba(14,42,30,.55) 45%,#123526 100%);}
+.home-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:20px;}
+.home-greet{display:flex; gap:10px; align-items:flex-start; min-width:0;}
+.home-leaf{flex-shrink:0; width:38px; height:38px; margin-top:-2px;}
+.home-screen .hello{font-size:24px; font-weight:800; color:#fff; line-height:1.15; text-shadow:0 2px 10px rgba(0,0,0,.35); word-break:break-word;}
+.hello-name{color:#7EE29B;}
+.home-screen .hello-sub{color:rgba(255,255,255,.88); font-size:14px; margin:4px 0 0; text-shadow:0 1px 6px rgba(0,0,0,.4);}
+.home-acts{display:flex; gap:8px; flex-shrink:0;}
+.round-btn{position:relative; width:44px; height:44px; border-radius:50%; background:rgba(15,30,24,.55); border:1px solid rgba(255,255,255,.18); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+.round-btn svg{width:22px; height:22px;}
+.round-btn .dot{position:absolute; top:6px; right:7px; width:10px; height:10px; border-radius:50%; background:#22C55E; border:2px solid #16352A; display:none;}
+.round-btn.has-dot .dot{display:block;}
+.home-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;}
+.hs-card{position:relative; border-radius:18px; padding:12px; display:flex; flex-direction:column; gap:6px; color:#1A2B22; box-shadow:0 6px 18px rgba(0,0,0,.18); min-width:0;}
+.hs-card.g{background:linear-gradient(145deg,#EAF7EE,#D3EEDC);} .hs-card.b{background:linear-gradient(145deg,#EAF4FD,#D5E8FA);} .hs-card.p{background:linear-gradient(145deg,#F1EDFC,#E2DAF7);}
+.hs-ico{width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.hs-card.g .hs-ico{background:#2F9E5B;} .hs-card.b .hs-ico{background:#2F7FD6;} .hs-card.p .hs-ico{background:#7B61D8;}
+.hs-ico svg{width:18px; height:18px;}
+.hs-card b{font-family:var(--font-head); font-size:24px; line-height:1;}
+.hs-card span.l{font-size:11.5px; color:#3E5247; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.hs-card .hs-arrow{position:absolute; right:10px; top:12px; width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center; font-size:12px; color:#4A6355;}
+.home-report{position:relative; overflow:hidden; border-radius:22px; min-height:150px; padding:18px 16px; margin-bottom:14px; cursor:pointer; border:1px solid rgba(126,226,155,.35); background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20200%22%20preserveAspectRatio%3D%22xMidYMax%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23F3D9A4%22%2F%3E%3Cstop%20offset%3D%22.45%22%20stop-color%3D%22%23A9CDB8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%233E7A61%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22400%22%20height%3D%22200%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Ccircle%20cx%3D%22292%22%20cy%3D%2262%22%20r%3D%2216%22%20fill%3D%22%23FFF4CC%22%20opacity%3D%22.95%22%2F%3E%3Cpath%20d%3D%22M0%20118L55%2072L105%20108L168%2050L238%20112L298%2070L356%20102L400%2082V200H0Z%22%20fill%3D%22%236E9C88%22%20opacity%3D%22.85%22%2F%3E%3Cpath%20d%3D%22M0%20142L48%20112L98%20138L160%20100L222%20138L288%20106L350%20136L400%20116V200H0Z%22%20fill%3D%22%2333705A%22%2F%3E%3Cpath%20d%3D%22M0%20168Q110%20148%20210%20162T400%20156V200H0Z%22%20fill%3D%22%238CC3D2%22%20opacity%3D%22.75%22%2F%3E%3Cpath%20d%3D%22M0%20200V172L10%20150L20%20172L30%20140L42%20174L54%20146L66%20176L78%20152L90%20178L100%20200ZM300%20200L310%20168L320%20146L330%20170L342%20136L354%20168L366%20142L378%20172L390%20150L400%20166V200Z%22%20fill%3D%22%23163A2B%22%2F%3E%3C%2Fsvg%3E") center/cover no-repeat; box-shadow:0 10px 26px rgba(0,0,0,.3);}
+.home-report::before{content:''; position:absolute; inset:0; background:linear-gradient(90deg,rgba(14,48,32,.95) 0%,rgba(14,48,32,.75) 48%,rgba(14,48,32,0) 80%);}
+.home-report > *{position:relative;}
+.hr-t{display:flex; align-items:center; gap:8px; font-family:var(--font-head); font-size:24px; font-weight:800; color:#fff;}
+.hr-d{font-size:14px; color:rgba(255,255,255,.9); margin:6px 0 14px; max-width:62%;}
+.hr-btn{display:inline-flex; align-items:center; gap:10px; padding:10px 18px; border-radius:24px; background:linear-gradient(135deg,#2FA65F,#1D8047); border:1px solid rgba(255,255,255,.25); color:#fff; font-weight:700; font-size:14px;}
+.hr-globe{position:absolute; right:10px; bottom:6px; font-size:58px; line-height:1; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));}
+.hr-globe i{position:absolute; left:16px; top:-26px; font-size:30px; font-style:normal;}
+.hr-arrow{position:absolute; right:16px; top:18px; color:#fff; font-size:20px;}
+.home-ai{position:relative; overflow:hidden; display:flex; align-items:center; gap:12px; border-radius:22px; padding:14px 14px 14px 10px; margin-bottom:14px; cursor:pointer; background:linear-gradient(120deg,#DDF5E4 0%,#BFE9CC 100%); color:#13301F; box-shadow:0 8px 22px rgba(0,0,0,.2);}
+.ai-bot{position:relative; flex-shrink:0; width:64px; height:64px; font-size:46px; display:flex; align-items:center; justify-content:center;}
+.ai-bot i{position:absolute; right:-8px; top:-4px; font-size:22px; font-style:normal;}
+.ai-body{flex:1; min-width:0;}
+.ai-body .t{font-family:var(--font-head); font-size:20px; font-weight:800;}
+.ai-body .d{font-size:13px; color:#2D6A4F; margin-top:2px;}
+.ai-go{flex-shrink:0; width:46px; height:46px; border-radius:50%; background:#1B5E3B; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;}
+.home-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.hg-card{position:relative; overflow:hidden; background:linear-gradient(160deg,#FFFFFF 0%,#F2F7F4 100%); border-radius:20px; padding:14px; min-height:132px; display:flex; flex-direction:column; color:#14261C; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.18);}
+.hg-card.wide{grid-column:1/-1; min-height:auto; flex-direction:row; align-items:center; gap:12px;}
+.hg-ico{width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;}
+.hg-ico svg{width:22px; height:22px;}
+.hg-ico.g{background:#2F9E5B;} .hg-ico.b{background:#2F7FD6;} .hg-ico.p{background:#7B61D8;} .hg-ico.o{background:#F2A516;} .hg-ico.t{background:#1F8A8A;}
+.hg-chev{position:absolute; right:12px; top:14px; color:#7C9488; font-size:20px;}
+.hg-t{font-family:var(--font-head); font-size:15px; font-weight:800; margin-top:auto; padding-top:10px; line-height:1.25; position:relative;}
+.hg-card.wide .hg-t{margin:0; padding:0;}
+.hg-d{font-size:12px; color:#2D7A50; margin-top:3px; font-weight:600; position:relative;}
+.hg-d.muted{color:#7C9488;}
+.hg-deco{position:absolute; right:-4px; bottom:-8px; font-size:40px; opacity:.2; pointer-events:none;}
+.home-screen .announce{margin-bottom:14px;}
+.home-screen .history-link{margin-bottom:14px;}
+/* ---- Pastki menyu (suzuvchi) ---- */
+
 .bottomnav{position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; z-index:5;}
-.bottomnav-inner{width:100%; max-width:460px; background:var(--card); border-top:1px solid var(--line); box-shadow:0 -4px 16px rgba(0,0,0,.05); display:flex; padding:8px 2px calc(8px + env(safe-area-inset-bottom,0px)); gap:0;}
-.nav-btn{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:none; border:none; cursor:pointer; color:var(--ink-soft); font-family:var(--font-body); padding:2px 0;}
-.nav-btn .ni{font-size:20px; line-height:1; width:48px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:15px; transition:background .15s;}
+.bottomnav-inner{width:calc(100% - 20px); max-width:460px; margin:0 10px calc(8px + env(safe-area-inset-bottom,0px)); background:rgba(14,36,27,.94); border:1px solid rgba(255,255,255,.1); border-radius:26px; box-shadow:0 10px 30px rgba(0,0,0,.35); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:flex; padding:6px; gap:2px;}
+.nav-btn{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:none; border:none; cursor:pointer; color:#C3D2C9; font-family:var(--font-body); padding:7px 2px; border-radius:20px; transition:background .15s;}
+.nav-btn .ni{font-size:20px; line-height:1; width:auto; height:26px; display:flex; align-items:center; justify-content:center; border-radius:15px; transition:background .15s;}
 .nav-btn .nl{font-size:10.5px; font-weight:600; letter-spacing:-.15px; line-height:1.2; max-width:100%; padding:0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.nav-btn.active{color:var(--leaf-dim);}
-.nav-btn.active .ni{background:rgba(82,183,136,.18);}
+.nav-btn.active{color:#fff; background:linear-gradient(135deg,#2FA65F,#1B7A45); box-shadow:0 4px 12px rgba(47,166,95,.35);}
+.nav-btn.active .ni{background:transparent;}
 .nav-btn.active .nl{font-weight:700;}
 
 /* ---- Profile ---- */
@@ -420,33 +476,46 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
   </div>
 
   <!-- HOME -->
-  <div id="screen-home" class="screen">
-    <div class="hello" id="homeHello">Salom!</div>
-    <div class="hello-sub" data-i18n="home_sub">Bugun atrof-muhit uchun nima qilamiz?</div>
+  <div id="screen-home" class="screen home-screen">
+    <div class="home-scene" aria-hidden="true"></div>
+    <div class="home-top">
+      <div class="home-greet">
+        <svg class="home-leaf" viewBox="0 0 40 40"><path d="M8 34C6 20 14 10 30 6c2 16-6 26-20 28z" fill="#3CCB6C"/><path d="M8 34C14 24 20 18 28 12" stroke="#1B6B3A" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <div><div class="hello" id="homeHello">Salom!</div><div class="hello-sub" data-i18n="home_sub">Bugun atrof-muhit uchun nima qilamiz?</div></div>
+      </div>
+      <div class="home-acts">
+        <div class="round-btn" id="homeBell" onclick="app.goto('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></div>
+        <div class="round-btn" onclick="app.goto('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div>
+      </div>
+    </div>
     <div class="announce" id="homeAnnounce" style="display:none;"></div>
-    <div class="stat-row">
-      <div class="stat-chip"><b id="statTotal">0</b><span data-i18n="stat_total">Jami murojaat</span></div>
-      <div class="stat-chip"><b id="statOpen">0</b><span data-i18n="stat_open">Jarayonda</span></div>
-      <div class="stat-chip"><b id="statDone">0</b><span data-i18n="stat_done">Bartaraf etildi</span></div>
+    <div class="home-stats">
+      <div class="hs-card g"><span class="hs-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span><b id="statTotal">0</b><span class="l" data-i18n="stat_total">Jami murojaat</span><span class="hs-arrow">→</span></div>
+      <div class="hs-card b"><span class="hs-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><b id="statOpen">0</b><span class="l" data-i18n="stat_open">Jarayonda</span><span class="hs-arrow">→</span></div>
+      <div class="hs-card p"><span class="hs-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M9 14l2 2 4-4"/></svg></span><b id="statDone">0</b><span class="l" data-i18n="stat_done">Bartaraf etildi</span><span class="hs-arrow">→</span></div>
     </div>
     <div class="history-link" id="homeHistoryLink" style="display:none;" onclick="app.goto('history')">
       <span data-i18n="hist_link_label">🕘 Bekor qilingan / tahrirlangan arizalar</span>
       <b id="homeHistoryCount">0</b>
     </div>
-    <div class="grid">
-      <div class="svc primary" onclick="app.goto('report-1')">
-        <div><div class="t">ECO REPORT</div><div class="d" data-i18n="card_ecoreport_d">Muammo haqida xabar berish</div></div>
-        <div class="arrow-circ">→</div>
-      </div>
-      <div class="svc primary" style="background:var(--leaf-dim); border-color:var(--leaf-dim);" onclick="app.goto('ai')">
-        <div><div class="t" data-i18n="card_ai_t">🤖 AI Yordamchi</div><div class="d" data-i18n="card_ai_d">Ekologiya bo‘yicha savol bering</div></div>
-        <div class="arrow-circ">→</div>
-      </div>
-      <div class="svc" onclick="app.goto('edu')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg><div class="t">EcoEducation</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_edu_d">Ekologik bilimlar →</div></div>
-      <div class="svc" onclick="app.goto('news')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><div class="t" data-i18n="card_news_t">Ekologik yangiliklar</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_news_d">So‘nggi xabarlar →</div></div>
-      <div class="svc"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><path d="M12 3v18M5 8h14M5 16h14"/></svg><div class="t" data-i18n="card_clean_t">Tozalash aksiyalari</div><div class="soon" data-i18n="card_soon">Tez orada</div></div>
-      <div class="svc" onclick="app.goto('maps')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><div class="t" data-i18n="card_maps_t">Ekologik xaritalar</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_maps_d">2 ta xarita →</div></div>
-      <div class="svc" onclick="app.goto('info')"><svg class="svc-ico" viewBox="0 0 24 24" fill="none" stroke="#52B788" stroke-width="1.6"><path d="M4 19h16M6 19V9l6-5 6 5v10"/></svg><div class="t" data-i18n="card_info_t">Ma’lumot markazi</div><div class="soon" style="color:var(--leaf-dim); font-weight:700;" data-i18n="card_info_d">Qonunlar va hujjatlar →</div></div>
+    <div class="home-report" onclick="app.goto('report-1')">
+      <div class="hr-t"><svg viewBox="0 0 40 40" width="32" height="32"><path d="M8 34C6 20 14 10 30 6c2 16-6 26-20 28z" fill="#7EE29B"/><path d="M8 34C14 24 20 18 28 12" stroke="#1B6B3A" stroke-width="2" fill="none"/></svg>ECO REPORT</div>
+      <div class="hr-d" data-i18n="card_ecoreport_d">Muammo haqida xabar berish</div>
+      <span class="hr-btn"><span data-i18n="nav_report">Xabar berish</span> →</span>
+      <span class="hr-arrow">→</span>
+      <div class="hr-globe">🌍<i>🌱</i></div>
+    </div>
+    <div class="home-ai" onclick="app.goto('ai')">
+      <div class="ai-bot">🤖<i>💬</i></div>
+      <div class="ai-body"><div class="t" data-i18n="card_ai_title">AI Yordamchi</div><div class="d" data-i18n="card_ai_d">Ekologiya bo‘yicha savol bering</div></div>
+      <div class="ai-go">→</div>
+    </div>
+    <div class="home-grid">
+      <div class="hg-card" onclick="app.goto('edu')"><span class="hg-ico g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg></span><span class="hg-chev">›</span><span class="hg-deco">🌿</span><div class="hg-t">EcoEducation</div><div class="hg-d" data-i18n="card_edu_d">Ekologik bilimlar →</div></div>
+      <div class="hg-card" onclick="app.goto('news')"><span class="hg-ico b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span class="hg-chev">›</span><span class="hg-deco">📰</span><div class="hg-t" data-i18n="card_news_t">Ekologik yangiliklar</div><div class="hg-d" data-i18n="card_news_d">So‘nggi xabarlar →</div></div>
+      <div class="hg-card"><span class="hg-ico p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="hg-chev">›</span><span class="hg-deco">🌱</span><div class="hg-t" data-i18n="card_clean_t">Tozalash aksiyalari</div><div class="hg-d muted" data-i18n="card_soon">Tez orada</div></div>
+      <div class="hg-card" onclick="app.goto('maps')"><span class="hg-ico o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="hg-chev">›</span><span class="hg-deco">🗺️</span><div class="hg-t" data-i18n="card_maps_t">Ekologik xaritalar</div><div class="hg-d" data-i18n="card_maps_d">2 ta xarita →</div></div>
+      <div class="hg-card wide" onclick="app.goto('info')"><span class="hg-ico t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M6 19V9l6-5 6 5v10"/><path d="M10 19v-5h4v5"/></svg></span><div><div class="hg-t" data-i18n="card_info_t">Ma’lumot markazi</div><div class="hg-d" data-i18n="card_info_d">Qonunlar va hujjatlar →</div></div><span class="hg-chev" style="top:50%; transform:translateY(-50%);">›</span><span class="hg-deco">📚</span></div>
     </div>
   </div>
 
@@ -946,7 +1015,7 @@ const LANG = {
     otp_title:'Подтвердите код', btn_confirm:'Подтвердить', btn_resend:'Отправить код повторно',
     home_sub:'Что сделаем для экологии сегодня?', stat_total:'Всего обращений', stat_open:'В процессе', stat_done:'Устранено',
     hist_link_label:'🕘 Отменённые / изменённые заявки',
-    card_ecoreport_d:'Сообщить о проблеме', card_ai_t:'🤖 ИИ-помощник', card_ai_d:'Задайте вопрос об экологии',
+    card_ecoreport_d:'Сообщить о проблеме', card_ai_t:'🤖 ИИ-помощник', card_ai_title:'ИИ-помощник', card_ai_d:'Задайте вопрос об экологии',
     card_clean_t:'Акции по уборке', card_soon:'Скоро', card_maps_t:'Экологические карты', card_maps_d:'2 карты →',
     map_waqi_d:'Карта индекса качества воздуха по всему миру', map_yandex_d:'Интерактивная карта улиц, районов и мест',
     card_info_d:'Законы и документы →', info_docs_label:'Правовые документы', info_more:'Другие экологические документы скоро появятся.',
@@ -1758,7 +1827,9 @@ const app = {
   },
 
   renderHome(){
-    document.getElementById('homeHello').textContent = this.t('hello_prefix') + (this.user? this.user.name.split(' ')[0] : '') + '!';
+    const first = this.user && this.user.name ? this.user.name.split(' ')[0] : '';
+    document.getElementById('homeHello').innerHTML = first ? this.esc(this.t('hello_prefix')) + '<span class="hello-name">' + this.esc(first) + '</span>!' : this.esc(this.t('hello_prefix').replace(/,\s*$/,'')) + '!';
+    document.getElementById('homeBell').classList.toggle('has-dot', this.cases.some(c=>c.statusIndex>0 && c.statusIndex<3 && !c.cancelled));
     document.getElementById('statTotal').textContent = this.cases.length;
     document.getElementById('statOpen').textContent = this.cases.filter(c=>c.statusIndex<3 && !c.cancelled).length;
     document.getElementById('statDone').textContent = this.cases.filter(c=>c.statusIndex>=3 && !c.cancelled).length;
