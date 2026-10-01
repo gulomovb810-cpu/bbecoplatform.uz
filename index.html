@@ -206,6 +206,7 @@ select.name-input{appearance:none; -webkit-appearance:none; width:100%; backgrou
 .ai-msg.user{align-self:flex-end; background:var(--moss); color:#fff; border-bottom-right-radius:5px;}
 .ai-msg.assistant{align-self:flex-start; background:var(--card); border:1px solid var(--line); color:var(--ink); border-bottom-left-radius:5px;}
 .ai-msg.assistant.pending{color:var(--ink-soft);}
+.ai-privacy{margin-top:14px; font-size:12px; color:var(--leaf-dim); font-weight:600;}
 .ai-empty{color:var(--ink-soft); font-size:13px; text-align:center; padding:40px 24px; line-height:1.6;}
 .ai-input-row{display:flex; gap:8px; align-items:center; padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--line); background:var(--sand); position:sticky; bottom:0;}
 .ai-input-row input{flex:1; border:1px solid var(--line); background:var(--card); border-radius:22px; padding:12px 16px; font-size:16px; color:var(--ink); font-family:var(--font-body); outline:none;}
@@ -526,7 +527,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     <div class="topbar" style="padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_ai_t">🤖 AI Yordamchi</h2></div>
     <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-input-row" style="padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));">
-      <input id="aiInput" type="text" placeholder="Savolingizni yozing..." data-i18n-ph="ai_ph" onkeydown="if(event.key==='Enter'){app.sendAI();}">
+      <input id="aiInput" type="text" maxlength="1500" placeholder="Savolingizni yozing..." data-i18n-ph="ai_ph" onkeydown="if(event.key==='Enter'){app.sendAI();}">
       <button id="aiSendBtn" class="ai-send" onclick="app.sendAI()">➤</button>
     </div>
   </div>
@@ -896,6 +897,8 @@ const LANG = {
     btn_cancel_case:'Отменить заявку',
     edit_title:'Редактирование заявки', btn_save:'Сохранить',
     ai_ph:'Напишите ваш вопрос...',
+    ai_privacy:'🔒 Не пишите личные данные: номер телефона, паспорта или карты. Они автоматически скрываются.', ai_err_limit:'Лимит вопросов на сегодня исчерпан. Попробуйте завтра.', ai_err_auth:'Чтобы пользоваться ИИ-помощником, войдите в аккаунт или как гость.', ai_err_busy:'ИИ-помощник сейчас занят. Попробуйте чуть позже.', ai_err_refusal:'Не могу ответить на этот вопрос. Пожалуйста, сформулируйте его иначе.', ai_err_off:'ИИ-помощник пока не подключён.', ai_err_net:'Не удалось получить ответ. Проверьте интернет и попробуйте снова.',
+
     stat_hal:'Решено', stat_top:'Чаще всего', section_arizalarim:'МОИ ЗАЯВКИ', stat_murojaat:'Обращение',
     btn_logout:'Выйти', btn_full_logout:'Полный выход (удалить все данные)',
     history_title:'Отменённые / изменённые',
@@ -936,6 +939,7 @@ const app = {
     Object.assign(LANG.uz, {
       region_ph:'— Viloyatni tanlang —', loc_detected:'Joylashuv aniqlandi ✓', loc_denied:'Ruxsat berilmadi. Viloyatni qo‘lda tanlang.',
       loc_unknown:'Aniqlanmadi', loc_detecting:'Aniqlanmoqda...', loc_retry:'Qayta aniqlash', loc_pick_map:'Ruxsat berilmadi. Joyni xaritada belgilang yoki viloyatni qo‘lda tanlang.', loc_map_set:'Joy xaritada belgilandi ✓', region_guessed:'Viloyat taxminan aniqlandi — tekshirib oling.',
+      ai_privacy:'🔒 Telefon, pasport yoki karta raqami kabi shaxsiy ma’lumotlarni yozmang. Ular avtomatik yashiriladi.', ai_err_limit:'Bugungi savollar limiti tugadi. Ertaga yana urinib ko‘ring.', ai_err_auth:'AI yordamchidan foydalanish uchun hisobingizga kiring yoki mehmon sifatida kiring.', ai_err_busy:'AI yordamchi hozir band. Birozdan so‘ng qayta urinib ko‘ring.', ai_err_refusal:'Bu savolga javob bera olmayman. Iltimos, savolni boshqacha yozing.', ai_err_off:'AI yordamchi hozircha ulanmagan.', ai_err_net:'Javob olib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_sending:'Yuborilmoqda...', submit_err_net:'Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_err_auth:'Ariza yuborish uchun hisobingizga kiring yoki mehmon sifatida qayta kiring.',
       submit_err_big:'Fayl juda katta (maks. 50 MB).', submit_err_closed:'Arizalarni qabul qilish vaqtincha to‘xtatilgan.',
@@ -1057,7 +1061,7 @@ const app = {
   renderAI(){
     const box = document.getElementById('aiMessages');
     if(this.aiMessages.length===0){
-      box.innerHTML = '<div class="ai-empty">' + this.t('ai_empty') + '</div>';
+      box.innerHTML = '<div class="ai-empty">' + this.t('ai_empty') + '<div class="ai-privacy">' + this.t('ai_privacy') + '</div></div>';
       return;
     }
     box.innerHTML = this.aiMessages.map(m=>
@@ -1076,24 +1080,43 @@ const app = {
     this.aiMessages.push({role:'assistant', content:'', pending:true});
     this.renderAI();
 
-    const preamble = 'Sen — bbecoplatform.uz ilovasi ichidagi ekologiya bo‘yicha AI yordamchisan. Foydalanuvchilarning ekologik muammolar, tabiatni asrash, ariza (ECO REPORT) yuborish tartibi va ilova imkoniyatlari haqidagi savollariga o‘zbek tilida, qisqa, aniq va foydali javob ber.';
-    const visible = this.aiMessages.filter(m=>!m.pending).map(m=>({role:m.role, content:m.content}));
-    const turns = [{role:'user', content:preamble}, {role:'assistant', content:'Tushunarli, yordam beraman.'}, ...visible];
+    const history = this.aiMessages.filter(m=>!m.pending && !m.err).map(m=>({role:m.role, content:m.content}));
+    const setReply = (content, err)=>{ this.aiMessages[this.aiMessages.length-1] = err ? {role:'assistant', content, err:true} : {role:'assistant', content}; };
 
-    try{
-      if(this.aiSampleCap===undefined){
-        this.aiSampleCap = window.claude ? await window.claude.use('sample') : null;
+    if(SUPABASE_READY){
+      // Server orqali: API kalit Supabase Edge Function (ai-chat) ichida yashirin turadi
+      try{
+        let { data:{ session } } = await sb.auth.getSession();
+        if(!session){ const r = await sb.auth.signInAnonymously(); session = r.data && r.data.session; }
+        if(!session) throw {code:'auth'};
+        const { data, error } = await sb.functions.invoke('ai-chat', { body:{ messages: history.slice(-12) } });
+        let code = data && data.error;
+        if(error){ try{ const b = await error.context.json(); code = b.error; }catch(e){ code = 'upstream'; } }
+        if(code) throw {code};
+        setReply(data.reply);
+      } catch(e){
+        const map = {limit:'ai_err_limit', auth:'ai_err_auth', busy:'ai_err_busy', refusal:'ai_err_refusal', not_configured:'ai_err_off'};
+        setReply(this.t(map[e && e.code] || 'ai_err_net'), true);
       }
-      if(!this.aiSampleCap) throw new Error('not_granted');
-      const result = await this.aiSampleCap(turns, {
-        onText: ({text})=>{
-          this.aiMessages[this.aiMessages.length-1].content = text;
-          this.renderAI();
+    } else {
+      // Demo rejim: faqat Claude Artifact ichida ishlaydi
+      const preamble = 'Sen — bbecoplatform.uz ilovasi ichidagi ekologiya bo‘yicha AI yordamchisan. Foydalanuvchilarning ekologik muammolar, tabiatni asrash, ariza (ECO REPORT) yuborish tartibi va ilova imkoniyatlari haqidagi savollariga o‘zbek tilida, qisqa, aniq va foydali javob ber.';
+      const turns = [{role:'user', content:preamble}, {role:'assistant', content:'Tushunarli, yordam beraman.'}, ...history];
+      try{
+        if(this.aiSampleCap===undefined){
+          this.aiSampleCap = window.claude ? await window.claude.use('sample') : null;
         }
-      });
-      this.aiMessages[this.aiMessages.length-1] = {role:'assistant', content: result.text};
-    } catch(e){
-      this.aiMessages[this.aiMessages.length-1] = {role:'assistant', content:'Kechirasiz, AI yordamchi hozir ulanmagan yoki ruxsat berilmagan. Birozdan so‘ng qayta urinib ko‘ring.'};
+        if(!this.aiSampleCap) throw new Error('not_granted');
+        const result = await this.aiSampleCap(turns, {
+          onText: ({text})=>{
+            this.aiMessages[this.aiMessages.length-1].content = text;
+            this.renderAI();
+          }
+        });
+        setReply(result.text);
+      } catch(e){
+        setReply(this.t('ai_err_off'), true);
+      }
     }
     document.getElementById('aiSendBtn').disabled = false;
     this.renderAI();

@@ -429,6 +429,34 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
+-- 8b. AI YORDAMCHI: kunlik so'rovlar limiti
+-- Savol matnlari bazada SAQLANMAYDI — faqat foydalanuvchi bo'yicha kunlik hisoblagich.
+-- ai_consume() faqat ai-chat Edge Function (service_role) tomonidan chaqiriladi.
+-- ---------------------------------------------------------------------
+create table if not exists public.ai_usage (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  day     date not null default (now() at time zone 'Asia/Tashkent')::date,
+  count   int  not null default 0,
+  primary key (user_id, day)
+);
+alter table public.ai_usage enable row level security;
+-- Siyosat yo'q: anon/authenticated foydalanuvchilar jadvalni o'qiy ham, yoza ham olmaydi.
+
+create or replace function public.ai_consume(p_user uuid, p_limit int) returns boolean
+language plpgsql security definer set search_path = public as $$
+declare v int;
+begin
+  insert into public.ai_usage(user_id, day, count)
+  values (p_user, (now() at time zone 'Asia/Tashkent')::date, 1)
+  on conflict (user_id, day) do update set count = public.ai_usage.count + 1
+  returning count into v;
+  delete from public.ai_usage where day < (now() at time zone 'Asia/Tashkent')::date - 7;
+  return v <= p_limit;
+end $$;
+revoke all on function public.ai_consume(uuid, int) from public, anon, authenticated;
+grant execute on function public.ai_consume(uuid, int) to service_role;
+
+-- ---------------------------------------------------------------------
 -- 9. BOSHLANG'ICH MA'LUMOTLAR
 -- ---------------------------------------------------------------------
 insert into public.app_settings (key, value) values

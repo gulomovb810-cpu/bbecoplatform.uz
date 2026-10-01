@@ -8,6 +8,7 @@ bbecoplatform.uz — ekologik muammolar haqida bir daqiqada xabar berish ilovasi
 | `admin/` | Admin panel: arizalarni ko‘rish, holatini o‘zgartirish, xarita, tashkilotlar, foydalanuvchilar, statistika, sozlamalar |
 | `config.js` | Supabase kalitlari (ilova + panel uchun umumiy) |
 | `supabase/schema.sql` | Ma’lumotlar bazasi: jadvallar, xavfsizlik (RLS), triggerlar, Storage, Realtime |
+| `supabase/functions/ai-chat/` | AI Yordamchi uchun server funksiya (API kalit shu yerda yashirin turadi) |
 | `docs/SUPABASE_SETUP.md` | Supabase’ga ulash bo‘yicha qadamma-qadam yo‘riqnoma |
 
 ## Admin panel bo‘limlari
