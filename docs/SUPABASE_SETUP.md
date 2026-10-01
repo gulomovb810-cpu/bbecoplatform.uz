@@ -104,6 +104,34 @@ Netlify, Vercel, Cloudflare Pages yoki GitHub Pages’ga repo’ni ulash kifoya.
 - [ ] Adminda holat “Bartaraf etildi” qilinib javob yozildi → ilovada holat va “Mas’ul tashkilot javobi” yangilandi
 - [ ] Sozlamalarda e’lon yoqildi → ilova bosh sahifasida ko‘rindi
 
+## 10. AI Yordamchi
+AI Yordamchi `supabase/functions/ai-chat` Edge Function orqali ishlaydi. API kalit faqat Supabase secrets ichida turadi va brauzerga chiqmaydi.
+
+**1. Bazani yangilang.** `schema.sql` ni SQL Editor'da qayta ishga tushiring: unda kunlik limit uchun `ai_usage` jadvali va `ai_consume` funksiyasi bor. Savol va javob matnlari bazaga yozilmaydi.
+
+**2. API kalit oling (bittasini tanlang):**
+| Provayder | Narxi | Qayerdan | Secret nomi |
+|---|---|---|---|
+| Google Gemini | Bepul tarif bor (kunlik limit bilan) | aistudio.google.com → **Get API key** | `GEMINI_API_KEY` |
+| Claude (Anthropic) | Pullik, ishlatilganiga qarab | console.anthropic.com → **API Keys** | `ANTHROPIC_API_KEY` |
+
+⚠️ Gemini'ning bepul tarifida Google yuborilgan matnlardan o‘z mahsulotlarini yaxshilash uchun foydalanishi mumkin. Shuning uchun funksiya telefon, email, pasport, JShShIR va karta raqamlarini AI'ga yuborishdan oldin yashiradi. Fuqarolar ma’lumotlari uchun eng ishonchli variant pullik tarif (Claude yoki Gemini’ning pullik tarifi): unda ma’lumotlar o‘qitishga ishlatilmaydi.
+Ikkala kalit ham qo‘yilsa, Claude ishlatiladi.
+
+**3. Secret'larni qo‘ying:** **Edge Functions → Secrets** (yoki CLI: `supabase secrets set GEMINI_API_KEY=...`):
+- `GEMINI_API_KEY` yoki `ANTHROPIC_API_KEY` — majburiy
+- `AI_DAILY_LIMIT` — har bir foydalanuvchiga kunlik savollar soni (standart `30`)
+- `ALLOWED_ORIGIN` — `https://bbecoplatform.uz` (boshqa saytlar funksiyani chaqira olmasligi uchun)
+- `GEMINI_MODEL` / `CLAUDE_MODEL` — ixtiyoriy, model nomini almashtirish uchun
+
+**4. Funksiyani joylang:**
+- Dashboard: **Edge Functions → Deploy a new function → Via Editor**, nomi `ai-chat`, `supabase/functions/ai-chat/index.ts` matnini joylab **Deploy** bosing.
+- yoki CLI: `supabase functions deploy ai-chat`
+
+“Verify JWT” yoqilgan qolsin: funksiyani faqat ilovaga kirgan (mehmon ham) foydalanuvchilar chaqira oladi.
+
+**5. Tekshiring:** ilovada 🤖 AI Yordamchi'ga savol yozing. “AI yordamchi hozircha ulanmagan” chiqsa, secret qo‘yilmagan yoki funksiya joylanmagan.
+
 ## Muammolar
 | Belgi | Sabab / yechim |
 |---|---|
@@ -112,3 +140,5 @@ Netlify, Vercel, Cloudflare Pages yoki GitHub Pages’ga repo’ni ulash kifoya.
 | “Jonli” o‘rniga “Ulanmoqda...” turibdi | **Database → Publications → supabase_realtime** da `reports` jadvali borligini tekshiring |
 | Ilovada “Arizalarni qabul qilish to‘xtatilgan” | Admin → Sozlamalar → “Arizalarni qabul qilish”ni yoqing |
 | Mehmon rejimi ishlamaydi | “Allow anonymous sign-ins” yoqilmagan |
+| AI “hozircha ulanmagan” deydi | `ai-chat` funksiyasi joylanmagan yoki `GEMINI_API_KEY`/`ANTHROPIC_API_KEY` secret qo‘yilmagan — 10-bo‘lim |
+| AI “bugungi limit tugadi” deydi | `AI_DAILY_LIMIT` secret qiymatini oshiring |
