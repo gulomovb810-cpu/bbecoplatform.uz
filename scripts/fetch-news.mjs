@@ -14,7 +14,13 @@ import { readFile, writeFile } from "node:fs/promises";
 
 // region: 'uz' — O'zbekiston manbalari, 'world' — xalqaro manbalar.
 // filter: true — umumiy lenta, faqat ekologiyaga oid xabarlar olinadi.
+// gnews: true — Google News qidiruv lentasi: ko'plab O'zbekiston saytlaridagi
+// xabarlarni yig'adi, manba nomi har bir xabarning o'zidan olinadi.
+const gnews = (q, hl, gl) =>
+  `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:7d")}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
 export const SOURCES = [
+  { name: "Google News", url: gnews('ekologiya OR "atrof-muhit" OR chiqindi OR iqlim OR "havo sifati" OR daraxt', "uz", "UZ"), lang: "uz", region: "uz", filter: true, gnews: true },
+  { name: "Google News", url: gnews('(экология OR климат OR "загрязнение воздуха" OR отходы OR вырубка OR "Аральское море") Узбекистан', "ru", "UZ"), lang: "ru", region: "uz", filter: true, gnews: true },
   { name: "Kun.uz", url: "https://kun.uz/news/rss", lang: "uz", region: "uz", filter: true },
   { name: "Kun.uz", url: "https://kun.uz/ru/news/rss", lang: "ru", region: "uz", filter: true },
   { name: "Gazeta.uz", url: "https://www.gazeta.uz/oz/rss/", lang: "uz", region: "uz", filter: true },
@@ -24,7 +30,7 @@ export const SOURCES = [
   { name: "BMT yangiliklari", url: "https://news.un.org/feed/subscribe/ru/news/topic/climate-change/feed/rss.xml", lang: "ru", region: "world", filter: false },
   { name: "UN News", url: "https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml", lang: "en", region: "world", filter: false },
   { name: "DW", url: "https://rss.dw.com/xml/rss-ru-all", lang: "ru", region: "world", filter: true },
-  { name: "The Guardian", url: "https://www.theguardian.com/environment/rss", lang: "en", region: "world", filter: false },
+  { name: "The Guardian", url: "https://www.theguardian.com/environment/rss", lang: "en", region: "world", filter: true },
   { name: "BBC", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", lang: "en", region: "world", filter: true },
   { name: "Mongabay", url: "https://news.mongabay.com/feed/", lang: "en", region: "world", filter: false },
 ];
@@ -41,8 +47,8 @@ const KEYWORDS = [
   "ekolog", "iqlim", "chiqindi", "atrof-muhit", "atrof muhit", "tabiat", "o'rmon", "daraxt",
   "havo sifat", "havoning ifloslan", "ifloslan", "chang bo'ron", "smog", "orol", "suv tanqis",
   "suv resurs", "qurg'oqchil", "ko'kalamzor", "yashil makon", "yashil hudud", "bioxilma", "yovvoyi",
-  "qizil kitob", "global isish", "issiqxona gaz", "qayta tiklanuvchi", "qayta ishla", "plastik",
-  "zaharli", "suv toshqin", "sel ", "muzlik", "brakonyer", "qo'riqxona", "milliy bog'",
+  "qizil kitob", "global isish", "issiqxona gaz", "qayta tiklanuvchi", "plastik",
+  "zaharli", "suv toshqin", "sel ", "qayta ishlash zavod", "chiqindixona", "muzlik", "brakonyer", "qo'riqxona", "milliy bog'",
   // ruscha
   "эколог", "климат", "отход", "мусор", "загрязн", "выброс", "вырубк", "лесн", "лесов", "лесах", "лес ",
   "арал", "природ", "засух", "водн ресурс", "водных ресурс", "водные ресурс", "нехватк вод", "нехватка вод", "дефицит вод", "смог", "пыльн", "озеленен",
@@ -61,19 +67,17 @@ const EXCLUDE = [
 
 const norm = (s) => s.toLowerCase().replace(/[ʻʼ‘’`´]/g, "'");
 const keyRe = new RegExp(
-  "(?:^|[^\\p{L}'])(?:" + KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")",
-  "u",
+  "(?:^|[^\\p{L}'])(" + KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")",
+  "gu",
 );
-export function isEco(text) {
-  const t = " " + norm(text) + " ";
-  if (EXCLUDE.some((e) => t.includes(e))) {
-    // istisno iborani olib tashlab, yana tekshiramiz
-    let rest = t;
-    for (const e of EXCLUDE) rest = rest.split(e).join(" ");
-    return keyRe.test(rest);
-  }
-  return keyRe.test(t);
+// Matndagi turli kalit so'zlar soni (istisno iboralar hisobga olinmaydi)
+export function ecoHits(text) {
+  let t = " " + norm(text) + " ";
+  for (const e of EXCLUDE) t = t.split(e).join(" ");
+  return new Set([...t.matchAll(keyRe)].map((m) => m[1])).size;
 }
+// Sarlavhada kalit so'z bo'lsa yoki tavsifda kamida 2 xil kalit so'z bo'lsa — ekologik xabar
+export const isEco = (title, summary = "") => ecoHits(title) > 0 || ecoHits(summary) >= 2;
 
 const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", laquo: "«", raquo: "»", mdash: "—", ndash: "–", hellip: "…", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“" };
 export function decode(s) {
@@ -129,7 +133,13 @@ export function parseFeed(xml, src) {
   const blocks = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || xml.match(/<entry[\s>][\s\S]*?<\/entry>/gi) || [];
   const items = [];
   for (const b of blocks) {
-    const title = stripTags(tag(b, "title"));
+    let title = stripTags(tag(b, "title"));
+    let source = src.name;
+    if (src.gnews) {
+      // "Sarlavha - Kun.uz" → sarlavha va manba alohida
+      source = stripTags(tag(b, "source")) || source;
+      if (title.endsWith(" - " + source)) title = title.slice(0, -(source.length + 3));
+    }
     let link = stripTags(tag(b, "link"));
     if (!link) {
       const alt = attr(b, "link", "href");
@@ -138,13 +148,13 @@ export function parseFeed(xml, src) {
     link = httpsUrl(link);
     if (!title || !link) continue;
     const summaryRaw = tag(b, "description") || tag(b, "summary") || tag(b, "content");
-    const summary = shorten(stripTags(summaryRaw), SUMMARY_CHARS);
+    const summary = src.gnews ? "" : shorten(stripTags(summaryRaw), SUMMARY_CHARS);
     const when = stripTags(tag(b, "pubDate") || tag(b, "published") || tag(b, "updated") || tag(b, "dc:date"));
     const d = new Date(when);
     const date = isNaN(d) ? new Date().toISOString() : d.toISOString();
-    if (src.filter && !isEco(title + " " + summary)) continue;
+    if (src.filter && !isEco(title, summary)) continue;
     const image = httpsUrl(findImage(b)).replace(/^http:/, "https:");
-    items.push({ title: shorten(title, 220), summary, link, image, date, source: src.name, lang: src.lang, region: src.region });
+    items.push({ title: shorten(title, 220), summary, link, image, date, source: source.slice(0, 40), lang: src.lang, region: src.region });
   }
   return items;
 }
@@ -193,6 +203,9 @@ async function main() {
   let prev = [];
   if (prevPath) {
     try { prev = JSON.parse(await readFile(prevPath, "utf8")).items || []; } catch { prev = []; }
+    // filtr qoidalari o'zgargan bo'lsa, eski xabarlar ham qayta tekshiriladi
+    const open = new Set(SOURCES.filter((x) => !x.filter).map((x) => x.name));
+    prev = prev.filter((it) => open.has(it.source) || isEco(it.title || "", it.summary || ""));
   }
   const fresh = [];
   const status = [];

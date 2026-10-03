@@ -1692,8 +1692,10 @@ const app = {
       link: okUrl(it.link), image: okUrl(it.image).replace(/^http:/i,'https:'), date: String(it.date||''),
       source: String(it.source||'').slice(0,40), lang: String(it.lang||'').slice(0,2), region: it.region==='world' ? 'world' : 'uz'
     })).filter(it=>it.title && it.link && !isNaN(Date.parse(it.date)));
-    const sources = Array.isArray(d.sources) ? d.sources.filter(x=>x && x.ok).map(x=>String(x.name||'').slice(0,40)) : [];
-    return { updated: String(d.updated||''), items, sources: [...new Set(sources)] };
+    // pastki yozuv uchun eng ko'p uchraydigan manbalar
+    const cnt = {}; items.forEach(it=>{ if(it.source) cnt[it.source]=(cnt[it.source]||0)+1; });
+    const sources = Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]).slice(0,8);
+    return { updated: String(d.updated||''), items, sources };
   },
   async loadNews(force, quiet){
     if(!this.news){ const c = safeGet('eco_news'); if(c && c.data){ this.news = this.cleanNews(c.data); this.newsAt = c.at||0; } }
@@ -1774,6 +1776,9 @@ const app = {
     live.classList.toggle('stale', stale);
     upd.textContent = this.newsErr && !navigator.onLine ? this.t('news_offline') : this.t('news_updated').replace('{t}', upAt ? this.timeAgo(this.news.updated) : '—');
     const items = this.news.items.filter(it=> this.newsTab==='all' || it.region===this.newsTab);
+    // asosiy (katta) kartada iloji bo'lsa ilova tilidagi so'nggi xabar turadi
+    const hi = items.slice(0,15).findIndex(it=>it.lang===this.lang);
+    if(hi>0) items.unshift(items.splice(hi,1)[0]);
     if(!items.length){
       list.innerHTML = '<div class="news-state"><div class="ico">🌿</div><div></div></div>';
       list.querySelector('.news-state div:nth-child(2)').textContent = this.t('news_empty');
