@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BB Eco</string>
+    <string name="pick_file">Fayl tanlang</string>
+    <string name="press_back_again">Chiqish uchun yana bir marta bosing</string>
+</resources>
