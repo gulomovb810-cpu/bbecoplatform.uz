@@ -37,7 +37,7 @@ export const SOURCES = [
 ];
 
 const MAX_AGE_DAYS = 45;        // shundan eski xabarlar o'chiriladi
-const MAX_PER_REGION = 60;      // har bir bo'limda saqlanadigan xabarlar soni
+const MAX_PER_GROUP = 40;       // har bir bo'lim va til uchun saqlanadigan xabarlar soni
 const SUMMARY_CHARS = 240;
 const FETCH_TIMEOUT = 20_000;
 const MAX_BYTES = 3_000_000;
@@ -212,7 +212,13 @@ export function merge(prev, fresh, now = Date.now()) {
       return true;
     });
   const out = [];
-  for (const r of ["uz", "world"]) out.push(...all.filter((it) => it.region === r).slice(0, MAX_PER_REGION));
+  // ingliz tilidagi xabarlar ko'p bo'lgani uchun har bir bo'lim+til guruhiga alohida chegara
+  const groups = new Map();
+  for (const it of all) {
+    const g = it.region + "|" + it.lang;
+    const n = groups.get(g) || 0;
+    if (n < MAX_PER_GROUP) { out.push(it); groups.set(g, n + 1); }
+  }
   return out.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
