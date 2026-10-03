@@ -20,6 +20,7 @@ const gnews = (q, hl, gl) =>
   `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:7d")}&hl=${hl}&gl=${gl}&ceid=${gl}:${hl}`;
 export const SOURCES = [
   { name: "Google News", url: gnews('ekologiya OR "atrof-muhit" OR chiqindi OR iqlim OR "havo sifati" OR daraxt', "uz", "UZ"), lang: "uz", region: "uz", filter: true, gnews: true },
+  { name: "Google News", url: gnews('(ekologiya OR ekologik OR chiqindi OR "atrof-muhit" OR iqlim OR daraxt OR "havo sifati") (site:kun.uz OR site:daryo.uz OR site:gazeta.uz OR site:uza.uz OR site:xabar.uz OR site:qalampir.uz OR site:uzdaily.uz)', "uz", "UZ"), lang: "uz", region: "uz", filter: true, gnews: true },
   { name: "Google News", url: gnews('(экология OR климат OR "загрязнение воздуха" OR отходы OR вырубка OR "Аральское море") Узбекистан', "ru", "UZ"), lang: "ru", region: "uz", filter: true, gnews: true },
   { name: "Kun.uz", url: "https://kun.uz/news/rss", lang: "uz", region: "uz", filter: true },
   { name: "Kun.uz", url: "https://kun.uz/ru/news/rss", lang: "ru", region: "uz", filter: true },
@@ -59,6 +60,19 @@ const KEYWORDS = [
   "carbon", "plastic", "drought", "ocean", "species", "conservation", "renewable", "heatwave",
   "glacier", "flood", "air quality", "recycl", "endangered",
 ];
+// O'zbekistonga oid ekanini aniqlash uchun joy nomlari (Google News natijalari uchun)
+const UZ_PLACES = [
+  "o'zbekiston", "uzbekistan", "узбекистан", "ўзбекистон", "toshkent", "tashkent", "ташкент", "тошкент",
+  "samarqand", "самарканд", "buxoro", "бухар", "xorazm", "хорезм", "farg'ona", "ферган", "andijon", "андижан",
+  "namangan", "наманган", "qashqadaryo", "кашкадар", "surxondaryo", "сурхандар", "jizzax", "джизак",
+  "sirdaryo", "сырдар", "navoiy", "навои", "qoraqalpog'", "каракалпак", "nukus", "нукус", "orol", "арал",
+  "chorvoq", "чарвак", "termiz", "термез", "urganch", "ургенч", "chirchiq", "чирчик", "olmaliq", "алмалык",
+  "angren", "ангрен", "nurafshon", "нурафшан",
+];
+export const aboutUz = (text, site = "") =>
+  /\.uz$/i.test(site) || /(\.uz|\buz)$/i.test(text.split("|")[1] || "") || UZ_PLACES.some((p) => norm(text).includes(p));
+const cyrillic = (t) => (t.match(/[\u0400-\u04FF]/g) || []).length > t.replace(/\s/g, "").length / 2;
+
 // Ekologiyaga aloqasi yo'q, lekin kalit so'zga tushib qoladigan iboralar
 const EXCLUDE = [
   "plastik karta", "пластиков карт", "пластиковой карт", "пластиковую карт", "природный газ", "природного газа",
@@ -139,6 +153,10 @@ export function parseFeed(xml, src) {
       // "Sarlavha - Kun.uz" → sarlavha va manba alohida
       source = stripTags(tag(b, "source")) || source;
       if (title.endsWith(" - " + source)) title = title.slice(0, -(source.length + 3));
+      let site = "";
+      try { site = new URL((attr(b, "source", "url")[0] || { val: "" }).val).hostname; } catch { /* yo'q */ }
+      // Google boshqa mamlakatlar xabarlarini ham qaytaradi: faqat O'zbekistonga oidlari olinadi
+      if (src.region === "uz" && !aboutUz(title + "|" + source, site)) continue;
     }
     let link = stripTags(tag(b, "link"));
     if (!link) {
@@ -154,7 +172,7 @@ export function parseFeed(xml, src) {
     const date = isNaN(d) ? new Date().toISOString() : d.toISOString();
     if (src.filter && !isEco(title, summary)) continue;
     const image = httpsUrl(findImage(b)).replace(/^http:/, "https:");
-    items.push({ title: shorten(title, 220), summary, link, image, date, source: source.slice(0, 40), lang: src.lang, region: src.region });
+    items.push({ title: shorten(title, 220), summary, link, image, date, source: source.slice(0, 40), lang: src.gnews ? (cyrillic(title) ? "ru" : src.lang === "ru" ? "uz" : src.lang) : src.lang, region: src.region });
   }
   return items;
 }
@@ -205,7 +223,9 @@ async function main() {
     try { prev = JSON.parse(await readFile(prevPath, "utf8")).items || []; } catch { prev = []; }
     // filtr qoidalari o'zgargan bo'lsa, eski xabarlar ham qayta tekshiriladi
     const open = new Set(SOURCES.filter((x) => !x.filter).map((x) => x.name));
-    prev = prev.filter((it) => open.has(it.source) || isEco(it.title || "", it.summary || ""));
+    const direct = new Set(SOURCES.filter((x) => !x.gnews).map((x) => x.name));
+    prev = prev.filter((it) => (open.has(it.source) || isEco(it.title || "", it.summary || ""))
+      && (it.region !== "uz" || direct.has(it.source) || aboutUz((it.title || "") + "|" + (it.source || ""))));
   }
   const fresh = [];
   const status = [];
