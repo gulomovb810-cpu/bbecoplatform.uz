@@ -13,7 +13,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 
 // region: 'uz' — O'zbekiston manbalari, 'world' — xalqaro manbalar.
-// filter: true — umumiy lenta, faqat ekologiyaga oid xabarlar olinadi.
+// filter: true — umumiy lenta, faqat ekologiyaga oid xabarlar olinadi;
+//         "title" — kalit so'z albatta sarlavhada bo'lishi kerak.
 // gnews: true — Google News qidiruv lentasi: ko'plab O'zbekiston saytlaridagi
 // xabarlarni yig'adi, manba nomi har bir xabarning o'zidan olinadi.
 const gnews = (q, hl, gl) =>
@@ -30,9 +31,9 @@ export const SOURCES = [
   { name: "Daryo", url: "https://daryo.uz/ru/feed/", lang: "ru", region: "uz", filter: true },
   { name: "BMT yangiliklari", url: "https://news.un.org/feed/subscribe/ru/news/topic/climate-change/feed/rss.xml", lang: "ru", region: "world", filter: false },
   { name: "UN News", url: "https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml", lang: "en", region: "world", filter: false },
-  { name: "DW", url: "https://rss.dw.com/xml/rss-ru-all", lang: "ru", region: "world", filter: true },
-  { name: "The Guardian", url: "https://www.theguardian.com/environment/rss", lang: "en", region: "world", filter: true },
-  { name: "BBC", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", lang: "en", region: "world", filter: true },
+  { name: "DW", url: "https://rss.dw.com/xml/rss-ru-all", lang: "ru", region: "world", filter: "title" },
+  { name: "The Guardian", url: "https://www.theguardian.com/environment/rss", lang: "en", region: "world", filter: "title" },
+  { name: "BBC", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", lang: "en", region: "world", filter: "title" },
   { name: "Mongabay", url: "https://news.mongabay.com/feed/", lang: "en", region: "world", filter: false },
 ];
 
@@ -58,7 +59,7 @@ const KEYWORDS = [
   // inglizcha
   "climate", "environment", "pollut", "emission", "wildlife", "forest", "deforest", "biodivers",
   "carbon", "plastic", "drought", "ocean", "species", "conservation", "renewable", "heatwave",
-  "glacier", "flood", "air quality", "recycl", "endangered",
+  "glacier", "flood", "air quality", "recycl", "endangered", "sewage", "wildfire", "extinct",
 ];
 // O'zbekistonga oid ekanini aniqlash uchun joy nomlari (Google News natijalari uchun)
 const UZ_PLACES = [
@@ -91,7 +92,8 @@ export function ecoHits(text) {
   return new Set([...t.matchAll(keyRe)].map((m) => m[1])).size;
 }
 // Sarlavhada kalit so'z bo'lsa yoki tavsifda kamida 2 xil kalit so'z bo'lsa — ekologik xabar
-export const isEco = (title, summary = "") => ecoHits(title) > 0 || ecoHits(summary) >= 2;
+export const isEco = (title, summary = "", mode = true) =>
+  ecoHits(title) > 0 || (mode !== "title" && ecoHits(summary) >= 2);
 
 const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", laquo: "«", raquo: "»", mdash: "—", ndash: "–", hellip: "…", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“" };
 export function decode(s) {
@@ -170,7 +172,7 @@ export function parseFeed(xml, src) {
     const when = stripTags(tag(b, "pubDate") || tag(b, "published") || tag(b, "updated") || tag(b, "dc:date"));
     const d = new Date(when);
     const date = isNaN(d) ? new Date().toISOString() : d.toISOString();
-    if (src.filter && !isEco(title, summary)) continue;
+    if (src.filter && !isEco(title, summary, src.filter)) continue;
     const image = httpsUrl(findImage(b)).replace(/^http:/, "https:");
     items.push({ title: shorten(title, 220), summary, link, image, date, source: source.slice(0, 40), lang: src.gnews ? (cyrillic(title) ? "ru" : src.lang === "ru" ? "uz" : src.lang) : src.lang, region: src.region });
   }
@@ -228,9 +230,9 @@ async function main() {
   if (prevPath) {
     try { prev = JSON.parse(await readFile(prevPath, "utf8")).items || []; } catch { prev = []; }
     // filtr qoidalari o'zgargan bo'lsa, eski xabarlar ham qayta tekshiriladi
-    const open = new Set(SOURCES.filter((x) => !x.filter).map((x) => x.name));
+    const mode = new Map(SOURCES.filter((x) => !x.gnews).map((x) => [x.name, x.filter]));
     const direct = new Set(SOURCES.filter((x) => !x.gnews).map((x) => x.name));
-    prev = prev.filter((it) => (open.has(it.source) || isEco(it.title || "", it.summary || ""))
+    prev = prev.filter((it) => (mode.get(it.source) === false || isEco(it.title || "", it.summary || "", mode.get(it.source)))
       && (it.region !== "uz" || direct.has(it.source) || aboutUz((it.title || "") + "|" + (it.source || ""))));
   }
   const fresh = [];

@@ -1776,9 +1776,9 @@ const app = {
     live.classList.toggle('stale', stale);
     upd.textContent = this.newsErr && !navigator.onLine ? this.t('news_offline') : this.t('news_updated').replace('{t}', upAt ? this.timeAgo(this.news.updated) : '—');
     const items = this.news.items.filter(it=> this.newsTab==='all' || it.region===this.newsTab);
-    // asosiy (katta) kartada iloji bo'lsa ilova tilidagi so'nggi xabar turadi
-    const hi = items.slice(0,15).findIndex(it=>it.lang===this.lang);
-    if(hi>0) items.unshift(items.splice(hi,1)[0]);
+    // ilova tilidagi xabarlar biroz yuqoriga, inglizchalar biroz pastga suriladi
+    const rank = it => Date.parse(it.date) + (it.lang===this.lang ? 36 : it.lang==='en' ? -24 : 0)*3600e3;
+    items.sort((a,b)=>rank(b)-rank(a));
     if(!items.length){
       list.innerHTML = '<div class="news-state"><div class="ico">🌿</div><div></div></div>';
       list.querySelector('.news-state div:nth-child(2)').textContent = this.t('news_empty');
