@@ -18,8 +18,9 @@ android {
         applicationId 'uz.bbecoplatform.app'
         minSdk 24
         targetSdk 34
-        versionCode (System.getenv('VERSION_CODE') ?: '1') as int
-        versionName '1.0.' + (System.getenv('VERSION_CODE') ?: '1')
+        def vc = System.getenv('VERSION_CODE') ?: '1'
+        versionCode Integer.parseInt(vc)
+        versionName "1.0.${vc}"
     }
 
     signingConfigs {
