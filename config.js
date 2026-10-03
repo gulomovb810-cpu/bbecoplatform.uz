@@ -12,5 +12,8 @@ window.ECO_CONFIG = {
   MEDIA_BUCKET: 'report-media',
   // Ixtiyoriy: Google Maps JavaScript API kaliti (Google Cloud Console → APIs & Services).
   // Bo'sh qolsa, joylashuv xaritasi OpenStreetMap orqali ishlaydi.
-  GOOGLE_MAPS_API_KEY: ''
+  GOOGLE_MAPS_API_KEY: '',
+  // Ixtiyoriy: ekologik yangiliklar fayli (news.json) manzili.
+  // Bo'sh qolsa, GitHub'dagi "news-data" branchidan olinadi (har soatda yangilanadi).
+  NEWS_URL: ''
 };

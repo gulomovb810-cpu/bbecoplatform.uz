@@ -230,6 +230,55 @@ textarea{min-height:130px;}
 .hg-t{font-family:var(--font-head); font-size:15px; font-weight:800; margin-top:auto; padding-top:10px; line-height:1.25; position:relative;}
 .hg-card.wide .hg-t{margin:0; padding:0;}
 .hg-d{font-size:12px; color:#2D7A50; margin-top:3px; font-weight:600; position:relative;}
+/* ECO NEWS */
+.hg-badge{position:absolute; right:30px; top:14px; background:#E8590C; color:#fff; font-size:10.5px; font-weight:800; padding:3px 7px; border-radius:10px; display:none;}
+.hg-badge.on{display:inline-block;}
+.news-refresh{margin-left:auto; width:38px; height:38px; border-radius:12px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink); flex-shrink:0;}
+.news-refresh svg{width:19px; height:19px;}
+.news-refresh.spin svg{animation:newsSpin .9s linear infinite;}
+@keyframes newsSpin{to{transform:rotate(360deg);}}
+.news-live{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft); margin:-6px 2px 12px;}
+.news-live .dot{width:8px; height:8px; border-radius:50%; background:#40C057; box-shadow:0 0 0 0 rgba(64,192,87,.6); animation:newsPulse 2s infinite; flex-shrink:0;}
+.news-live.stale .dot{background:#ADB5BD; animation:none;}
+@keyframes newsPulse{0%{box-shadow:0 0 0 0 rgba(64,192,87,.55);}70%{box-shadow:0 0 0 8px rgba(64,192,87,0);}100%{box-shadow:0 0 0 0 rgba(64,192,87,0);}}
+.news-tabs{display:flex; gap:6px; padding:4px; border-radius:16px; background:var(--card); border:1px solid var(--line); margin-bottom:14px;}
+.news-tabs button{flex:1; border:0; background:transparent; color:var(--ink-soft); font:600 13px var(--font-body); padding:9px 4px; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; white-space:nowrap;}
+.news-tabs button.sel{background:linear-gradient(135deg,#2FA65F,#1B7A45); color:#fff; box-shadow:0 4px 12px rgba(27,122,69,.35);}
+.news-tabs button i{font-style:normal; font-size:11px; opacity:.8;}
+.news-hero{position:relative; display:block; border-radius:22px; overflow:hidden; min-height:220px; margin-bottom:14px; color:#fff; text-decoration:none; background:linear-gradient(135deg,#1B5E3B,#2D6A4F 55%,#0F3D2A); box-shadow:0 10px 26px rgba(0,0,0,.28);}
+.news-hero img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.news-hero::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.05) 20%,rgba(4,20,13,.88) 100%);}
+.news-hero .nh-body{position:absolute; left:0; right:0; bottom:0; padding:16px; z-index:1;}
+.news-hero .nh-top{position:absolute; left:14px; top:14px; z-index:1; display:flex; gap:6px;}
+.news-pill{font-size:11px; font-weight:700; padding:4px 9px; border-radius:20px; background:rgba(255,255,255,.18); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff;}
+.news-pill.hot{background:#2FA65F;}
+.news-hero .nh-t{font-family:var(--font-head); font-size:18px; font-weight:800; line-height:1.3; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+.news-hero .nh-meta{font-size:12px; opacity:.85; margin-top:6px;}
+.news-hero .nh-leaf{position:absolute; right:-10px; top:-10px; width:150px; height:150px; opacity:.16;}
+.news-item{display:flex; gap:12px; padding:12px; border-radius:18px; background:var(--card); border:1px solid var(--line); margin-bottom:10px; text-decoration:none; color:var(--ink); align-items:flex-start;}
+.news-item:active,.news-hero:active{transform:scale(.99);}
+.news-thumb{position:relative; width:86px; height:86px; border-radius:14px; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#2FA65F,#1B5E3B); color:#fff;}
+.news-thumb.w{background:linear-gradient(135deg,#3B82C4,#1D4E89);}
+.news-thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.news-thumb svg{width:34px; height:34px; opacity:.9;}
+.news-body{flex:1; min-width:0;}
+.news-meta{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-soft); margin-bottom:4px; flex-wrap:wrap;}
+.news-meta b{color:#2FA65F; font-weight:700;}
+.news-meta .lang{font-size:10px; font-weight:800; padding:1px 5px; border-radius:6px; border:1px solid var(--line); color:var(--ink-soft);}
+.news-t{font-family:var(--font-head); font-size:14.5px; font-weight:700; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+.news-d{font-size:12.5px; color:var(--ink-soft); line-height:1.45; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.news-more{width:100%; margin:4px 0 6px;}
+.news-state{text-align:center; padding:34px 16px; border-radius:20px; background:var(--card); border:1px solid var(--line); color:var(--ink-soft); font-size:13.5px; line-height:1.55;}
+.news-state .ico{font-size:38px; margin-bottom:8px;}
+.news-state .btn{margin-top:14px;}
+.news-skel{height:96px; border-radius:18px; margin-bottom:10px; background:linear-gradient(90deg,var(--card) 0%,var(--line) 50%,var(--card) 100%); background-size:200% 100%; animation:newsShimmer 1.2s infinite;}
+.news-skel.big{height:220px; border-radius:22px;}
+@keyframes newsShimmer{to{background-position:-200% 0;}}
+.news-foot{font-size:11.5px; color:var(--ink-soft); text-align:center; line-height:1.55; margin-top:10px; padding:0 8px;}
+:root[data-theme="dark"] .news-item,:root[data-theme="dark"] .news-tabs,:root[data-theme="dark"] .news-state,:root[data-theme="dark"] .news-refresh{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03)); border-color:rgba(255,255,255,.12);}
+:root[data-theme="dark"] .news-refresh{color:#fff; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+:root[data-theme="dark"] .news-meta b{color:#7EE29B;}
+:root[data-theme="dark"] .news-skel{background:linear-gradient(90deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 100%); background-size:200% 100%;}
 .hg-d.muted{color:#7C9488;}
 .hg-deco-img{position:absolute; right:0; bottom:0; width:58%; max-width:120px; height:auto; pointer-events:none; -webkit-mask-image:radial-gradient(circle at 70% 70%,#000 45%,transparent 72%); mask-image:radial-gradient(circle at 70% 70%,#000 45%,transparent 72%);}
 .hg-deco{position:absolute; right:-4px; bottom:-8px; font-size:40px; opacity:.2; pointer-events:none;}
@@ -525,7 +574,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     </div>
     <div class="home-grid">
       <div class="hg-card" onclick="app.goto('edu')"><span class="hg-ico g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg></span><span class="hg-chev">›</span><img class="hg-deco-img" src="data:image/webp;base64,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" alt=""><div class="hg-t">EcoEducation</div><div class="hg-d" data-i18n="card_edu_d">Ekologik bilimlar →</div></div>
-      <div class="hg-card" onclick="app.goto('news')"><span class="hg-ico b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span class="hg-chev">›</span><img class="hg-deco-img" src="data:image/webp;base64,UklGRgIFAABXRUJQVlA4IPYEAAAwHwCdASqIAGIAPjEYiUOiIaESSc14IAMEs52+RmCfRqelNcq+Q0h67Y/Ge/9LQBXyQTZau0gzuYj06h3ZszA7M59Jhxp/K4MEGZcToFx8M5e4/pl9/hSOL8rcVAeShimwGOiKcvcgQHGAp9LNHSaWA3GAinKTqlNfgPoLBJKcKNsWJhKabOBCjoxwNgJpCFCPJ5Xf+KxG6+tK1/W0dkduB2Iw545mD7M21L1fRyCfX4Y2mK2SQzctU2aR1U8h4oI0CnaCUjitXqvc/QpxoIhG8VrosHs5DJhDQQ2f7ChEJm+EyztV0OYkKlUEhuja+GGc3prL5eDa5P5eU4FmqwU2IQAA/v4bpLWpb9ywhWX48JoYaDDe+BpOTQIYAidJgfv2Z4NksYeePg1ofP7PtrG2rtKtQvDV63cqCnziSZlcM9F2IFMTGJE6r4Hscrup9hXtL6w6KSO2twm6Pon76xgC3zLOrHuyYqaWOMhZjlE6LhFGSRS+dYk0NSHHVTdmac5Yg2aW9HCD37Ht+eoV6OZdy+7a2brHHgKUOogMh/a/OaGW0KuApCte0OCjr3hKMqk5SUNfJAJf6LOGQY3de8Jl1cSlymABcXWsSAJvSiPCfg/xP1lk4ejvqd6mr4ElY+Xigrpg/Wq3MTFYiy7DYuLthVgOUIvjXeTIKcDvLxeHCI/BGUgWIniunYIkXnvJLP+AHZZMM0iZ2EvYW0CpDP//h05iAfeQv35IQ8jgDi3yQ+NX4Du5viXDMOoG04cZjmqjGAjl02+iebZUo+Yruf015rMROS2emjuWFHGD2uqoik1uZxV6KhXktl+bHf60Zozch3ueyQVi24VGIbZ2QlWFOOOA3/UE0VDrw5Qrf0tyW7+0MrA7YUgeWFxB4iMVPGkxTwUWYZRXdB7Gy1ED/cZxUQXbIqDczotq8JJoVKKCzKjfIW/AZY+AwN9a+ruJW5nPId/cJDZbZgi1Obc6bSH27/oBGJu2leTromZWqCDYz+B0LkwF+sg58tCN2/lhlbykce5iTqKhJh9MS4t1xo4AfbnHg1+n4hBIivCGyfufuCH2tM5Wi8ifPiekd9sEUmjxJBXctsm1ltl9LS4Ao/aucCefBLNtL+NdXMAnsgxfsw8Y1zp8fisnVdsSOMkXV/cFbXvRRhFWHdKYEIcmOcTQ9PwJ96hrWaDdF9nysgCQCqrm6YuLcwK46lD/GuWcBsoG3bQUY6GrwfU2GYBbUUObvVLkbjT5sh7FhRkz8xCZSvtV2r7+TxbkcfVHWZCN2D7wx2VBQLrl0jFtGRQYH9IPGYF3qMdcm3Otj7YzkGZOMJRT89KLbA5Rxy4ITJjbPBI3EP3t56lxNWXX7zw3bw9UO6UIMHdgcJA8h2GSrNrXHHGKha3dxqBhDtcxO1VnYkjaRQFNq0XpOxI+q8cdaYLQSkDIU7DteZP0KP83+a2mPy/+Vdn8765oL+a2vG2nGUBKdLem7R9hcvF//nQeHX/83H/IXVCV+/K+6WTtSY58GWS9PD3PHl7s3kxz60bfrMnpTYvQVBDUL5X5M585opfFQ/uOGnw7amfirx2wdrcFYclsYReQsBSIm9OAZsj4T9fkAHu8puvW+JvsuK6kYFD7W0l2FtkbUn3/xpWtMf0tOOhfuD+sxVKtkv3jji4xkuxIMrWwQqIt6YgRJL/qoSe/7rpZAAAA" alt=""><div class="hg-t" data-i18n="card_news_t">Ekologik yangiliklar</div><div class="hg-d" data-i18n="card_news_d">So‘nggi xabarlar →</div></div>
+      <div class="hg-card" onclick="app.goto('news')"><span class="hg-ico b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span class="hg-chev">›</span><img class="hg-deco-img" src="data:image/webp;base64,UklGRgIFAABXRUJQVlA4IPYEAAAwHwCdASqIAGIAPjEYiUOiIaESSc14IAMEs52+RmCfRqelNcq+Q0h67Y/Ge/9LQBXyQTZau0gzuYj06h3ZszA7M59Jhxp/K4MEGZcToFx8M5e4/pl9/hSOL8rcVAeShimwGOiKcvcgQHGAp9LNHSaWA3GAinKTqlNfgPoLBJKcKNsWJhKabOBCjoxwNgJpCFCPJ5Xf+KxG6+tK1/W0dkduB2Iw545mD7M21L1fRyCfX4Y2mK2SQzctU2aR1U8h4oI0CnaCUjitXqvc/QpxoIhG8VrosHs5DJhDQQ2f7ChEJm+EyztV0OYkKlUEhuja+GGc3prL5eDa5P5eU4FmqwU2IQAA/v4bpLWpb9ywhWX48JoYaDDe+BpOTQIYAidJgfv2Z4NksYeePg1ofP7PtrG2rtKtQvDV63cqCnziSZlcM9F2IFMTGJE6r4Hscrup9hXtL6w6KSO2twm6Pon76xgC3zLOrHuyYqaWOMhZjlE6LhFGSRS+dYk0NSHHVTdmac5Yg2aW9HCD37Ht+eoV6OZdy+7a2brHHgKUOogMh/a/OaGW0KuApCte0OCjr3hKMqk5SUNfJAJf6LOGQY3de8Jl1cSlymABcXWsSAJvSiPCfg/xP1lk4ejvqd6mr4ElY+Xigrpg/Wq3MTFYiy7DYuLthVgOUIvjXeTIKcDvLxeHCI/BGUgWIniunYIkXnvJLP+AHZZMM0iZ2EvYW0CpDP//h05iAfeQv35IQ8jgDi3yQ+NX4Du5viXDMOoG04cZjmqjGAjl02+iebZUo+Yruf015rMROS2emjuWFHGD2uqoik1uZxV6KhXktl+bHf60Zozch3ueyQVi24VGIbZ2QlWFOOOA3/UE0VDrw5Qrf0tyW7+0MrA7YUgeWFxB4iMVPGkxTwUWYZRXdB7Gy1ED/cZxUQXbIqDczotq8JJoVKKCzKjfIW/AZY+AwN9a+ruJW5nPId/cJDZbZgi1Obc6bSH27/oBGJu2leTromZWqCDYz+B0LkwF+sg58tCN2/lhlbykce5iTqKhJh9MS4t1xo4AfbnHg1+n4hBIivCGyfufuCH2tM5Wi8ifPiekd9sEUmjxJBXctsm1ltl9LS4Ao/aucCefBLNtL+NdXMAnsgxfsw8Y1zp8fisnVdsSOMkXV/cFbXvRRhFWHdKYEIcmOcTQ9PwJ96hrWaDdF9nysgCQCqrm6YuLcwK46lD/GuWcBsoG3bQUY6GrwfU2GYBbUUObvVLkbjT5sh7FhRkz8xCZSvtV2r7+TxbkcfVHWZCN2D7wx2VBQLrl0jFtGRQYH9IPGYF3qMdcm3Otj7YzkGZOMJRT89KLbA5Rxy4ITJjbPBI3EP3t56lxNWXX7zw3bw9UO6UIMHdgcJA8h2GSrNrXHHGKha3dxqBhDtcxO1VnYkjaRQFNq0XpOxI+q8cdaYLQSkDIU7DteZP0KP83+a2mPy/+Vdn8765oL+a2vG2nGUBKdLem7R9hcvF//nQeHX/83H/IXVCV+/K+6WTtSY58GWS9PD3PHl7s3kxz60bfrMnpTYvQVBDUL5X5M585opfFQ/uOGnw7amfirx2wdrcFYclsYReQsBSIm9OAZsj4T9fkAHu8puvW+JvsuK6kYFD7W0l2FtkbUn3/xpWtMf0tOOhfuD+sxVKtkv3jji4xkuxIMrWwQqIt6YgRJL/qoSe/7rpZAAAA" alt=""><span class="hg-badge" id="newsBadge"></span><div class="hg-t" data-i18n="card_news_t">Ekologik yangiliklar</div><div class="hg-d" data-i18n="card_news_d">So‘nggi xabarlar →</div></div>
       <div class="hg-card"><span class="hg-ico p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="hg-chev">›</span><img class="hg-deco-img" src="data:image/webp;base64,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" alt=""><div class="hg-t" data-i18n="card_clean_t">Tozalash aksiyalari</div><div class="hg-d muted" data-i18n="card_soon">Tez orada</div></div>
       <div class="hg-card" onclick="app.goto('maps')"><span class="hg-ico o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="hg-chev">›</span><img class="hg-deco-img" src="data:image/webp;base64,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" alt=""><div class="hg-t" data-i18n="card_maps_t">Ekologik xaritalar</div><div class="hg-d" data-i18n="card_maps_d">2 ta xarita →</div></div>
       <div class="hg-card wide" onclick="app.goto('info')"><span class="hg-ico t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M6 19V9l6-5 6 5v10"/><path d="M10 19v-5h4v5"/></svg></span><div><div class="hg-t" data-i18n="card_info_t">Ma’lumot markazi</div><div class="hg-d" data-i18n="card_info_d">Qonunlar va hujjatlar →</div></div><span class="hg-chev" style="top:50%; transform:translateY(-50%);">›</span></div>
@@ -764,8 +813,16 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 
   <!-- ECO NEWS -->
   <div id="screen-news" class="screen">
-    <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_news_t">Ekologik yangiliklar</h2></div>
-    <p class="loose-text" style="font-size:12px; color:var(--ink-soft); text-align:center; margin-top:18px;" data-i18n="news_soon">Ekologik yangiliklar tez orada qo‘shiladi.</p>
+    <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_news_t">Ekologik yangiliklar</h2>
+      <div class="news-refresh" id="newsRefresh" onclick="app.loadNews(true)" role="button" aria-label="Yangilash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></div></div>
+    <div class="news-live" id="newsLive"><span class="dot"></span><span id="newsUpdated" data-i18n="news_loading">Yangiliklar yuklanmoqda...</span></div>
+    <div class="news-tabs" id="newsTabs">
+      <button class="sel" data-r="all" onclick="app.setNewsTab('all')"><span data-i18n="news_all">Hammasi</span></button>
+      <button data-r="uz" onclick="app.setNewsTab('uz')"><i>🇺🇿</i><span data-i18n="news_uz">O‘zbekiston</span></button>
+      <button data-r="world" onclick="app.setNewsTab('world')"><i>🌍</i><span data-i18n="news_world">Dunyo</span></button>
+    </div>
+    <div id="newsList"></div>
+    <div class="news-foot" id="newsFoot"></div>
   </div>
 
   <!-- PAYMENTS & FINES -->
@@ -1038,6 +1095,11 @@ const LANG = {
     card_info_t:'Информационный центр',
     card_edu_d:'Экологические знания →', edu_soon:'Обучающие материалы скоро появятся.',
     card_news_t:'Экологические новости', card_news_d:'Последние новости →', news_soon:'Экологические новости скоро появятся.',
+    news_loading:'Загрузка новостей...', news_all:'Все', news_uz:'Узбекистан', news_world:'Мир',
+    news_updated:'Обновлено {t}', news_err:'Не удалось загрузить новости. Проверьте интернет и попробуйте снова.', news_offline:'Нет связи. Показаны сохранённые новости.',
+    news_empty:'В этом разделе пока нет новостей.', news_more:'Показать ещё', news_retry:'Повторить', news_new:'{n} нов.',
+    news_sources:'Новости автоматически собираются с сайтов {s} и обновляются каждый час. Полный текст открывается на сайте источника.',
+    news_latest:'Свежее', t_now:'только что', t_min:'{n} мин назад', t_hour:'{n} ч назад', t_yday:'вчера', t_days:'{n} дн. назад',
     card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи', nav_fandomat:'Фандоматы', fan_desc:'Фандоматы — автоматизированные экологические устройства, которые принимают пластиковые, стеклянные и алюминиевые (жестяные) ёмкости из-под напитков и платят за них деньги.', fan_plastic:'🧴 Пластик', fan_glass:'🍾 Стекло', fan_can:'🥫 Алюминий', fan_soon:'Скоро подключится', pay_intro:'Выберите тип плательщика.', pay_person_t:'Физические лица', pay_person_tag:'Население', pay_org_t:'Юридические лица', pay_org_tag:'Предприятия и организации', pay_soon:'Этот раздел скоро заработает.',
     region_label:'Область', region_ph:'— Выберите область —', address_label:'Ориентир / адрес (необязательно)',
     address_ph:'Например: Чиланзар 9-квартал, за базаром', rev_region:'Область',
@@ -1110,6 +1172,10 @@ const app = {
       loc_unknown:'Aniqlanmadi', loc_detecting:'Aniqlanmoqda...', loc_retry:'Qayta aniqlash', loc_pick_map:'Ruxsat berilmadi. Joyni xaritada belgilang yoki viloyatni qo‘lda tanlang.', loc_map_set:'Joy xaritada belgilandi ✓', region_guessed:'Viloyat taxminan aniqlandi — tekshirib oling.',
       ai_privacy:'🔒 Telefon, pasport yoki karta raqami kabi shaxsiy ma’lumotlarni yozmang. Ular avtomatik yashiriladi.', ai_err_limit:'Bugungi savollar limiti tugadi. Ertaga yana urinib ko‘ring.', ai_err_auth:'AI yordamchidan foydalanish uchun hisobingizga kiring yoki mehmon sifatida kiring.', ai_err_busy:'AI yordamchi hozir band. Birozdan so‘ng qayta urinib ko‘ring.', ai_err_refusal:'Bu savolga javob bera olmayman. Iltimos, savolni boshqacha yozing.', ai_err_off:'AI yordamchi hozircha ulanmagan.', ai_err_net:'Javob olib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       prof_cases_count:'Jami {n} ta murojaat. Holatini quyida kuzating.',
+      news_updated:'Yangilandi: {t}', news_err:'Yangiliklarni yuklab bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.', news_offline:'Internet yo‘q. Saqlangan yangiliklar ko‘rsatilmoqda.',
+      news_empty:'Bu bo‘limda hozircha xabar yo‘q.', news_more:'Yana ko‘rsatish', news_retry:'Qayta urinish', news_new:'{n} yangi',
+      news_sources:'Xabarlar {s} saytlaridan avtomatik olinadi va har soatda yangilanadi. To‘liq matn manba saytida ochiladi.',
+      news_latest:'Eng so‘nggi', t_now:'hozirgina', t_min:'{n} daqiqa oldin', t_hour:'{n} soat oldin', t_yday:'kecha', t_days:'{n} kun oldin',
       submit_sending:'Yuborilmoqda...', submit_err_net:'Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_err_auth:'Ariza yuborish uchun hisobingizga kiring yoki mehmon sifatida qayta kiring.',
       submit_err_big:'Fayl juda katta (maks. 50 MB).', submit_err_closed:'Arizalarni qabul qilish vaqtincha to‘xtatilgan.',
@@ -1133,6 +1199,7 @@ const app = {
     document.querySelectorAll('.lang-option').forEach(el=> el.classList.toggle('sel', el.dataset.lang===this.lang));
     this.renderHome(); this.renderProfile();
     if(document.getElementById('screen-history').classList.contains('active')) this.renderHistory();
+    if(document.getElementById('screen-news').classList.contains('active')) this.renderNews();
     if(document.getElementById('screen-case').classList.contains('active') && this.activeCaseId!=null) this.openCase(this.activeCaseId);
     if(document.getElementById('screen-login').classList.contains('active')) this.fillLoginScreen();
     if(document.getElementById('screen-ai').classList.contains('active')) this.renderAI();
@@ -1177,6 +1244,8 @@ const app = {
     this.applyLang();
     this.applyTheme();
     this.applyBackground();
+    setTimeout(()=>this.loadNews(false, true), 1200);
+    setInterval(()=>{ if(document.visibilityState==='visible') this.loadNews(false, !document.getElementById('screen-news').classList.contains('active')); }, 5*60*1000);
     if(SUPABASE_READY){
       this.loadSettings();
       const { data:{ session } } = await sb.auth.getSession();
@@ -1611,6 +1680,147 @@ const app = {
     this.goto('profile');
   },
 
+  // ===== EKOLOGIK YANGILIKLAR =====
+  // news.json GitHub Actions orqali har soatda yangilanadi (scripts/fetch-news.mjs)
+  news: null, newsTab: 'all', newsShown: 20, newsLoading: false, newsErr: false,
+  newsUrl(){ return (window.ECO_CONFIG && window.ECO_CONFIG.NEWS_URL) || 'https://raw.githubusercontent.com/gulomovb810-cpu/bbecoplatform.uz/news-data/news.json'; },
+  cleanNews(d){
+    if(!d || !Array.isArray(d.items)) return null;
+    const okUrl = u => typeof u==='string' && /^https?:\/\//i.test(u) ? u : '';
+    const items = d.items.slice(0, 200).map(it=>({
+      title: String(it.title||'').slice(0,240), summary: String(it.summary||'').slice(0,300),
+      link: okUrl(it.link), image: okUrl(it.image).replace(/^http:/i,'https:'), date: String(it.date||''),
+      source: String(it.source||'').slice(0,40), lang: String(it.lang||'').slice(0,2), region: it.region==='world' ? 'world' : 'uz'
+    })).filter(it=>it.title && it.link && !isNaN(Date.parse(it.date)));
+    const sources = Array.isArray(d.sources) ? d.sources.filter(x=>x && x.ok).map(x=>String(x.name||'').slice(0,40)) : [];
+    return { updated: String(d.updated||''), items, sources: [...new Set(sources)] };
+  },
+  async loadNews(force, quiet){
+    if(!this.news){ const c = safeGet('eco_news'); if(c && c.data){ this.news = this.cleanNews(c.data); this.newsAt = c.at||0; } }
+    const fresh = this.news && Date.now() - (this.newsAt||0) < 10*60*1000;
+    if(!quiet) this.renderNews();
+    if(this.newsLoading || (fresh && !force)) return;
+    this.newsLoading = true; this.newsErr = false;
+    document.getElementById('newsRefresh').classList.add('spin');
+    try{
+      const r = await fetch(this.newsUrl() + '?t=' + Math.floor(Date.now()/300000), {cache:'no-store'});
+      if(!r.ok) throw new Error('http '+r.status);
+      const data = this.cleanNews(await r.json());
+      if(!data) throw new Error('bad data');
+      this.news = data; this.newsAt = Date.now();
+      safeSet('eco_news', {at:this.newsAt, data});
+    }catch(e){ this.newsErr = true; }
+    this.newsLoading = false;
+    document.getElementById('newsRefresh').classList.remove('spin');
+    if(document.getElementById('screen-news').classList.contains('active')) this.renderNews();
+    this.renderNewsBadge();
+  },
+  openNews(){
+    this.newsShown = 20;
+    this.loadNews(false);
+    if(this.news && this.news.items.length) safeSet('eco_news_seen', this.news.items[0].date);
+    this.renderNewsBadge();
+  },
+  setNewsTab(r){ this.newsTab = r; this.newsShown = 20; this.renderNews(); window.scrollTo(0,0); },
+  renderNewsBadge(){
+    const b = document.getElementById('newsBadge'); if(!b) return;
+    const seen = safeGet('eco_news_seen') || '';
+    const n = this.news ? this.news.items.filter(it=>it.date > seen).length : 0;
+    const show = n>0 && !!seen;
+    b.textContent = show ? this.t('news_new').replace('{n}', n>99?'99+':n) : '';
+    b.classList.toggle('on', show);
+    if(!seen && this.news && this.news.items.length) safeSet('eco_news_seen', this.news.items[0].date);
+  },
+  timeAgo(iso){
+    const d = new Date(iso), m = Math.round((Date.now()-d.getTime())/60000);
+    if(m < 2) return this.t('t_now');
+    if(m < 60) return this.t('t_min').replace('{n}', m);
+    if(m < 24*60) return this.t('t_hour').replace('{n}', Math.floor(m/60));
+    const days = Math.floor(m/1440);
+    if(days === 1) return this.t('t_yday');
+    if(days < 7) return this.t('t_days').replace('{n}', days);
+    return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+  },
+  newsImg(box, src){
+    if(!src) return;
+    const img = document.createElement('img');
+    img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
+    img.addEventListener('error', ()=>img.remove());
+    img.src = src; box.appendChild(img);
+  },
+  renderNews(){
+    const list = document.getElementById('newsList'), live = document.getElementById('newsLive'), upd = document.getElementById('newsUpdated');
+    document.querySelectorAll('#newsTabs button').forEach(b=>b.classList.toggle('sel', b.dataset.r===this.newsTab));
+    list.innerHTML = '';
+    const leaf = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
+    const globe = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+    live.style.display = !this.news && this.newsErr ? 'none' : '';
+    if(!this.news){
+      live.classList.add('stale');
+      if(this.newsErr){
+        upd.textContent = '';
+        list.innerHTML = '<div class="news-state"><div class="ico">📡</div><div></div><button class="btn btn-primary" onclick="app.loadNews(true)"></button></div>';
+        list.querySelector('.news-state div:nth-child(2)').textContent = this.t('news_err');
+        list.querySelector('.news-state button').textContent = this.t('news_retry');
+      } else {
+        upd.textContent = this.t('news_loading');
+        list.innerHTML = '<div class="news-skel big"></div><div class="news-skel"></div><div class="news-skel"></div><div class="news-skel"></div>';
+      }
+      document.getElementById('newsFoot').textContent = '';
+      return;
+    }
+    const upAt = Date.parse(this.news.updated);
+    const stale = this.newsErr || !upAt || Date.now()-upAt > 3*3600*1000;
+    live.classList.toggle('stale', stale);
+    upd.textContent = this.newsErr && !navigator.onLine ? this.t('news_offline') : this.t('news_updated').replace('{t}', upAt ? this.timeAgo(this.news.updated) : '—');
+    const items = this.news.items.filter(it=> this.newsTab==='all' || it.region===this.newsTab);
+    if(!items.length){
+      list.innerHTML = '<div class="news-state"><div class="ico">🌿</div><div></div></div>';
+      list.querySelector('.news-state div:nth-child(2)').textContent = this.t('news_empty');
+    }
+    const meta = (it, el, withLang)=>{
+      const b = document.createElement('b'); b.textContent = it.source; el.appendChild(b);
+      el.appendChild(document.createTextNode('· ' + this.timeAgo(it.date)));
+      if(withLang && it.lang && it.lang!==this.lang){ const l=document.createElement('span'); l.className='lang'; l.textContent=it.lang.toUpperCase(); el.appendChild(l); }
+    };
+    items.slice(0, this.newsShown).forEach((it, i)=>{
+      const a = document.createElement('a');
+      a.href = it.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      if(i===0){
+        a.className = 'news-hero';
+        a.innerHTML = '<span class="nh-leaf">'+leaf+'</span>';
+        this.newsImg(a, it.image);
+        const top = document.createElement('div'); top.className='nh-top';
+        const p1 = document.createElement('span'); p1.className='news-pill hot'; p1.textContent = this.t('news_latest'); top.appendChild(p1);
+        const p2 = document.createElement('span'); p2.className='news-pill'; p2.textContent = (it.region==='world'?'🌍 ':'🇺🇿 ') + it.source; top.appendChild(p2);
+        if(it.lang && it.lang!==this.lang){ const p3=document.createElement('span'); p3.className='news-pill'; p3.textContent=it.lang.toUpperCase(); top.appendChild(p3); }
+        const body = document.createElement('div'); body.className='nh-body';
+        const t = document.createElement('div'); t.className='nh-t'; t.textContent = it.title;
+        const m = document.createElement('div'); m.className='nh-meta'; m.textContent = this.timeAgo(it.date);
+        body.append(t, m); a.append(top, body);
+      } else {
+        a.className = 'news-item';
+        const th = document.createElement('div'); th.className = 'news-thumb' + (it.region==='world'?' w':'');
+        th.innerHTML = it.region==='world' ? globe : leaf;
+        this.newsImg(th, it.image);
+        const body = document.createElement('div'); body.className='news-body';
+        const m = document.createElement('div'); m.className='news-meta'; meta(it, m, true);
+        const t = document.createElement('div'); t.className='news-t'; t.textContent = it.title;
+        body.append(m, t);
+        if(it.summary){ const d = document.createElement('div'); d.className='news-d'; d.textContent = it.summary; body.appendChild(d); }
+        a.append(th, body);
+      }
+      list.appendChild(a);
+    });
+    if(items.length > this.newsShown){
+      const more = document.createElement('button'); more.className='btn btn-outline news-more';
+      more.textContent = this.t('news_more'); more.onclick = ()=>{ this.newsShown += 20; this.renderNews(); };
+      list.appendChild(more);
+    }
+    const src = this.news.sources.length ? this.news.sources.join(', ') : 'Kun.uz, Gazeta.uz, Daryo, UN News';
+    document.getElementById('newsFoot').textContent = this.t('news_sources').replace('{s}', src);
+  },
+
   goto(id){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('screen-'+id).classList.add('active');
@@ -1626,6 +1836,7 @@ const app = {
     if(id==='theme'){ document.querySelectorAll('.theme-option').forEach(el=> el.classList.toggle('sel', el.dataset.theme===this.theme)); }
     if(id==='bgpicker'){ this.applyBackground(); }
     if(id==='law'){ this.renderLaw(); }
+    if(id==='news'){ this.openNews(); }
     if(id==='report-1' && !this.draftInProgress){ this.resetDraft(); }
     if(id==='report-5'){ this.renderReview(); }
     window.scrollTo(0,0);
@@ -1843,6 +2054,7 @@ const app = {
     const first = this.user && this.user.name ? this.user.name.split(' ')[0] : '';
     document.getElementById('homeHello').innerHTML = first ? this.esc(this.t('hello_prefix')) + '<span class="hello-name">' + this.esc(first) + '</span>!' : this.esc(this.t('hello_prefix').replace(/,\s*$/,'')) + '!';
     document.getElementById('homeBell').classList.toggle('has-dot', this.cases.some(c=>c.statusIndex>0 && c.statusIndex<3 && !c.cancelled));
+    this.renderNewsBadge();
     document.getElementById('statTotal').textContent = this.cases.length;
     document.getElementById('statOpen').textContent = this.cases.filter(c=>c.statusIndex<3 && !c.cancelled).length;
     document.getElementById('statDone').textContent = this.cases.filter(c=>c.statusIndex>=3 && !c.cancelled).length;
