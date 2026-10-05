@@ -260,5 +260,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         web.onResume();
+        // ilovaga qaytilganda sahifa yangiliklarni tekshiradi (oxirgi tekshiruvdan 2 daqiqa o'tgan bo'lsa)
+        web.evaluateJavascript("window.dispatchEvent(new Event('focus'))", null);
     }
 }

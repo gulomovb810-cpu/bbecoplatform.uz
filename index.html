@@ -524,6 +524,19 @@ body.has-bg .tl-sub, body.has-bg .empty, body.has-bg .loose-text{color:rgba(255,
 mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 .law-foot{font-size:12px; color:var(--ink-soft); line-height:1.6; text-align:center; margin-top:14px;}
 .law-foot b{display:block; color:var(--ink); font-size:13px; margin-bottom:4px;}
+.news-ptr{height:0; overflow:hidden; display:flex; align-items:flex-end; justify-content:center; color:var(--ink-soft); font-size:12.5px; transition:height .2s;}
+.news-ptr.pull{transition:none;}
+.news-ptr span{display:flex; align-items:center; gap:8px; padding-bottom:10px;}
+.news-ptr svg{width:18px; height:18px; transition:transform .2s;}
+.news-ptr.ready svg{transform:rotate(180deg);}
+.news-ptr.busy svg{animation:spin .9s linear infinite;}
+.news-newpill{position:sticky; top:8px; z-index:5; display:none; margin:0 auto 10px; width:max-content; padding:8px 16px; border:0; border-radius:20px; background:#2FA65F; color:#fff; font:600 13px/1 inherit; font-family:inherit; box-shadow:0 6px 18px rgba(0,0,0,.25); cursor:pointer;}
+.news-newpill.on{display:block;}
+.news-new-dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:#40C057; margin-right:6px; vertical-align:middle;}
+.net-banner{position:fixed; left:50%; bottom:92px; transform:translate(-50%,20px); z-index:9999; width:max-content; max-width:calc(100% - 32px); text-align:center; padding:10px 16px; border-radius:14px; background:#13342A; color:#E6F4EC; border:1px solid #2C6B4B; font-size:13px; line-height:1.35; box-shadow:0 10px 26px rgba(0,0,0,.3); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;}
+.net-banner.on{opacity:1; transform:translate(-50%,0);}
+.net-banner.off{background:#3A2A12; border-color:#7A5A1E; color:#FFE8B8;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -867,16 +880,19 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     <p class="loose-text" style="font-size:12px; color:var(--ink-soft); text-align:center; margin-top:18px;" data-i18n="edu_soon">Ta’limiy materiallar tez orada qo‘shiladi.</p>
   </div>
 
+  <div class="net-banner" id="netBanner" role="status" aria-live="polite"></div>
   <!-- ECO NEWS -->
   <div id="screen-news" class="screen">
     <div class="topbar"><div class="back" onclick="app.goto('home')">←</div><h2 data-i18n="card_news_t">Ekologik yangiliklar</h2>
-      <div class="news-refresh" id="newsRefresh" onclick="app.loadNews(true)" role="button" aria-label="Yangilash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></div></div>
+      <div class="news-refresh" id="newsRefresh" onclick="app.newsErr=false;app.newsAuto(true)" role="button" aria-label="Yangilash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></div></div>
     <div class="news-live" id="newsLive"><span class="dot"></span><span id="newsUpdated" data-i18n="news_loading">Yangiliklar yuklanmoqda...</span></div>
     <div class="news-tabs" id="newsTabs">
       <button class="sel" data-r="all" onclick="app.setNewsTab('all')"><span data-i18n="news_all">Hammasi</span></button>
       <button data-r="uz" onclick="app.setNewsTab('uz')"><i>🇺🇿</i><span data-i18n="news_uz">O‘zbekiston</span></button>
       <button data-r="world" onclick="app.setNewsTab('world')"><i>🌍</i><span data-i18n="news_world">Dunyo</span></button>
     </div>
+    <div class="news-ptr" id="newsPtr"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg><b id="newsPtrT" data-i18n="news_pull">Yangilash uchun pastga torting</b></span></div>
+    <button class="news-newpill" id="newsNewPill" onclick="app.showNewNews()"></button>
     <div id="newsList"></div>
     <div class="news-foot" id="newsFoot"></div>
   </div>
@@ -1193,7 +1209,7 @@ const LANG = {
     news_updated:'Обновлено {t}', news_err:'Не удалось загрузить новости. Проверьте интернет и попробуйте снова.', news_offline:'Нет связи. Показаны сохранённые новости.',
     news_empty:'В этом разделе пока нет новостей.', news_more:'Показать ещё', news_retry:'Повторить', news_new:'{n} нов.',
     news_sources:'Новости автоматически собираются с сайтов {s} и обновляются каждый час. Полный текст открывается на сайте источника.',
-    news_latest:'Свежее', t_now:'только что', t_min:'{n} мин назад', t_hour:'{n} ч назад', t_yday:'вчера', t_days:'{n} дн. назад',
+    news_latest:'Свежее', news_pull:'Потяните вниз, чтобы обновить', news_release:'Отпустите для обновления', news_refreshing:'Обновление...', news_new_pill:'↑ {n} новых', net_off:'Нет интернета. Новости обновятся автоматически, когда связь появится.', net_back:'Интернет появился. Новости обновлены.', net_back_n:'Интернет появился: {n} новых новостей.', news_checked:'проверено {t}', t_now:'только что', t_min:'{n} мин назад', t_hour:'{n} ч назад', t_yday:'вчера', t_days:'{n} дн. назад',
     card_pay_t:'💳 ПЛАТЕЖИ И ШТРАФЫ', nav_pay:'Платежи', nav_fandomat:'Фандоматы', fan_desc:'Фандоматы — автоматизированные экологические устройства, которые принимают пластиковые, стеклянные и алюминиевые (жестяные) ёмкости из-под напитков и платят за них деньги.', fan_plastic:'🧴 Пластик', fan_glass:'🍾 Стекло', fan_can:'🥫 Алюминий', fan_soon:'Скоро подключится', pay_intro:'Выберите тип плательщика.', pay_person_t:'Физические лица', pay_person_tag:'Население', pay_org_t:'Юридические лица', pay_org_tag:'Предприятия и организации', pay_soon:'Этот раздел скоро заработает.',
     region_label:'Область', region_ph:'— Выберите область —', address_label:'Ориентир / адрес (необязательно)',
     address_ph:'Например: Чиланзар 9-квартал, за базаром', rev_region:'Область',
@@ -1279,7 +1295,7 @@ const app = {
       news_updated:'Yangilandi: {t}', news_err:'Yangiliklarni yuklab bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.', news_offline:'Internet yo‘q. Saqlangan yangiliklar ko‘rsatilmoqda.',
       news_empty:'Bu bo‘limda hozircha xabar yo‘q.', news_more:'Yana ko‘rsatish', news_retry:'Qayta urinish', news_new:'{n} yangi',
       news_sources:'Xabarlar {s} saytlaridan avtomatik olinadi va har soatda yangilanadi. To‘liq matn manba saytida ochiladi.',
-      news_latest:'Eng so‘nggi', t_now:'hozirgina', t_min:'{n} daqiqa oldin', t_hour:'{n} soat oldin', t_yday:'kecha', t_days:'{n} kun oldin',
+      news_latest:'Eng so‘nggi', news_pull:'Yangilash uchun pastga torting', news_release:'Yangilash uchun qo‘yib yuboring', news_refreshing:'Yangilanmoqda...', news_new_pill:'↑ {n} ta yangi xabar', net_off:'Internet yo‘q. Aloqa tiklanishi bilan yangiliklar o‘zi yangilanadi.', net_back:'Internet qaytdi. Yangiliklar yangilandi.', net_back_n:'Internet qaytdi: {n} ta yangi xabar.', news_checked:'tekshirildi {t}', t_now:'hozirgina', t_min:'{n} daqiqa oldin', t_hour:'{n} soat oldin', t_yday:'kecha', t_days:'{n} kun oldin',
       submit_sending:'Yuborilmoqda...', submit_err_net:'Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.',
       submit_err_auth:'Ariza yuborish uchun hisobingizga kiring yoki mehmon sifatida qayta kiring.',
       submit_err_big:'Fayl juda katta (maks. 50 MB).', submit_err_closed:'Arizalarni qabul qilish vaqtincha to‘xtatilgan.',
@@ -1350,7 +1366,7 @@ const app = {
     this.applyTheme();
     this.applyBackground();
     setTimeout(()=>this.loadNews(false, true), 1200);
-    setInterval(()=>{ if(document.visibilityState==='visible') this.loadNews(false, !document.getElementById('screen-news').classList.contains('active')); }, 5*60*1000);
+    this.newsAutoInit();
     if(SUPABASE_READY){
       this.loadSettings();
       const { data:{ session } } = await sb.auth.getSession();
@@ -1792,7 +1808,80 @@ const app = {
     const c = window.ECO_CONFIG && window.ECO_CONFIG.NEWS_URL;
     // asosiy manzil ishlamasa (tarmoq yoki brauzer cheklovi), CDN nusxasi sinab ko'riladi
     return [c, 'https://raw.githubusercontent.com/gulomovb810-cpu/bbecoplatform.uz/news-data/news.json',
+      'https://api.github.com/repos/gulomovb810-cpu/bbecoplatform.uz/contents/news.json?ref=news-data',
       'https://cdn.jsdelivr.net/gh/gulomovb810-cpu/bbecoplatform.uz@news-data/news.json'].filter(Boolean);
+  },
+  // ===== avtomatik yangilash: internet qaytganda, ilovaga qaytganda, har 3 daqiqada, pastga tortganda =====
+  newsCheckedAt: 0, newsNewCount: 0,
+  newsOnScreen(){ const s = document.getElementById('screen-news'); return !!(s && s.classList.contains('active')); },
+  async newsAuto(force){
+    const before = this.news && this.news.items.length ? this.news.items[0].date : '';
+    const prevIds = new Set(this.news ? this.news.items.map(it=>it.link) : []);
+    await this.loadNews(force, !this.newsOnScreen());
+    if(!this.news || this.newsErr) return 0;
+    const n = this.news.items.filter(it=>!prevIds.has(it.link) && it.date > before).length;
+    if(n && prevIds.size && this.newsOnScreen() && window.scrollY > 200){
+      this.newsNewCount += n;
+      const pill = document.getElementById('newsNewPill');
+      pill.textContent = this.t('news_new_pill').replace('{n}', this.newsNewCount); pill.classList.add('on');
+    }
+    return prevIds.size ? n : 0;
+  },
+  showNewNews(){
+    this.newsNewCount = 0; document.getElementById('newsNewPill').classList.remove('on');
+    this.newsTab = 'all'; this.renderNews(); window.scrollTo({top:0, behavior:'smooth'});
+  },
+  netBanner(text, off){
+    const b = document.getElementById('netBanner'); if(!b) return;
+    clearTimeout(this._netT); b.textContent = text; b.classList.toggle('off', !!off); b.classList.add('on');
+    this._netT = setTimeout(()=>b.classList.remove('on'), off ? 5000 : 3500);
+  },
+  newsAutoInit(){
+    // internet qaytdi: darhol, majburiy yangilash
+    window.addEventListener('online', async ()=>{
+      this.newsErr = false;
+      const n = await this.newsAuto(true);
+      if(this.newsErr) return;
+      this.netBanner(n ? this.t('net_back_n').replace('{n}', n) : this.t('net_back'));
+    });
+    window.addEventListener('offline', ()=>{
+      this.netBanner(this.t('net_off'), true);
+      if(this.newsOnScreen()) this.renderNews();
+    });
+    // ilovaga qaytildi (ekran yoqildi, boshqa ilovadan qaytildi)
+    const back = ()=>{ if(document.visibilityState==='visible' && Date.now()-this.newsCheckedAt > 2*60*1000) this.newsAuto(false); };
+    document.addEventListener('visibilitychange', back);
+    window.addEventListener('focus', back);
+    window.addEventListener('pageshow', back);
+    // ilova ochiq turganda har 3 daqiqada tekshiradi (oxirgi yuklanganidan 10 daqiqa o'tgan bo'lsa yuklaydi)
+    setInterval(()=>{ if(document.visibilityState==='visible' && navigator.onLine !== false) this.newsAuto(false); }, 3*60*1000);
+    this.newsPullInit();
+  },
+  newsPullInit(){
+    const scr = document.getElementById('screen-news'), ptr = document.getElementById('newsPtr'), txt = document.getElementById('newsPtrT');
+    if(!scr || !ptr) return;
+    let y0 = null, d = 0;
+    const set = h=>{ ptr.style.height = h+'px'; };
+    scr.addEventListener('touchstart', e=>{ y0 = (window.scrollY <= 0 && !this.newsLoading) ? e.touches[0].clientY : null; d = 0; }, {passive:true});
+    scr.addEventListener('touchmove', e=>{
+      if(y0===null) return;
+      d = e.touches[0].clientY - y0;
+      if(d <= 0 || window.scrollY > 0){ set(0); return; }
+      ptr.classList.add('pull');
+      const h = Math.min(90, d*0.5); set(h);
+      const ready = h >= 60; ptr.classList.toggle('ready', ready);
+      txt.textContent = this.t(ready ? 'news_release' : 'news_pull');
+    }, {passive:true});
+    scr.addEventListener('touchend', async ()=>{
+      if(y0===null) return; y0 = null; ptr.classList.remove('pull');
+      if(ptr.classList.contains('ready')){
+        ptr.classList.remove('ready'); ptr.classList.add('busy'); txt.textContent = this.t('news_refreshing'); set(48);
+        this.newsErr = false;
+        await this.newsAuto(true);
+        ptr.classList.remove('busy');
+      }
+      set(0);
+    });
   },
   newsSeed(){
     // ilova ichiga joylangan oxirgi nusxa: internet yoki manzil umuman ishlamasa ham bo'lim bo'sh qolmaydi
@@ -1826,7 +1915,9 @@ const app = {
     for(const url of this.newsUrls()){
       try{
         const ctl = new AbortController(), timer = setTimeout(()=>ctl.abort(), 10000);
-        const r = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Math.floor(Date.now()/300000), {signal:ctl.signal});
+        const api = url.includes('api.github.com');
+        const r = await fetch(api ? url : url + (url.includes('?')?'&':'?') + 't=' + Math.floor(Date.now()/60000),
+          {signal:ctl.signal, cache:'no-store', headers: api ? {'Accept':'application/vnd.github.raw+json'} : {}});
         clearTimeout(timer);
         if(!r.ok) throw new Error('http '+r.status);
         data = this.cleanNews(await r.json());
@@ -1839,13 +1930,15 @@ const app = {
       this.news = data; this.newsAt = Date.now();
       safeSet('eco_news', {at:this.newsAt, data});
     } else if(!data) this.newsErr = true;
-    this.newsLoading = false;
+    this.newsLoading = false; this.newsCheckedAt = Date.now();
     document.getElementById('newsRefresh').classList.remove('spin');
     if(document.getElementById('screen-news').classList.contains('active')) this.renderNews();
     this.renderNewsBadge();
   },
   openNews(){
-    this.newsShown = 20;
+    this.newsShown = 20; this.newsNewCount = 0;
+    this.newsSeenBefore = safeGet('eco_news_seen') || '';
+    const pill = document.getElementById('newsNewPill'); if(pill) pill.classList.remove('on');
     this.loadNews(false);
     if(this.news && this.news.items.length) safeSet('eco_news_seen', this.news.items[0].date);
     this.renderNewsBadge();
@@ -1853,6 +1946,8 @@ const app = {
   setNewsTab(r){ this.newsTab = r; this.newsShown = 20; this.renderNews(); window.scrollTo(0,0); },
   renderNewsBadge(){
     const b = document.getElementById('newsBadge'); if(!b) return;
+    // yangiliklar ekrani ochiq bo'lsa, kelgan xabarlar ko'rilgan hisoblanadi
+    if(this.newsOnScreen() && this.news && this.news.items.length) safeSet('eco_news_seen', this.news.items[0].date);
     const seen = safeGet('eco_news_seen') || '';
     const n = this.news ? this.news.items.filter(it=>it.date > seen).length : 0;
     const show = n>0 && !!seen;
@@ -1901,7 +1996,11 @@ const app = {
     const upAt = Date.parse(this.news.updated);
     const stale = this.newsErr || !upAt || Date.now()-upAt > 3*3600*1000;
     live.classList.toggle('stale', stale);
-    upd.textContent = this.newsErr && !navigator.onLine ? this.t('news_offline') : this.t('news_updated').replace('{t}', upAt ? this.timeAgo(this.news.updated) : '—');
+    const offline = navigator.onLine === false;
+    live.classList.toggle('stale', stale || offline);
+    upd.textContent = offline ? this.t('news_offline')
+      : this.t('news_updated').replace('{t}', upAt ? this.timeAgo(this.news.updated) : '—')
+        + (this.newsCheckedAt && !this.newsErr ? ' · ' + this.t('news_checked').replace('{t}', this.timeAgo(new Date(this.newsCheckedAt).toISOString())) : '');
     const items = this.news.items.filter(it=> this.newsTab==='all' || it.region===this.newsTab);
     // ilova tilidagi xabarlar biroz yuqoriga, inglizchalar biroz pastga suriladi
     const rank = it => Date.parse(it.date) + (it.lang===this.lang ? 36 : it.lang==='en' ? -24 : 0)*3600e3;
@@ -1936,7 +2035,9 @@ const app = {
         th.innerHTML = it.region==='world' ? globe : leaf;
         this.newsImg(th, it.image);
         const body = document.createElement('div'); body.className='news-body';
-        const m = document.createElement('div'); m.className='news-meta'; meta(it, m, true);
+        const m = document.createElement('div'); m.className='news-meta';
+        if(this.newsSeenBefore && it.date > this.newsSeenBefore){ const dot=document.createElement('span'); dot.className='news-new-dot'; m.appendChild(dot); }
+        meta(it, m, true);
         const t = document.createElement('div'); t.className='news-t'; t.textContent = it.title;
         body.append(m, t);
         if(it.summary){ const d = document.createElement('div'); d.className='news-d'; d.textContent = it.summary; body.appendChild(d); }
