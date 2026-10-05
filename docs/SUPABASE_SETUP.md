@@ -1,7 +1,7 @@
 # Supabase’ga ulash — to‘liq yo‘riqnoma
 
-Mobil ilova (`index.html`) va admin panel (`admin/`) **bitta Supabase loyihasidan** foydalanadi.
-Fuqaro ilovadan yuborgan ariza va ro‘yxatdan o‘tgan foydalanuvchi admin panelda **darhol (realtime)** ko‘rinadi.
+Mobil ilova (`index.html`) va idoralar portali (`admin/`) **bitta Supabase loyihasidan** foydalanadi.
+Fuqaro ilovadan yuborgan ariza va ro‘yxatdan o‘tgan foydalanuvchi portalda **darhol (realtime)** ko‘rinadi.
 Admin holatni o‘zgartirsa yoki javob yozsa, bu fuqaro ilovasida ham darhol ko‘rinadi.
 
 ```
@@ -38,7 +38,13 @@ Skript yaratadi:
 
 ### Xavfsizlik (RLS) — skriptga kiritilgan
 - Fuqaro **faqat o‘z arizalarini** ko‘radi. U faqat tavsif/kategoriyani (`edit_days` muddati ichida) tahrirlay oladi va arizani bekor qila oladi. Holat, tashkilot va javobni o‘zgartirishga urinsa, server bu o‘zgarishlarni e’tiborsiz qoldiradi.
-- `moderator` barcha arizalarni ko‘radi va boshqaradi.
+- `moderator` (vazirlik dispetcheri) barcha arizalarni ko‘radi, taqsimlanmaganlarini idoralarga yo‘naltiradi.
+- `org_head` (idora rahbari) faqat **o‘z idorasi** arizalarini ko‘radi: ijrochi tayinlaydi, muddatni uzaytiradi (yaratilgandan boshlab ko‘pi bilan 30 kun), muhimlikni belgilaydi, boshqa idoraga yo‘naltiradi, javobni tasdiqlab yopadi.
+- `org_staff` (ijrochi/inspektor) o‘z idorasi arizalarini ko‘radi, lekin faqat **o‘ziga biriktirilganlarini** ijro qiladi: holatni o‘zgartiradi, bajarilgan ish suratini yuklaydi, fuqaroga javob yozadi. Ijrochi, idora va muddatni o‘zgartira olmaydi.
+- Idora xodimlari fuqaro yozgan matn, surat va joylashuvni o‘zgartira olmaydi. Yopish yoki rad etish faqat fuqaroga javob matni bilan mumkin.
+- Boshqa idoraga yo‘naltirish `forward_report(report, org, reason)` funksiyasi orqali bajariladi: ariza yangi idoraga “Yangi” holatida tushadi, sabab ichki izohga yoziladi.
+- Har bir ariza yaratilganda muddat (`deadline_at`) toifaga qarab qo‘yiladi: sozlamalardagi `sla_days`, bo‘lmasa 15 kun (“Jismoniy va yuridik shaxslarning murojaatlari to‘g‘risida”gi qonun).
+- Ichki izohlar (`report_comments`) va javob shablonlari (`response_templates`) fuqaroga ko‘rinmaydi.
 - `admin` bunga qo‘shimcha ravishda tashkilotlar, foydalanuvchilar, rollar va sozlamalarni boshqaradi, ariza o‘chiradi.
 - Qabul to‘xtatilgan, foydalanuvchi bloklangan yoki kunlik limit tugagan bo‘lsa, ariza **server tomonida** rad etiladi.
 - Fuqaro “Butunlay chiqish” qilsa, `delete_my_account()` hisobni o‘chiradi. Uning arizalari statistikada anonim holda qoladi.
@@ -69,7 +75,7 @@ window.ECO_CONFIG = {
 };
 ```
 
-Bu bitta fayl ham ilovani, ham admin panelni ulaydi.
+Bu bitta fayl ham ilovani, ham portalni ulaydi.
 ⚠️ **`service_role` kalitini hech qachon bu yerga qo‘ymang**: u barcha himoyani chetlab o‘tadi. `anon` kalitni ochiq qo‘yish xavfsiz, chunki himoyani RLS ta’minlaydi.
 
 ## 6. Birinchi adminni yaratish
@@ -80,28 +86,32 @@ Bu bitta fayl ham ilovani, ham admin panelni ulaydi.
    ```
 3. `https://bbecoplatform.uz/admin/` sahifasini oching va shu email/parol bilan kiring.
 
-Keyingi admin yoki moderatorlarni panelning o‘zidan qo‘shasiz: **Foydalanuvchilar → Boshqarish → Rol**.
-Buning uchun ular avval email+parol bilan (1-qadamdagidek) yaratilgan bo‘lishi kerak.
+### Idora xodimlarini qo‘shish
+1. Portalda **Tashkilotlar** bo‘limida idorani yarating (toifalar va hudud belgilansa, arizalar unga avtomatik tushadi).
+2. Xodimni **Authentication → Users → Add user** orqali email+parol bilan yarating.
+3. Portalda **Xodimlar → Xodim qo‘shish**: email, rol (`Idora rahbari` yoki `Ijrochi`), idora va lavozimni kiriting.
+
+Rol va idorani faqat `admin` o‘zgartira oladi (server buni tekshiradi).
 
 ## 7. Realtime
-Skript `reports`, `profiles` va `report_status_history` jadvallarini `supabase_realtime` ga qo‘shadi.
-Admin panel yuqori o‘ng burchagida **● Jonli** yozuvi ko‘rinsa, ulanish ishlayapti. Yangi ariza kelganda bildirishnoma chiqadi va “ECO REPORTS” yonida hisoblagich paydo bo‘ladi.
+Skript `reports`, `profiles`, `report_status_history` va `report_comments` jadvallarini `supabase_realtime` ga qo‘shadi.
+Yangi ariza kelganda portalda ovozli bildirishnoma chiqadi va “Kiruvchi arizalar” yonidagi hisoblagich yangilanadi.
 
 ## 8. Saytga joylash
 Loyiha statik fayllardan iborat (server kerak emas):
 ```
 index.html        → https://bbecoplatform.uz/        (mobil ilova)
 config.js         → umumiy sozlama
-admin/            → https://bbecoplatform.uz/admin/  (admin panel)
+admin/            → https://bbecoplatform.uz/admin/  (idoralar portali)
 ```
 Netlify, Vercel, Cloudflare Pages yoki GitHub Pages’ga repo’ni ulash kifoya. Domen DNS’ini hosting ko‘rsatmasi bo‘yicha yo‘naltiring.
 
 ## 9. Tekshiruv ro‘yxati
 - [ ] `schema.sql` xatosiz bajarildi
 - [ ] `config.js` da URL va anon key bor
-- [ ] Ilovada ro‘yxatdan o‘tildi → admin panel **Foydalanuvchilar** bo‘limida paydo bo‘ldi
-- [ ] Ilovadan foto bilan ariza yuborildi → **ECO REPORTS**da foto bilan ko‘rindi, **ECO MAP**da nuqta paydo bo‘ldi
-- [ ] Adminda holat “Bartaraf etildi” qilinib javob yozildi → ilovada holat va “Mas’ul tashkilot javobi” yangilandi
+- [ ] Ilovadan foto bilan ariza yuborildi → portalning **Kiruvchi arizalar** bo‘limida foto bilan ko‘rindi, **Xarita**da nuqta paydo bo‘ldi
+- [ ] Idora rahbari ijrochi tayinladi → ijrochi o‘z hisobida **Mening topshiriqlarim**da ko‘rdi
+- [ ] Ijrochi “Hal qilindi — fuqaroga javob” bosdi → ilovada holat va “Mas’ul tashkilot javobi” yangilandi
 - [ ] Sozlamalarda e’lon yoqildi → ilova bosh sahifasida ko‘rindi
 
 ## 10. AI Yordamchi
