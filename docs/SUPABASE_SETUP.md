@@ -114,25 +114,35 @@ Netlify, Vercel, Cloudflare Pages yoki GitHub Pages’ga repo’ni ulash kifoya.
 - [ ] Ijrochi “Hal qilindi — fuqaroga javob” bosdi → ilovada holat va “Mas’ul tashkilot javobi” yangilandi
 - [ ] Sozlamalarda e’lon yoqildi → ilova bosh sahifasida ko‘rindi
 
-## 10. AI Yordamchi
-AI Yordamchi `supabase/functions/ai-chat` Edge Function orqali ishlaydi. API kalit faqat Supabase secrets ichida turadi va brauzerga chiqmaydi.
+## 10. AI Yordamchi (Google Gemini)
+AI Yordamchi `supabase/functions/ai-chat` Edge Function orqali Google Gemini bilan ishlaydi. Gemini API kaliti faqat Supabase secrets ichida turadi va brauzerga, `config.js` ga yoki ilovaga hech qachon tushmaydi.
 
-**1. Bazani yangilang.** `schema.sql` ni SQL Editor'da qayta ishga tushiring: unda kunlik limit uchun `ai_usage` jadvali va `ai_consume` funksiyasi bor. Savol va javob matnlari bazaga yozilmaydi.
+**Imkoniyatlar**
+- Javob yozilayotgan paytida jonli ko‘rinadi.
+- Fuqaro surat yuborib so‘rashi mumkin (masalan, “bu chiqindini qayerga topshiraman?”). Surat ilovada kichraytirilib qayta chiziladi, shuning uchun undagi GPS va boshqa yashirin ma’lumotlar Google’ga bormaydi.
+- Asosiy model band bo‘lsa yoki limiti tugasa, zaxira modelga avtomatik o‘tadi.
+- Pullik tarifda javobni Google qidiruvi bilan tekshirib, manbalarini ko‘rsatadi (ixtiyoriy).
+- O‘zbek (lotin va kirill) va rus tillarida javob beradi.
 
-**2. API kalit oling (bittasini tanlang):**
-| Provayder | Narxi | Qayerdan | Secret nomi |
-|---|---|---|---|
-| Google Gemini | Bepul tarif bor (kunlik limit bilan) | aistudio.google.com → **Get API key** | `GEMINI_API_KEY` |
-| Claude (Anthropic) | Pullik, ishlatilganiga qarab | console.anthropic.com → **API Keys** | `ANTHROPIC_API_KEY` |
+**1. Bazani yangilang.** `schema.sql` ni SQL Editor’da qayta ishga tushiring: unda kunlik limit uchun `ai_usage` jadvali va `ai_consume` funksiyasi bor. Savol, surat va javoblar bazaga ham, logga ham yozilmaydi.
 
-⚠️ Gemini'ning bepul tarifida Google yuborilgan matnlardan o‘z mahsulotlarini yaxshilash uchun foydalanishi mumkin. Shuning uchun funksiya telefon, email, pasport, JShShIR va karta raqamlarini AI'ga yuborishdan oldin yashiradi. Fuqarolar ma’lumotlari uchun eng ishonchli variant pullik tarif (Claude yoki Gemini’ning pullik tarifi): unda ma’lumotlar o‘qitishga ishlatilmaydi.
-Ikkala kalit ham qo‘yilsa, Claude ishlatiladi.
+**2. Gemini API kalitini oling.** [aistudio.google.com](https://aistudio.google.com) → **Get API key** → **Create API key**.
 
-**3. Secret'larni qo‘ying:** **Edge Functions → Secrets** (yoki CLI: `supabase secrets set GEMINI_API_KEY=...`):
-- `GEMINI_API_KEY` yoki `ANTHROPIC_API_KEY` — majburiy
-- `AI_DAILY_LIMIT` — har bir foydalanuvchiga kunlik savollar soni (standart `30`)
-- `ALLOWED_ORIGIN` — `https://bbecoplatform.uz` (boshqa saytlar funksiyani chaqira olmasligi uchun)
-- `GEMINI_MODEL` / `CLAUDE_MODEL` — ixtiyoriy, model nomini almashtirish uchun
+**Bepul yoki pullik tarif**
+- Bepul tarifda Google yuborilgan matn va suratlardan o‘z mahsulotlarini yaxshilash uchun foydalanishi mumkin. Shuning uchun funksiya telefon, email, pasport, JShShIR va karta raqamlarini AI’ga yuborishdan oldin yashiradi.
+- Fuqarolar ma’lumotlari uchun eng ishonchli variant pullik tarif: AI Studio’da loyihaga **Billing** ulang. Unda ma’lumotlar o‘qitishga ishlatilmaydi, limitlar katta bo‘ladi va Google qidiruvi bilan tekshirish ishlaydi.
+
+**3. Secret’larni qo‘ying:** **Edge Functions → Secrets** (yoki CLI: `supabase secrets set GEMINI_API_KEY=...`)
+
+| Secret | Majburiymi | Qiymati |
+|---|---|---|
+| `GEMINI_API_KEY` | ha | AI Studio’dagi kalit |
+| `ALLOWED_ORIGIN` | tavsiya | `https://bbecoplatform.uz` (boshqa saytlar funksiyani chaqira olmaydi) |
+| `AI_DAILY_LIMIT` | yo‘q | har bir foydalanuvchiga kunlik savollar soni, standart `30` |
+| `GEMINI_MODEL` | yo‘q | asosiy model, standart `gemini-3.6-flash` |
+| `GEMINI_FALLBACK` | yo‘q | zaxira model, standart `gemini-3.1-flash-lite` |
+| `AI_GOOGLE_SEARCH` | yo‘q | `1` bo‘lsa, javob Google qidiruvi bilan tekshiriladi va manbalar ko‘rsatiladi (faqat pullik tarifda) |
+| `ANTHROPIC_API_KEY` | yo‘q | Gemini butunlay ishlamay qolsa javob beradigan zaxira (Claude) |
 
 **4. Funksiyani joylang:**
 - Dashboard: **Edge Functions → Deploy a new function → Via Editor**, nomi `ai-chat`, `supabase/functions/ai-chat/index.ts` matnini joylab **Deploy** bosing.
@@ -140,7 +150,10 @@ Ikkala kalit ham qo‘yilsa, Claude ishlatiladi.
 
 “Verify JWT” yoqilgan qolsin: funksiyani faqat ilovaga kirgan (mehmon ham) foydalanuvchilar chaqira oladi.
 
-**5. Tekshiring:** ilovada 🤖 AI Yordamchi'ga savol yozing. “AI yordamchi hozircha ulanmagan” chiqsa, secret qo‘yilmagan yoki funksiya joylanmagan.
+**5. Tekshiring:** ilovada 🤖 AI Yordamchi’ni oching va tayyor savollardan birini bosing. Javob yozila boshlasa, hammasi ishlayapti.
+- “AI yordamchi hozircha ulanmagan” chiqsa, `GEMINI_API_KEY` qo‘yilmagan yoki funksiya joylanmagan.
+- “AI yordamchi hozir band” chiqsa, Gemini’ning daqiqalik yoki kunlik limiti tugagan. Bir ozdan keyin qayta urinib ko‘ring yoki pullik tarifga o‘ting.
+- Supabase → **Edge Functions → ai-chat → Logs** bo‘limida faqat xato turi ko‘rinadi (masalan, `provider error: key 403` — kalit noto‘g‘ri). Savol matnlari logga yozilmaydi.
 
 ## Muammolar
 | Belgi | Sabab / yechim |
