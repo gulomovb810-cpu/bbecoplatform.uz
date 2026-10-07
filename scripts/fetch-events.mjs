@@ -27,6 +27,10 @@ export const SOURCES = [
   { name: "Google News", url: gnews('(субботник OR "экологическая акция" OR "посадка деревьев" OR "посадили деревья" OR "уборка мусора" OR "Яшил макон" OR хашар) Узбекистан', "ru", "UZ"), lang: "ru", region: "uz", filter: false, gnews: true },
   { name: "Google News", url: gnews('(волонтеры OR волонтёры OR экоактивисты) (экология OR мусор OR деревья OR уборка OR озеленение) Узбекистан', "ru", "UZ"), lang: "ru", region: "uz", filter: false, gnews: true },
   { name: "Google News", url: gnews(`(субботник OR хашар OR "посадка деревьев" OR волонтеры OR "экологическая акция") ${UZ_SITES}`, "ru", "UZ"), lang: "ru", region: "uz", filter: false, gnews: true },
+  // o'zbek kirill yozuvidagi saytlar (uza.uz, xabar.uz, viloyat hokimliklari)
+  { name: "Google News", url: gnews('ҳашар OR шанбалик OR "кўчат экиш" OR "дарахт экиш" OR "Яшил макон" OR кўкаламзорлаштириш OR волонтёр', "uz", "UZ", 45), lang: "uz", region: "uz", filter: false, gnews: true },
+  { name: "Google News", url: gnews('"ko\'kalamzorlashtirish" OR "nihol" OR "ekologik volontyor" OR "toza hudud" OR "ekologik hashar" OR "yashil hudud"', "uz", "UZ", 45), lang: "uz", region: "uz", filter: false, gnews: true },
+  { name: "Google News", url: gnews('Uzbekistan (volunteers OR "tree planting" OR "clean-up" OR cleanup OR "Yashil Makon")', "en", "US", 45), lang: "ru", region: "uz", filter: false, gnews: true },
   { name: "Kun.uz", url: "https://kun.uz/news/rss", lang: "uz", region: "uz", filter: false },
   { name: "Kun.uz", url: "https://kun.uz/ru/news/rss", lang: "ru", region: "uz", filter: false },
   { name: "Gazeta.uz", url: "https://www.gazeta.uz/oz/rss/", lang: "uz", region: "uz", filter: false },
@@ -44,15 +48,17 @@ const has = (t, list) => list.some((k) => t.includes(k));
 // Turi bo'yicha kalit so'zlar (o'zak, kichik harflarda)
 const TYPE_WORDS = {
   clean: ["hashar", "shanbalik", "tozalash aksiya", "tozalash ishlari", "tozalash tadbir", "chiqindi yig'", "axlat yig'", "obodonlashtirish hashar",
-    "субботник", "хашар", "уборк", "сбор мусора", "собрали мусор", "очистк", "очистили", "clean-up", "cleanup", "clean up"],
+    "субботник", "хашар", "уборк", "сбор мусора", "собрали мусор", "очистк", "очистили", "clean-up", "cleanup", "clean up",
+    "ҳашар", "шанбалик", "тозалаш", "toza hudud", "чиқинди йиғ"],
   tree: ["ko'chat", "daraxt ek", "daraxt o'tqaz", "daraxtlar ekil", "yashil makon", "o'rmon barpo", "ihota daraxt",
-    "посадк", "саженц", "высадил", "высадят", "высажен", "озеленен", "яшил макон", "зеленое пространство", "зелёное пространство"],
-  volunteer: ["volontyor", "volontor", "ko'ngilli", "волонтер", "волонтёр", "экоактивист", "эко-активист", "volunteer"],
+    "посадк", "саженц", "высадил", "высадят", "высажен", "озеленен", "яшил макон", "зеленое пространство", "зелёное пространство",
+    "ko'kalamzor", "nihol", "кўчат", "кучат", "дарахт", "кўкаламзор", "tree planting", "trees planted", "planted trees", "yashil hudud"],
+  volunteer: ["volontyor", "volontor", "ko'ngilli", "волонтер", "волонтёр", "экоактивист", "эко-активист", "volunteer", "кўнгилли"],
   action: ["ekologik aksiya", "ekoaksiya", "eko-aksiya", "ekologik marafon", "ekologik tadbir", "ekologik flesh",
-    "экологическ акци", "экологическая акция", "экологической акции", "экоакци", "эко-акци", "экологический марафон", "экомарафон"],
+    "экологическ акци", "экологическая акция", "экологической акции", "экоакци", "эко-акци", "экологический марафон", "экомарафон", "экологик акция", "экологик тадбир"],
 };
 // Volontyorlik xabari ekologiyaga oid bo'lishi kerak (saylov, sport volontyorlari emas)
-const ECO_CONTEXT = ["ekolog", "tabiat", "chiqindi", "axlat", "daraxt", "ko'chat", "tozala", "yashil", "atrof-muhit", "plastik", "orol",
+const ECO_CONTEXT = ["ekolog", "экологи", "табиат", "дарахт", "тозала", "trees", "environment", "clean", "tabiat", "chiqindi", "axlat", "daraxt", "ko'chat", "tozala", "yashil", "atrof-muhit", "plastik", "orol",
   "эколог", "природ", "мусор", "отход", "дерев", "саженц", "уборк", "озелен", "зелен", "пластик", "арал", "чист"];
 // "aksiya" yolg'iz ishlatilmaydi: o'zbek tilida qimmatli qog'oz ham "aksiya"
 const EXCLUDE = ["aksiyalar narx", "aksiyalari narx", "aksiyalar paket", "aksiyador", "fond bozor", "birja", "акции компании", "пакет акций", "акционер", "биржа", "скидк", "chegirma",
@@ -76,26 +82,26 @@ export function classify(title, summary = "") {
 
 // ---------------------------------------------------------- hududlar
 const REGION_WORDS = {
-  tashkent_city: ["toshkent shahr", "toshkent shahar", "poytaxt", "г. ташкент", "ташкенте", "в столице", "столичн", "chilonzor", "yunusobod", "mirzo ulug'bek", "yakkasaroy", "olmazor", "sergeli", "shayxontohur", "yashnobod", "mirobod", "uchtepa", "bektemir", "yangihayot", "чиланзар", "юнусабад", "мирзо-улугбек", "яккасарай", "алмазар", "сергели", "шайхантахур", "яшнабад", "мирабад", "учтепа", "бектемир", "янгихаят"],
-  tashkent: ["toshkent viloyat", "ташкентской области", "ташкентская область", "chirchiq", "olmaliq", "angren", "nurafshon", "bekobod", "ohangaron", "bo'stonliq", "chorvoq", "чирчик", "алмалык", "ангрен", "нурафшан", "бекабад", "ахангаран", "бостанлык", "чарвак"],
-  andijan: ["andijon", "андижан"],
-  bukhara: ["buxoro", "бухар"],
-  fergana: ["farg'ona", "fargona", "qo'qon", "marg'ilon", "ферган", "коканд", "маргилан"],
-  jizzakh: ["jizzax", "джизак"],
-  khorezm: ["xorazm", "urganch", "xiva", "хорезм", "ургенч", "хива"],
-  namangan: ["namangan", "наманган"],
-  navoi: ["navoiy", "zarafshon", "навои", "зарафшан"],
-  kashkadarya: ["qashqadaryo", "qarshi", "shahrisabz", "кашкадар", "карши", "шахрисабз"],
-  karakalpakstan: ["qoraqalpog'", "nukus", "mo'ynoq", "orolbo'yi", "каракалпак", "нукус", "муйнак", "приарал"],
-  samarkand: ["samarqand", "самарканд"],
-  syrdarya: ["sirdaryo", "guliston", "сырдар", "гулистан"],
-  surkhandarya: ["surxondaryo", "termiz", "сурхандар", "термез"],
+  tashkent_city: ["тошкент шаҳ", "пойтахт", "tashkent city", "toshkent shahr", "toshkent shahar", "poytaxt", "г. ташкент", "ташкенте", "в столице", "столичн", "chilonzor", "yunusobod", "mirzo ulug'bek", "yakkasaroy", "olmazor", "sergeli", "shayxontohur", "yashnobod", "mirobod", "uchtepa", "bektemir", "yangihayot", "чиланзар", "юнусабад", "мирзо-улугбек", "яккасарай", "алмазар", "сергели", "шайхантахур", "яшнабад", "мирабад", "учтепа", "бектемир", "янгихаят"],
+  tashkent: ["тошкент вилоят", "tashkent region", "chirchik", "toshkent viloyat", "ташкентской области", "ташкентская область", "chirchiq", "olmaliq", "angren", "nurafshon", "bekobod", "ohangaron", "bo'stonliq", "chorvoq", "чирчик", "алмалык", "ангрен", "нурафшан", "бекабад", "ахангаран", "бостанлык", "чарвак"],
+  andijan: ["андижон", "andijan", "andijon", "андижан"],
+  bukhara: ["бухоро", "bukhara", "buxoro", "бухар"],
+  fergana: ["фарғона", "қўқон", "fergana", "kokand", "farg'ona", "fargona", "qo'qon", "marg'ilon", "ферган", "коканд", "маргилан"],
+  jizzakh: ["жиззах", "jizzakh", "jizzax", "джизак"],
+  khorezm: ["хоразм", "урганч", "khorezm", "urgench", "khiva", "xorazm", "urganch", "xiva", "хорезм", "ургенч", "хива"],
+  namangan: ["namangan", "namangan", "наманган"],
+  navoi: ["навоий", "navoi", "navoiy", "zarafshon", "навои", "зарафшан"],
+  kashkadarya: ["қашқадарё", "қарши", "kashkadarya", "karshi", "qashqadaryo", "qarshi", "shahrisabz", "кашкадар", "карши", "шахрисабз"],
+  karakalpakstan: ["қорақалпоғ", "нукус", "орол бўйи", "karakalpak", "nukus", "aral sea", "moynaq", "qoraqalpog'", "nukus", "mo'ynoq", "orolbo'yi", "каракалпак", "нукус", "муйнак", "приарал"],
+  samarkand: ["самарқанд", "samarkand", "samarqand", "самарканд"],
+  syrdarya: ["сирдарё", "гулистон", "syrdarya", "sirdaryo", "guliston", "сырдар", "гулистан"],
+  surkhandarya: ["сурхондарё", "термиз", "surkhandarya", "termez", "surxondaryo", "termiz", "сурхандар", "термез"],
 };
 export function findRegion(text) {
   const t = norm(text);
   for (const [code, words] of Object.entries(REGION_WORDS)) if (has(t, words)) return code;
   // "Toshkent" yolg'iz — ko'pincha poytaxt
-  if (/[\s(«"]toshkent|ташкент/.test(t)) return "tashkent_city";
+  if (/[\s(«"]toshkent|ташкент|тошкент|tashkent/.test(t)) return "tashkent_city";
   return null;
 }
 
@@ -136,13 +142,22 @@ export function findEventDate(text, pub) {
   return null;
 }
 
+// Google News kirill yozuvini "ru" deb belgilaydi: o'zbek kirill harflari bo'lsa — uz,
+// lotin yozuvida o'zbekcha belgilar bo'lmasa — en
+export function langOf(title, lang) {
+  if (/[ўқғҳЎҚҒҲ]/.test(title)) return "uz";
+  if (/[а-яё]/i.test(title)) return "ru";
+  if (/[‘’ʻʼ']|\b(va|bilan|uchun|hudud|yoshlar|aksiya|ekildi|o'tkazildi|tadbir)\b/i.test(title) || /(lar|dagi|da|ga|ni)\b/.test(title)) return "uz";
+  return /^[\x00-\x7F\s]+$/.test(title) ? "en" : lang;
+}
+
 export function toEvent(it) {
   const type = classify(it.title, it.summary);
   if (!type) return null;
   const text = it.title + " " + it.summary;
   return {
     title: it.title, summary: it.summary, link: it.link, image: it.image, date: it.date,
-    source: it.source, lang: it.lang, type,
+    source: it.source, lang: langOf(it.title, it.lang), type,
     eventDate: findEventDate(text, it.date),
     region: findRegion(text),
   };
