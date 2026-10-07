@@ -1,0 +1,1235 @@
+{
+ "updated": "2026-10-07T20:00:10.905Z",
+ "sources": [
+  {
+   "name": "BBC",
+   "lang": "en",
+   "ok": true,
+   "count": 6
+  },
+  {
+   "name": "BMT yangiliklari",
+   "lang": "ru",
+   "ok": true,
+   "count": 30
+  },
+  {
+   "name": "Daryo",
+   "lang": "ru",
+   "ok": false
+  },
+  {
+   "name": "Daryo",
+   "lang": "uz",
+   "ok": true,
+   "count": 1
+  },
+  {
+   "name": "DW",
+   "lang": "ru",
+   "ok": true,
+   "count": 0
+  },
+  {
+   "name": "Gazeta.uz",
+   "lang": "uz",
+   "ok": true,
+   "count": 1
+  },
+  {
+   "name": "Gazeta.uz",
+   "lang": "ru",
+   "ok": true,
+   "count": 0
+  },
+  {
+   "name": "Google News",
+   "lang": "ru",
+   "ok": true,
+   "count": 22
+  },
+  {
+   "name": "Google News",
+   "lang": "uz",
+   "ok": true,
+   "count": 0
+  },
+  {
+   "name": "Google News",
+   "lang": "uz",
+   "ok": true,
+   "count": 27
+  },
+  {
+   "name": "Kun.uz",
+   "lang": "uz",
+   "ok": true,
+   "count": 1
+  },
+  {
+   "name": "Kun.uz",
+   "lang": "ru",
+   "ok": false
+  },
+  {
+   "name": "Mongabay",
+   "lang": "en",
+   "ok": true,
+   "count": 32
+  },
+  {
+   "name": "The Guardian",
+   "lang": "en",
+   "ok": true,
+   "count": 10
+  },
+  {
+   "name": "UN News",
+   "lang": "en",
+   "ok": true,
+   "count": 30
+  }
+ ],
+ "items": [
+  {
+   "title": "Arabian Sea humpbacks may be a unique subspecies at risk of extinction",
+   "summary": "Humpback whales found in the Arabian Sea are likely a distinct subspecies, having evolved in isolation for tens of thousands of years, according to a newly published genetic analysis. “Arabian Sea humpback whales have long been an enigma…",
+   "link": "https://news.mongabay.com/short-article/2026/10/arabian-sea-humpbacks-may-be-a-unique-subspecies-at-risk-of-extinction/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07183207/Photo-3-768x512.jpg",
+   "date": "2026-10-07T18:39:53.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Tropical Storm Isaias forms, is forecast to become a hurricane and hit US Gulf Coast this week",
+   "summary": "MIAMI (AP) — Tropical Storm Isaias formed Wednesday in the warm waters off eastern Mexico and forecasters said it was expected to strengthen into the first hurricane of the Atlantic season before hitting the U.S. Gulf Coast later in the…",
+   "link": "https://news.mongabay.com/short-article/2026/10/tropical-storm-isaias-forms-is-forecast-to-become-a-hurricane-and-hit-us-gulf-coast-this-week/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07180212/AP26280555166570-768x512.jpg",
+   "date": "2026-10-07T18:09:01.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "‘A few are afraid of the chicks’: Preparing Thailand’s rescued leopard cats for life in the wild",
+   "summary": "KHON KAEN, Thailand – A wildlife officer holds a leopard cat cub in one hand, its entire body small enough for her fingers to wrap around its torso. With the other hand, she feeds it formula milk from a syringe. This is the latest rescue…",
+   "link": "https://news.mongabay.com/2026/10/a-few-are-afraid-of-the-chicks-preparing-thailands-rescued-leopard-cats-for-life-in-the-wild/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07165523/leopard-cat-release-25-of-26-768x512.jpg",
+   "date": "2026-10-07T17:30:57.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "International pledge to fund forest rights exceeds target, but direct funding remains low",
+   "summary": "Funders of the $1.7 billion pledge to support Indigenous peoples and local communities’ land rights, announced at the 2021 United Nations Climate Change Conference, say they have exceeded the target by 35%, delivering $2.35 billion between…",
+   "link": "https://news.mongabay.com/2026/10/international-pledge-to-fund-forest-rights-exceeds-target-but-direct-funding-remains-low/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07154220/AP24302739182917-Jayapura-Papua-province-768x512.jpg",
+   "date": "2026-10-07T17:23:29.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Invading the globe: Bird flu now threatens Australia and Oceania",
+   "summary": "Like a dark cloud of pestilence spreading across the globe in a science fiction movie, a highly contagious, fatal strain of avian influenza is continuing its death march across the globe, infecting wild birds, poultry, dairy cattle and…",
+   "link": "https://news.mongabay.com/2026/10/invading-the-globe-bird-flu-now-threatens-australia-and-oceania/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/02172718/Australian-Sea-Lion-768x512.jpg",
+   "date": "2026-10-07T17:02:43.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Ожидается, что качество воздуха в небе над Ташкентом снова ухудшится",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPbS1jQklxTFdfejM1R3RHZ051cHp1eEtwaXRucHktTG5KRjdLSlphNlBYQjlMOFlfYkJvYTJpRFhYNEN2eTRnS1BrRUp3NkJiOEp0by1DTGJvWEkyal9jdXZvUHFMZERsUmNoOTdhbXRyM0c2N2FRTTAyTUVYeGlJaUxjUVRjU3QzTzdtWFBXY1JFYTBYOUJFVU10YzA1YWJlVW1FRjd1ekNJbDU1U1lfN1RkOG03OURFTmxR?oc=5",
+   "image": "",
+   "date": "2026-10-07T16:16:00.000Z",
+   "source": "Zamin.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Blue Planet III ventures into darkest depths of ocean",
+   "summary": "Sir David says the series uncovers marine life that is \"even more precious than we ever realised\".",
+   "link": "https://www.bbc.co.uk/news/articles/c5pvgzvlepr1o?at_medium=RSS&at_campaign=rss",
+   "image": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d5f8/live/1b1aff90-c25c-11f1-bc2e-018d645d8d21.jpg",
+   "date": "2026-10-07T16:07:21.000Z",
+   "source": "BBC",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "В Ташкенте изменили профиль теплиц на 300 га из-за загрязнения воздуха — Умурзаков",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9ham15cjRucUFjZE96cVVndnlicnFZZFlTMHQ5SGJLQUdkWVBrX00tcXUwU19JbDU2bUVrSVE2dzJhU0Q1WU9PSVZnZ2hmbzNoenNaR05aZHA0UQ?oc=5",
+   "image": "",
+   "date": "2026-10-07T15:34:53.000Z",
+   "source": "Spot.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В Ташкенте до конца недели может периодически ухудшаться качество воздуха",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE1YVjVEeFg5bHpuYmNLTVJQZXFCZzhFcHRUa0xUSjEzUnBrOGhycGFja0NOS1FGRHd1ZlN5bXc1ZDZUSllXdEJz?oc=5",
+   "image": "",
+   "date": "2026-10-07T14:57:47.000Z",
+   "source": "UzNews.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Landslides, flash floods and raging seas: is California ready for the ravages of El Niño?",
+   "summary": "A mix of natural disasters could all befall the state at once as it finds itself in the crosshairs of the climate phenomenon On a cloudless autumn afternoon, sunlight sparkled on the water that had quietly swallowed a busy intersection to…",
+   "link": "https://www.theguardian.com/us-news/2026/oct/07/california-el-nino-preparedness",
+   "image": "https://i.guim.co.uk/img/media/dabc42a5d696e2c6fb88400550acbd8eff349aec/129_0_3829_3064/master/3829.jpg?width=700&quality=85&auto=format&fit=max&s=60938c9c811b2eaf7b8508c2b1a81588",
+   "date": "2026-10-07T14:30:52.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Toshkentda hafta oxirigacha havo sifati vaqti-vaqti bilan yomonlashadi",
+   "summary": "Bunday holat tungi va ertalabki vaqtlarda kuzatilishi kutilmoqda. Atmosfera havosi sifati maxsus komissiya tomonidan doimiy monitoring qilinmoqda.",
+   "link": "https://daryo.uz/2026/10/07/toshkentda-hafta-oxirigacha-havo-sifati-vaqti-vaqti-bilan-yomonlashadi/",
+   "image": "https://gocdn.daryo.uz/large/2026/10/07/c69e51571ba5fdf5b0cc6869141f45d9bc43ee0e762905d39eb2ec6ff55f8a34.webp",
+   "date": "2026-10-07T13:54:41.000Z",
+   "source": "Daryo",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Toshkentda havo sifatining yomonlashishi hafta oxirigacha davom etishi mumkin.",
+   "summary": "Toshkentda havo sifati kechasi va ertalab yomonlashdi - ayrim hududlarda havo «sezgir guruhlar uchun noqulay» darajaga yetdi. Bunga shamolning susayishi va kuchli harorat inversiyasi sabab boʻlgan..",
+   "link": "https://kun.uz/news/2026/10/07/toshkentda-havo-sifatining-yomonlashishi-hafta-oxirigacha-davom-etishi-mumkin",
+   "image": "",
+   "date": "2026-10-07T13:25:11.000Z",
+   "source": "Kun.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Toshkentda havo sifatining yomonlashishi hafta oxirigacha kuzatilishi mumkin",
+   "summary": "Toshkent shahrida so‘nggi kunlarda havo sifati yomonlashishiga meteorologik sharoitlar — shamol tezligining pastligi va harorat inversiyasi ta’sir ko‘rsatdi. Bu kabi hodisalar hafta oxirigacha kechasi va ertalab qisqa muddatga kuzatilishi…",
+   "link": "https://www.gazeta.uz/oz/2026/10/07/air-quality/",
+   "image": "https://www.gazeta.uz/media/img/2024/11/ob1S5n17320000830819_b.jpg",
+   "date": "2026-10-07T12:21:00.000Z",
+   "source": "Gazeta.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Yorkshire Water admits sewage scheme falls short",
+   "summary": "The firm says the scheme to reduce storm overflow discharges has not performed as expected.",
+   "link": "https://www.bbc.co.uk/news/articles/cqvg070l39yro?at_medium=RSS&at_campaign=rss",
+   "image": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/bf98/live/aff95860-c242-11f1-b2a8-994b2a5598cb.jpg",
+   "date": "2026-10-07T12:14:49.000Z",
+   "source": "BBC",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Flávio Bolsonaro’s advance in Brazil’s election is grim jolt for climate campaigners",
+   "summary": "Inquest under way into why President Lula’s success in curbing Amazon deforestation has not led to success at polls More fire, more ash, more crime, more death. And a globally important ecosystem driven ever more rapidly towards a point of…",
+   "link": "https://www.theguardian.com/world/2026/oct/07/flavio-bolsonaro-advance-brazil-election-jolt-climate-campaigners",
+   "image": "https://i.guim.co.uk/img/media/93a8f2545cebb38eee1bb023ec41061632d8df9d/695_0_5133_4107/master/5133.jpg?width=700&quality=85&auto=format&fit=max&s=a370fdb9652bca20c73e6333e7f86278",
+   "date": "2026-10-07T11:58:48.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "International Whaling Commission rejects push to revive commercial whaling",
+   "summary": "A push to reopen the door to commercial whaling failed at the recent meeting of the International Whaling Commission (IWC) after a controversial resolution was taken off the table on the last day. The draft resolution, put forward by the…",
+   "link": "https://news.mongabay.com/2026/10/international-whaling-commission-rejects-push-to-revive-commercial-whaling/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07110650/OceanImageBank_LarsvonRitterZahony_14-768x512.jpg",
+   "date": "2026-10-07T11:20:26.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Wild tulips in Central Asia have become rare, expert says",
+   "summary": "More than half of the world’s wild tulip species assessed so far are threatened with extinction, reports Mongabay’s Shreya Dasgupta. “For a flower this famous, it may surprise people how rare its wild relatives have become,” Brett Wilson…",
+   "link": "https://news.mongabay.com/short-article/2026/10/wild-tulips-in-central-asia-have-become-rare-expert-says/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/08/26062941/Tulipa-anadroma-1-768x512.jpg",
+   "date": "2026-10-07T10:53:31.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Colombia’s new government backs fracking as debate over energy future heats up",
+   "summary": "PUERTO WILCHES, Santander – On the banks of Colombia’s largest river, the town and the wider municipality of Puerto Wilches sit amid a maze of wetlands and floodplain lakes in the Middle Magdalena Valley. Residents spend weekends at…",
+   "link": "https://news.mongabay.com/2026/10/colombias-new-government-backs-fracking-as-debate-over-energy-future-heats-up/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07103518/Residents-in-the-Medio-Magdalena-region-protest-against-proposed-fracking-CREDIT-Alianza-Colombia-Libre-de-Fracking-768x512.jpg",
+   "date": "2026-10-07T10:46:55.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Депутаты ЖК в Ташкенте обсуждают климатические рекомендации",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPTnE1MW1FdXBhbURiWTRQSU5SNkdiUEpkb2JLX21RbUNDNFVjTXFidkxNZi1zdGJUNXNyVkNXdHBGR1ZvWWhOQ2ljWGlucGVHdDBPRE9VMlI5SGtFZ1hUZWFzMDRRUEVYamNtTm4zOXVxYUlwOHRZQ1RYM0xpS2xwY3dqMDdPaGJqR2tFbTZnNzJxXzhDUXRONWFtblpTTTlwVHJucFNuNA?oc=5",
+   "image": "",
+   "date": "2026-10-07T10:40:30.000Z",
+   "source": "Economist.kg",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Современные решения для отопления, водоснабжения и климата: в столице открылась международная выставка Aquatherm Tashkent | Репортаж",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNTmJRUXBXLS00SElIY2lyblBJMWVLUHZlMXhDaTBxWUczSjFPR0dheDE2MWJJdzlRRFNyZmJhdExWdmJWS3FRdGF2ck9PeE9oRWFnWVV0VldTcmF0ZzNOUGlRTkIzX245eGxfTVpkNnMwSFJ6Mjd3VHhfMGtxQzNiazNLUjFnYWpVM3JfaFFKaEJTSzhSOXUzNWpmUDZqT05PVFI1Tzh5VjFhVGN1QkxFMWk3Y3lTaVgyM1pqTGgwT1dKMXBveUUtOFVfOTZGcHgwQmNiU1ZsTlNNV0ktb09MZ3JPMy1XZkEtQXJJUlNXWHhhRUF4WWtF?oc=5",
+   "image": "",
+   "date": "2026-10-07T08:58:23.000Z",
+   "source": "Nuz.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Q&A: ‘Are the warnings all hype?’ – our environment writers answered your El Niño questions",
+   "summary": "Guardian reporters Jonathan Watts and Gabrielle Canon answered your question climate and extreme weather, from what to expect this winter in the UK to the increasing risk of natural disasters funkymentalist asks: Unrelated to El Niño, what…",
+   "link": "https://www.theguardian.com/community/live/2026/oct/07/a-godzilla-level-el-nino-is-causing-extreme-weather-conditions-around-the-world-put-your-questions-to-our-environment-writers",
+   "image": "https://i.guim.co.uk/img/media/ac3f1e4ea4d3753bb62a16d2580e3ce2dd909c61/0_0_2000_1600/master/2000.jpg?width=700&quality=85&auto=format&fit=max&s=8f2772923bba050f972486a4a059b4d0",
+   "date": "2026-10-07T08:52:06.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Olmaliq KMKda zamonaviy chiqindi saqlash ombori barpo etiladi",
+   "summary": "3-Mis boyitish fabrikasi uchun yirik qoldiqlar ombori qurilmoqda, u yiliga 300 million kub metr qoldiq qabul qiladi.",
+   "link": "https://daryo.uz/2026/10/07/olmaliq-kmkda-zamonaviy-chiqindi-saqlash-ombori-barpo-etiladi/",
+   "image": "https://gocdn.daryo.uz/large/2026/10/07/b16535b1b10e0a1721c3e9247f295b5ad51aa2e7b9301fae099ce88e1dde7dcf.webp",
+   "date": "2026-10-07T08:30:15.000Z",
+   "source": "Daryo",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Экологическая устойчивость - основа развития",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPa0luUjgxYUFlSUI1elpoSklNRy0zNmNObE1IdzZrX19XdGlRb1N5bWQ5MTc1a1NrNTViRF9NVzF1bkFPTG8xaE5oSE9iQ3NMalpNR2FuVEVkYnpod2cydTV4ay11OVNQSWdUY2F0WFNrT3lvZkxiRTlHekV3NDZvUQ?oc=5",
+   "image": "",
+   "date": "2026-10-07T07:40:24.000Z",
+   "source": "UZA.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Merino yana qahramon, Qozogʻiston Farer orollarini yana yenga olmadi.",
+   "summary": "Belarus qatorasiga ikkinchi oʻyinda gʻalaba qozonib, oʻz guruhida ikkinchi oʻringa chiqib oldi, Qozogʻiston esa oʻz uyida Farer orollarini ham yenga olmadi va Slovakiya, Farer orollari va Moldova bor guruhda soʻnggi oʻrinda qolmoqda..",
+   "link": "https://kun.uz/news/2026/10/07/merino-yana-qahramon-angliyada-yana-yirik-galaba",
+   "image": "",
+   "date": "2026-10-07T07:30:39.000Z",
+   "source": "Kun.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Scientists who put faith in technology less likely to take climate action",
+   "summary": "‘Techno-optimism’ may lead to reliance on unproven solutions at expense of societal changes needed Scientists who believe technology will largely solve the problems caused by the climate crisis are less likely to engage in civic action on…",
+   "link": "https://www.theguardian.com/environment/2026/oct/07/scientists-technology-less-likely-climate-crisis-action",
+   "image": "https://i.guim.co.uk/img/media/12cc622b72243227a583bfa8c7ae6c1f62f88478/532_0_3328_2662/master/3328.jpg?width=700&quality=85&auto=format&fit=max&s=23338626491cfdff80c375b50b1d6713",
+   "date": "2026-10-07T06:00:36.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Death of anti-plague lab worker in Russia prompts quarantines and international concern",
+   "summary": "The reported death of a 28-year-old laboratory technician in eastern Siberia has triggered regional quarantines and international attention over fears of the cause of death and a lack of transparency. According to local media reports…",
+   "link": "https://news.mongabay.com/short-article/2026/10/death-of-anti-plague-lab-worker-in-russia-prompts-quarantines-and-international-concern/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/07054203/Irkutsk_Russia1-768x512.jpg",
+   "date": "2026-10-07T05:42:26.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "New crocodile species found fossilized in stone used to build Egypt’s Great Sphinx",
+   "summary": "About 45 million years ago in northern Egypt, a long-snouted crocodile hunted in the warm, shallow sea. Its bones settled into the same limestone formation that ancient Egyptians would later carry and carve into the Great Sphinx. Now, a…",
+   "link": "https://news.mongabay.com/2026/10/new-crocodile-species-found-fossilized-in-stone-used-to-build-egypts-great-sphinx/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/06231012/Sphinx-croc_Herugavialis_cairensis-768x512.png",
+   "date": "2026-10-06T23:14:27.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Indigenous activist Kynan Tegar on Indonesia’s fires, and defending the Earth",
+   "summary": "Indigenous activist and filmmaker Kynan Tegar joins the Mongabay Newscast this week to discuss the impacts of the fires devastating Kalimantan, the Indonesian portion of the island of Borneo. Some 48,000 hectares (about 119,000 acres) of…",
+   "link": "https://news.mongabay.com/podcast/2026/10/indigenous-activist-kynan-tegar-on-indonesias-fires-and-defending-the-earth/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2024/11/15123538/5-Customary-long-house-768x512.jpg",
+   "date": "2026-10-06T19:06:37.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "100 conservation projects are looking for funding after USAID’s closure",
+   "summary": "Founder’s Briefs: An occasional series where Mongabay founder Rhett Ayers Butler shares analysis, perspectives and story summaries. Twenty months after the dismantling of USAID, a new analysis documents what the international development…",
+   "link": "https://news.mongabay.com/short-article/2026/10/100-conservation-projects-are-looking-for-funding-after-usaids-closure/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/09/24143236/USAID-1-scaled-e1791303366230-768x512.jpg",
+   "date": "2026-10-06T18:20:09.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Solar power helps Amazon communities ditch diesel and prepare for El Niño drought",
+   "summary": "SANTAREM, Brazil (AP) — Off-grid solar power is spreading across Brazil’s Amazon, helping remote communities prepare for severe drought while replacing costly, polluting diesel generators. In Nova Sociedade, where residents walked up to 20…",
+   "link": "https://news.mongabay.com/short-article/2026/10/solar-power-helps-amazon-communities-ditch-diesel-and-prepare-for-el-nino-drought/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/06160008/AP26272825099885-scaled-e1791302750226-768x512.jpg",
+   "date": "2026-10-06T16:06:43.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "В Узбекистане строят пять заводов по переработке отходов",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPejliaFBXcWE1al8zQ1pVWmYwNHl6UW8tM3FiSVlrQ0xKM0ZfRDZDQkdpRFFWRWI3Wll4eE5Gb1I4N2k5endfNmdhY1VPbTZOeUFCUHMwckdLUVFiT09udDRSenNjak9faVJxQ0R1WjdMaVBXbm8xYXU1d0I4UWJHVjViTElfcUVZMFRMenJR?oc=5",
+   "image": "",
+   "date": "2026-10-06T15:45:00.000Z",
+   "source": "UzDaily.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "In Australia’s Wet Tropics, restoration misses the forest for the tree cover",
+   "summary": "Relics of ancient wet forests stretch across the coast of Queensland state in Australia. In a landscape made patchwork by agriculture, volunteers, community groups and Indigenous rangers in Australia’s Wet Tropics now grow more than…",
+   "link": "https://news.mongabay.com/2026/10/in-australias-wet-tropics-restoration-misses-the-forest-for-the-tree-cover/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/05/20181459/6-1-768x512.jpg",
+   "date": "2026-10-06T15:14:29.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Science, Indigenous knowledge team up to restore Canada’s kelp. (Sea otters help, too.)",
+   "summary": "Emily Fulton spends a lot of time in a small boat cruising the waters of Clayoquot Sound off the west coast of Vancouver Island in British Columbia, Canada. As the marine program manager for the nonprofit Redd Fish Restoration Society, she…",
+   "link": "https://news.mongabay.com/2026/10/science-indigenous-knowledge-team-up-to-restore-canadas-kelp-sea-otters-help-too/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/02162939/a.-BANNER-Liam-Ragan-original-768x512.jpg",
+   "date": "2026-10-06T14:44:29.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "The Indonesians facing El Nino’s fires have lessons to teach us (commentary)",
+   "summary": "In October 2006, I was supposed to be starting my dissertation research on tropical reforestation in Indonesia. Instead, I found myself in the forests of Tanjung Puting National Park in Central Kalimantan helping locals to fight fires with…",
+   "link": "https://news.mongabay.com/2026/10/the-indonesians-facing-el-ninos-fires-have-lessons-to-teach-us-commentary/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2025/04/22123507/borneo-Dayak-fire-768x512.jpg",
+   "date": "2026-10-06T14:17:40.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Artificial nests give Hong Kong’s cockatoos a home – and a chance to study their behavior",
+   "summary": "HONG KONG — “Spiderman … Tom Holland,” two secondary school boys repeated to each other as they watched conservationist Harry Wong nimbly climb a tall tree at their school, St. Louis School, in downtown Hong Kong. On a humid September…",
+   "link": "https://news.mongabay.com/2026/10/artificial-nests-give-hong-kongs-cockatoos-a-home-and-a-chance-to-study-their-behavior/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/06121036/WSK_20260509_1006-768x512.jpg",
+   "date": "2026-10-06T13:39:42.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "From drought to deluge: ‘Super’ El Niño’s expanding reach",
+   "summary": "Across Papua New Guinea, water sources are drying up, crops are failing and food prices are rising months before the worst agricultural impacts are expected. Behind those warning signs is an El Niño whose Pacific Ocean temperatures have…",
+   "link": "https://news.un.org/feed/view/en/story/2026/10/1168537",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/31-01-2025_WMO_China.jpg/image560x340cropped.jpg",
+   "date": "2026-10-06T12:00:00.000Z",
+   "source": "UN News",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "16 new fungal species found hiding in Thailand’s flowers",
+   "summary": "Researchers surveying garden and wild flowers across northern Thailand have uncovered 16 previously unknown species of black, yeast-like fungi living inside the flowers, according to a recent study. The newly described fungi belong to the…",
+   "link": "https://news.mongabay.com/short-article/2026/10/16-new-fungal-species-found-hiding-in-thailands-flowers/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/06110219/Melampodium-divaricatum-768x512.jpg",
+   "date": "2026-10-06T11:02:53.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Far-right election results in Brazil ‘bleak’ for Indigenous peoples, says Indigenous leader",
+   "summary": "Right-wing candidates made big gains in both houses of Congress in Brazil’s Oct. 4 general election. Brazil’s main Indigenous organization, the Articulation of Indigenous Peoples of Brazil APIB, told Mongabay that the result will drive new…",
+   "link": "https://news.mongabay.com/short-article/2026/10/far-right-election-results-in-brazil-bleak-for-indigenous-peoples-says-indigenous-leader/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2025/12/10035129/54929781835_62d2201585_k-768x512.jpg",
+   "date": "2026-10-06T10:59:21.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Carbon tracking tower put on Scotland's largest saltmarsh",
+   "summary": "It will track how much carbon is being taken out of the atmosphere by the saltmarsh on the Solway Firth.",
+   "link": "https://www.bbc.co.uk/news/articles/cky8302y7zejo?at_medium=RSS&at_campaign=rss",
+   "image": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5d44/live/d0d6b640-c0b2-11f1-b026-53d1506ee826.jpg",
+   "date": "2026-10-06T09:35:01.000Z",
+   "source": "BBC",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Helping 100,000 amphibians safely cross the road",
+   "summary": "Every year, thousands of salamanders and frogs try to cross from their wooded winter homes in the U.S. state of New Hampshire to the swamps they breed in. But the road is a dangerous place — unless you have the help of New Hampshire’s…",
+   "link": "https://news.mongabay.com/short-article/2026/10/helping-100000-amphibians-safely-cross-the-road/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/06090715/Mongabay_Thumbnail_DangerousJourney_Featured.jpg",
+   "date": "2026-10-06T09:08:18.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "«Bez Asfaltu 4x4»: Узбекистан предлагает автотуристам уникальный синтез природно-климатических условий и богатейшего культурного наследия",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNMXM3b0FEX21QQ0ozZkRDX3JKenZicS1lb01MZVE4R2pTN19KS01wUkoxWHY5ZklVaHVBQ0p3X0xCVVhsNVZxVzJJZXlVTHpMWXdZZUpYdHV3RG8wSklhN1B4ZDlnV1lVNjV6WFUyOUxMOGhodEV5MHYwRkpLdmRudTB6MzRXY1o1bWVnY1ZpWmVJblhwTG50NU13?oc=5",
+   "image": "",
+   "date": "2026-10-06T08:33:46.000Z",
+   "source": "Dunyo",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "UK oil refinery broke toxic pollution limits dozens of times, documents reveal",
+   "summary": "Pollution was spilled into local rivers and protected sites, documents shared with the BBC suggest.",
+   "link": "https://www.bbc.co.uk/news/articles/c64g15v2jqy8o?at_medium=RSS&at_campaign=rss",
+   "image": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d955/live/5b6c02f0-c0cd-11f1-a5b0-6f550c662e91.jpg",
+   "date": "2026-10-06T06:01:12.000Z",
+   "source": "BBC",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Экологи спасли обезьяну, которую держали в компьютерном клубе на Карасу-6",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBQVnowajYzMG9pZTM0emN3N2JlalFFbmt3amhnX2ZCWXh1Vk8wS21PQ3NBNF9pS2g4MkQwWEVjQmktVDdyS3dIR1NB?oc=5",
+   "image": "",
+   "date": "2026-10-06T03:22:57.000Z",
+   "source": "Новости Узбекистана — Upl.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Indonesia threatens prison time for unauthorized downloads of forest data",
+   "summary": "Indonesia’s government is imposing new restrictions on access to geospatial data, raising concerns among researchers and activists that it will suppress environmental science and advocacy work in one of the world’s most biodiverse…",
+   "link": "https://news.mongabay.com/2026/10/indonesia-threatens-prison-time-for-unauthorized-downloads-of-forest-data/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/05121818/orangutan-indonesia-maps-768x512.jpg",
+   "date": "2026-10-06T02:59:01.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Sabine Schoppe who built a refuge for Palawan’s forest turtles has died",
+   "summary": "On June 17, 2015, Philippine officials confiscated thousands of turtles in cement tanks from a warehouse in Palawan, an island province in the Philippines. More than 3,800 of them were endangered Palawan forest turtles (Siebenrockiella…",
+   "link": "https://news.mongabay.com/short-article/2026/10/sabine-schoppe-who-built-a-refuge-for-palawans-forest-turtles-has-died/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/05214242/sabine-schoppe-katala-foundation-768x512.jpg",
+   "date": "2026-10-05T22:14:56.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Brazil far-right presidential candidate wins most votes in deforestation hotspots",
+   "summary": "In Brazil’s general election on Oct. 4, incumbent leftist President Luiz Inácio Lula da Silva finished second to far-right Flávio Bolsonaro, a senator and son of former President Jair Bolsonaro, who was barred from public office after…",
+   "link": "https://news.mongabay.com/short-article/2026/10/brazil-far-right-presidential-candidate-wins-most-votes-in-deforestation-hotspots/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/05214443/Screenshot-2026-10-05-164835-768x512.png",
+   "date": "2026-10-05T21:48:06.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "US supreme court hears big oil’s bid to block climate damage lawsuits",
+   "summary": "How the court will lean is unclear amid Suncor Energy and ExxonMobil’s attempt to stop lawsuits at state level The US supreme court began its new nine-month term hearing arguments on Monday in a major case in which big oil companies…",
+   "link": "https://www.theguardian.com/us-news/2026/oct/05/supreme-court-big-oil-climate-damage-lawsuits",
+   "image": "https://i.guim.co.uk/img/media/0d739a8bfd1d9ce7c20c22a65ad3a7c6eeab8d0a/27_0_4908_3927/master/4908.jpg?width=700&quality=85&auto=format&fit=max&s=6e21ea26751bc2dbae10ba1d624d6021",
+   "date": "2026-10-05T19:57:36.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Uncertainty mounts as Suriname struggles to evict illegal settlers in the Amazon",
+   "summary": "The government in Suriname this year said it planned to evict illegal settlers in the Amazon Rainforest, and possibly send many of them back to their home countries. But eviction has proven much more complicated than it first appeared…",
+   "link": "https://news.mongabay.com/2026/10/uncertainty-mounts-as-suriname-struggles-to-evict-illegal-settlers-in-the-amazon/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/05183543/FEATURE-768x512.png",
+   "date": "2026-10-05T19:03:50.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Saida Mirziyoyeva: “Shaharlar o‘z-o‘zidan zamonaviy va yashil makonga aylanib qolmaydi, mutaxassislar kerak”",
+   "summary": "“O‘zbekiston shaharlari o‘z-o‘zidan zamonaviy va yashil bo‘la olmaydi. Noan’anaviy fikrlaydigan mutaxassislarni yetishtirish muhim”, — dedi Prezident administratsiyasi rahbari Saida Mirziyoyeva. U Butunjahon arxitektura kuni munosabati…",
+   "link": "https://www.gazeta.uz/oz/2026/10/05/tasu/",
+   "image": "https://www.gazeta.uz/media/img/2026/10/ks8nm2vipqb7cFOvOcl17912230443602_b.webp",
+   "date": "2026-10-05T18:34:00.000Z",
+   "source": "Gazeta.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Farg‘ona neftni qayta ishlash zavodi yuklamasi 2026-yil oxirigacha 65 foizga yetkaziladi",
+   "summary": "Kelgusida zavodni xomashyo bilan barqaror ta’minlash, mavjud quvvatlardan samarali foydalanish hamda qarzdorlikni kamaytirish bo‘yicha keng qamrovli tadbirlar amalga oshiriladi.",
+   "link": "https://daryo.uz/2026/10/05/fargona-neftni-qayta-ishlash-zavodi-yuklamasi-2026-yil-oxirigacha-65-foizga-yetkaziladi/",
+   "image": "https://gocdn.daryo.uz/large/2026/10/05/330b210d7cfc3751ccb422989141c34e905d5df84ea49f7689964e0bf036ae4c.webp",
+   "date": "2026-10-05T17:34:08.000Z",
+   "source": "Daryo",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Thailand braces for more rain as death toll from recent flooding hits 31",
+   "summary": "BANGKOK (AP) — Thai authorities on Monday warned of more rain and flash flooding as the death toll from floods across the country since mid-September rose to 31. Thunderstorms, strong winds and heavy rain are expected across much of upper…",
+   "link": "https://news.mongabay.com/short-article/2026/10/thailand-braces-for-more-rain-as-death-toll-from-recent-flooding-hits-31/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/05164022/AP26271261973605-768x512.jpg",
+   "date": "2026-10-05T16:45:35.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Ещё пять заводов по переработке отходов построят в Узбекистане за $625 млн",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE5NWS1jWU9COVM5LTlLQ292X3BDdUxJR3E4WTQ5ZGJjcjhmYUwzQTNPdzgyWVBIaDQ2YnZZdmx3bkQ3Q3BERy1iN1BGNTg?oc=5",
+   "image": "",
+   "date": "2026-10-05T15:52:00.000Z",
+   "source": "UzNews.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "O‘zbekistonda yovvoyi o‘simliklarni yig‘ish uchun ruxsatnoma olish tartibi o‘zgardi",
+   "summary": "Yangi tartib tabiiy resurslardan foydalanish huquqini ma’muriy tarzda taqsimlashdan elektron savdo va raqobat mexanizmiga o‘tishni nazarda tutadi.",
+   "link": "https://daryo.uz/2026/10/05/ozbekistonda-yovvoyi-osimliklarni-yigish-uchun-ruxsatnoma-olish-tartibi-ozgardi/",
+   "image": "https://gocdn.daryo.uz/large/2026/10/05/d8eb0bd09bb34dff34b3909017435ce73ace849df78488a49e43c837b6bf689e.webp",
+   "date": "2026-10-05T14:45:28.000Z",
+   "source": "Daryo",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "Creosote found in beach pollution investigation",
+   "summary": "Restrictions remain in place on Blyth Beach after a pollution incident was reported in August.",
+   "link": "https://www.bbc.co.uk/news/articles/cq398lmlp7djo?at_medium=RSS&at_campaign=rss",
+   "image": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/9595/live/925320a0-96e3-11f1-9b96-77d3dc534330.jpg",
+   "date": "2026-10-05T14:26:20.000Z",
+   "source": "BBC",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Security, sacrifice or opportunity: Visions differ over effective climate action",
+   "summary": "Should the world move away sharply from fossil fuels, or manage a slower, more careful retreat?",
+   "link": "https://news.un.org/feed/view/en/story/2026/10/1168526",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/21-04-2026-UNDP-Tuvalu-08.jpg/image560x340cropped.jpg",
+   "date": "2026-10-05T12:00:00.000Z",
+   "source": "UN News",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Extreme heat making pregnancy a ‘new fault line’ in climate crisis",
+   "summary": "Pregnancy and childbirth have become a “new fault line in the global climate crisis” as extreme heat worsens, the head of the UN climate action body (UNFCCC) warned on Monday, calling for maternal and newborn health to be built into…",
+   "link": "https://news.un.org/feed/view/en/story/2026/10/1168522",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/09/23-09-2026_UNICEF_Nepal.jpg/image560x340cropped.jpg",
+   "date": "2026-10-05T12:00:00.000Z",
+   "source": "UN News",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Жара и беременность: изменение климата угрожает здоровью матерей и новорожденных",
+   "summary": "Семьдесят три процента медицинских работников в сфере охраны материнства сообщают о росте числа осложнений беременности, связанных с жарой, за последние пять лет.",
+   "link": "https://news.un.org/feed/view/ru/story/2026/10/1468836",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Libraries/Production%20Library/08-07-2025-UNICEF-Sri_Lanka.jpg/image560x340cropped.jpg",
+   "date": "2026-10-05T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "‘There could be local extinction’: The fight to protect Indonesia’s orangutans as El Niño fuels fires",
+   "summary": "JAKARTA — Fires burning within rainforests that contain more than half of the world’s critically endangered Bornean orangutan population have prompted scientists and experts to call for urgent action in response to the escalating fires…",
+   "link": "https://news.mongabay.com/2026/10/there-could-be-local-extinction-the-fight-to-protect-indonesias-orangutans-as-el-nino-fuels-fires/",
+   "image": "https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/09/09065841/Orangutan-Sampurna1-768x512.jpeg",
+   "date": "2026-10-05T11:08:46.000Z",
+   "source": "Mongabay",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Экологическая устойчивость — основа национального развития",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQZEpTTmJaTVNleWFLa2pYeDYxc2hpN2Rpcmp4dnd6YVhwdUhwZzVlSUEtOV9FaTJsVTdCN1hDbHItcmU2WGlzVVNkYlRRUWhzMVlqV0V3dnowaDkxSjNHaTVoXy1BaGt6aWpKbV9KdFdQa2t5U2N2Mm9QOGlWaG5yeG40aEFOSjZ0U2J4V1psX0FGZlE?oc=5",
+   "image": "",
+   "date": "2026-10-05T11:01:06.000Z",
+   "source": "UZA.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Mixed start for pre-Cop as just two non-Pacific leaders accept Australian invitation to climate summit",
+   "summary": "Anthony Albanese joins about 4,000 people in Fiji for preparatory meeting for year-ending Cop31 UN climate summit Sign up for climate and environment editor Adam Morton’s free Clear Air newsletter here The Australian prime minister…",
+   "link": "https://www.theguardian.com/australia-news/2026/oct/05/mixed-start-for-pre-cop-as-just-two-non-pacific-leaders-accept-australian-invitation-to-climate-summit",
+   "image": "https://i.guim.co.uk/img/media/f0363908cbd6b04c45232b3078a8e144965ad64f/85_0_2953_2362/master/2953.jpg?width=700&quality=85&auto=format&fit=max&s=ba14de3f260d3f668c66a1492233d766",
+   "date": "2026-10-05T09:52:03.000Z",
+   "source": "The Guardian",
+   "lang": "en",
+   "region": "world"
+  },
+  {
+   "title": "Экологическое заключение теперь можно оформить онлайн через my.gov.uz",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE5td3lKQ3BKUEVVeWhMVWwwZ2g0Um0wZFBpbU9hNC1SOTBhdFBXQWRmcVJMLVI3OEdTSHg5anFMZzM1MGhmdzRRcTZR?oc=5",
+   "image": "",
+   "date": "2026-10-05T04:51:00.000Z",
+   "source": "yuz.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Заключение экологической экспертизы: теперь его можно получить онлайн",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNY3FjVDQ1TWJJMjZVV1VUNzhmUVRXVVhNME5WaGpnZlhVVTNKMTktY0VScThnRTQ3ODhvOXNvVElFR0RTTUdQRXNsZnprWWpmNFhmYi1TMGZ6eFZTZ0RPMWVxVEs5dVd4VVA2cmY2VmxueVhTckZGWDZwdzRKSVc4X3U5N0xtLU9rVmgzV25WYnh2Ti1zejlBVTBsd0c2V2UxQk1KVA?oc=5",
+   "image": "",
+   "date": "2026-10-04T16:39:08.000Z",
+   "source": "Zamon.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "yashil makon",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5qVldHb0VHTHBMamVuaVpla3NjdXVvYUQ0ajlqeUswb1M0WlFiZ29hN3FMYzFwY0pyZE5zWV9sQ3U1akVlRjNwNUh2VVNwQ0hpRTdrejAxZUhMczkzY0wydg?oc=5",
+   "image": "",
+   "date": "2026-10-04T09:44:11.000Z",
+   "source": "Kun.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "В Ташкенте перед дождём возможны кратковременные пыльные бури",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE10Q0RKZEdPcUhJTk1ETlFXRWhONGcxLWpPOVR6OERCRUdRSHhCS3RpTlBOd1lXbThGbkw3a2tGd3ZSXzhmVnlnV2JfN29VWnI3Umc?oc=5",
+   "image": "",
+   "date": "2026-10-04T09:26:30.000Z",
+   "source": "Газета.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В Ташкенте перед дождём возможны кратковременные пыльные бури",
+   "summary": "Вечером в воскресенье в Ташкенте перед дождём возможны кратковременные пыльные бури. Это может привести к временному увеличению пылевых частиц в воздухе, особенно частиц PM10. 2−3 октября из-за слабого ветра и температурной инверсии в…",
+   "link": "https://www.gazeta.uz/ru/2026/10/04/air/",
+   "image": "https://www.gazeta.uz/media/img/2025/10/fvrkvO17608926164513_b.webp",
+   "date": "2026-10-04T09:26:00.000Z",
+   "source": "Gazeta.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Узбекистан перевел учет климатических выбросов в цифровой формат",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNLUFRV2tEQUFWLVZIRWFxOUh2WXROWDhMbVZSZE1vQmwxa1pPUl9qYXpqc3kteVU0WVlFQXVNRTJLNHgzcVQ5cjdyM3htQ3B6ZHNSVlpCNno4QzctUXVGOHdxMVVZaXlCVDNEQ05xZHF4V1p0X1djTV9EWGNFdWcwekVNanpoOGcyOVQw?oc=5",
+   "image": "",
+   "date": "2026-10-03T19:14:00.000Z",
+   "source": "Правда.Ру",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Экологи объяснили, из-за чего в Ташкенте ухудшилось качество воздуха",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9oUV9RaG9BUUpDSXU1SVdtaUxZNTIyR1BhelN2Ykx5MFc4TGhadmUtVEtVVV9CeTdHeUJQZUgtbnk5TmlYamlxWjg0dVByY3ZZN0dB?oc=5",
+   "image": "",
+   "date": "2026-10-03T14:17:00.000Z",
+   "source": "Repost.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "\"Daxlsiz ekologiya\" fotoustalar nigohida",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9RVGc2VDBXNkJob196cWFGMW4wWGpHR25nNnRIdEl6dlAtaXJYMF9WUktjUjV1SEVqeU92YlNEa1ZuMWJONkxCVWlxelhVUmEtSW54dFpkWGpobkd2eG55U2tuOUgzNXdpRkZpMEJPcjd2bF9LSTRvWg?oc=5",
+   "image": "",
+   "date": "2026-10-03T08:27:15.000Z",
+   "source": "UZA.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "В управлении экологии объяснили вырубку 650 тополей в Нарпайском районе",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE15OXZLVHUzU2pPVk5jX0doSDlYUHVTa0lqb3VqSFBISG9UOHhfYWJyVGFjVk1RMzk4SHE5dU5ueTBUaVh6WkdUNUJHVmNudy05SHA4ekk5LUlJN1FSY1IyeVd3?oc=5",
+   "image": "",
+   "date": "2026-10-03T07:15:00.000Z",
+   "source": "Anhor.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Проект Sea Breeze прошёл два этапа экологической экспертизы",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPVzFpT0Jpa2F4bk94UXE4RjE1UG1ybWpIeUtvVXpldnJRR1ZzNWZWdXZZaGpSZmNFdm5iVi1DaEVVQTR1OXRJV1o4c3B1RTVwbld6WVFSemVmSXFHUGtjMGVZWnF5bzFVUVV4bVdZUVNobGdTcW43Y19ZWHpXOU5ZNmR4X1VfR2FkcGoySDRhNkVUQWp2djNCRzJB?oc=5",
+   "image": "",
+   "date": "2026-10-02T12:33:32.000Z",
+   "source": "Daryo",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Sea Breeze на Чарваке получил положительное заключение второго этапа экологической экспертизы",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFA5WmFxN09iUmlfaU11YTd2cDdheHYwWTlwdDN3WkM5U0FtdmM1b3ZDajlneVFDQmo2OTZLQVdaUVYzVjg2a0hvWVNBV05YWnhQSzFidkQ2WFQtbDNSdzZ5OHVEck81V2RsSlZyWA?oc=5",
+   "image": "",
+   "date": "2026-10-02T10:24:56.000Z",
+   "source": "Газета.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "По проекту Sea Breeze на Чарваке завершены два этапа экологической экспертизы",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE1tbXQ3NURQeHlEQ0VqM0Z1eEowNlBkcjZSQXNUaGZkQXhnXzJFMWJIMm9yY3cwWE1TaGpmemtIOTBiTDFKbkdOSUxnVExhNWhIbXhjdVhDQ0VpbjcyRWdyMURSbw?oc=5",
+   "image": "",
+   "date": "2026-10-02T08:57:46.000Z",
+   "source": "Spot.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Sea Breeze на Чарваке получил еще одно положительное заключение экологической экспертизы",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNNUppc0dLOHBmN1BVQW4ta3c5V0xKNlNJdjlQNjVZRGFabTlEVURqM1lzbUhaUWFJb0FkM2d1MjlNbmRNaUUxZ0JHcFBOWHI2Nm4tX3JaNFFwZ1BvV29JUGZIQlN1VmZWV2ZFX1RDdHRxTURyYXZ3aGw5d0h4Yi1XYzY0MkdoQWk0T3NfZVlJZVIwOGJuRElZU1FLV3h4T3czc1BjcEFQenVlNmRma3NLSTdyczZUVlhIY1JrQlhxeXVvNDZxbEdOaU5xSQ?oc=5",
+   "image": "",
+   "date": "2026-10-02T08:10:00.000Z",
+   "source": "Podrobno.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Лица устойчивости (часть 1): Создание климатически устойчивого города Намангана",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPVUN1NkltWE1pZXlNYWtweUgxS0NsN0xMaGJvRFhET1czejQ0QnVqT2Q3a3lKTlNJNTc4VlhLZ3BGek9EVU0yS1dGamNaOGNsdTFXZGUzVXZEc2dKMExCQURlX0lsdVQwaDZxdTRWSmg5MWNlUmNkTDRRSVliQ0hTM2dLRUtvNXBPdklNMVhMVS1GRW9jenpoTjE2Z0ZHUTNkang0QVlSbjhPOWg1bVZ2R0VTUVp1Y2l0cElj?oc=5",
+   "image": "",
+   "date": "2026-10-02T07:09:38.000Z",
+   "source": "United Nations Development Programme",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Качество воздуха в Ташкенте сегодня: AQI и уровень РМ2,5",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPMEpqdUxHZV9TbXZGT0wxYjI3TzBPVi1mZUNtd01ZUjdUbzlNSEdTOU1PRnZfdkcwZGowaHRTWVZHbFpYeE82am5sUU1QRjJ5TnhOa01KanNIN2FMdjlMZVJ4NEZRSDFZdmk0YzE5ZE1RcWRIUVhMQ1lpY0tUMWZEb3pSbl9uLXN6X3dUOUVBWVpDYzZ6VGdaYw?oc=5",
+   "image": "",
+   "date": "2026-10-02T05:18:30.000Z",
+   "source": "Kursiv Media",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В каждой махалле Узбекистана появится лесник",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE4wbjE1S3pUNE1NVkplTXFzZTZlQWMxNnhYek1GNXNPNFVoN0NZSHdNbzg0OEpMRzNNTW5vYlFIcEw3aUY0M3FYVHV3?oc=5",
+   "image": "",
+   "date": "2026-10-02T04:58:02.000Z",
+   "source": "Новости Узбекистана — Upl.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Карта лесных пожаров в Узбекистан",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFAtejk4RThhVkpBcGVkUGFLdzRyNTgtX1p1R3d1OVk0T3luLTJvdnhvODJFeGllUldqSENUTFFpRXNEdERCcnpMU3lBTUp6dmxLSVJhY2FIaw?oc=5",
+   "image": "",
+   "date": "2026-10-01T23:20:43.000Z",
+   "source": "IQAir",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Узбекистан усиливает меры по предотвращению передачи зоонозных патогенов на охраняемых природных территориях",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNdFUwRXMtZzJtTXpRbFVJZmRUZEVCLWJXcnBwRHczakdCTjF4eWRURl9UUjVvWXVyYkFxRHRIamdhbGxSQUhyYlA2RFNBTXdyOVlaa19sN0x3VUNscTZkRGZpWEVNQTltYkxGT245Rm1xYmZVOXBBZ05vakJQOEhUUlhKZk9EMWpJa3Zqd1lmNU00U1RwNFFLTDJ6TllhTFlpSFFYbUVaSGI2XzNTS2E4X25OTktWNXhRWHNDdU9FZFVabnZPNUFzdkJMQkJ1cmJuMTVQcElNRmk?oc=5",
+   "image": "",
+   "date": "2026-10-01T08:00:00.000Z",
+   "source": "Nuz.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Ледники, уран и отходы: с какими экологическими проблемами сталкивается Таджикистан",
+   "summary": "В Таджикистане на бедствия, связанные с водой, приходится более 70 процентов стихийных бедствий и свыше 80 процентов причиняемого ими ущерба. Такие данные приводятся в Четвертом обзоре результативности экологической деятельности страны…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468809",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/19-03-2026_Tajikistan%20Glaciers%202.jpg/image560x340cropped.jpg",
+   "date": "2026-09-30T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "ПРООН и Япония содействуют эффективному водопользованию для повышения устойчивости к изменению климата в регионе Приаралья",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxOVW1lUXdfa0ZrMTMxU0EzZFFQckZSY2p1Ry1Fc0pvSDllNFpjaDRtNVVEdFBZNFBRNHcxQUZUMGhCZlZldUVocmdRYVRVNlh6emJjQUZseTdzV09LV1J3RVYwMUNGU2s4NmhfQVBpcFRKcXh4MVpxTGNRcmtWcVdXTzd2QUFncFQtbEpZR3c3V1RzbWV1V2pLLUxLdElaNWV1cGYyMXFMWXdrVlpJMlB5ZFR1NFMtRHAyUDB1UmRWRHg0T05YNW9Xb25fME5MVXNEVDRpdjZrTHVQUG5BSkxvVHNvWXZ2aWYtZUJVNF9VdXRTVnQxQmhHYVJQLUVvQlE?oc=5",
+   "image": "",
+   "date": "2026-09-30T07:00:00.000Z",
+   "source": "United Nations Development Programme",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Бизнес-омбудсман помог компании из Ташкента отменить штраф за мусор на 20,6 млн сумов",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1XVWNJQ0VfMDNfaHlvRHQ5NWtfdVRuZmxTWVFNQjdpOUx3eS05bjE2WERYSjBvRVRpUGF6ZG1OcGxtU01PRjN6UmRHM1FZZC1RVlVqV2ZZWkU4Um5zbWJrV3Rn?oc=5",
+   "image": "",
+   "date": "2026-09-30T06:00:23.000Z",
+   "source": "Spot.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В хокимияте Юнусабадского района ответили на слухи о вырубке деревьев в Ботаническом саду",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1kYW5yUEdhRFlIS25SelpYNDN5ektWU3JlcXZXaVRiVjdSV3gtUm1tNmRnWTdSYXBSV0xiWUhUZ1JUTXJLM0hiQnl3?oc=5",
+   "image": "",
+   "date": "2026-09-29T23:28:45.000Z",
+   "source": "Новости Узбекистана — Upl.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Экология — последние новости и статьи | Daryo — страница 3",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFA0a1Nkb1Nhdnp3S29UN1VpTWg0TGd3Y2VVMFp1SzFXbGs5U2pwd0ZTazRpS1N4U2F3Ry1IT0lLYjhDR2xNTkJFVHdJUHZiWjRrOW9XT2NR?oc=5",
+   "image": "",
+   "date": "2026-09-29T23:01:28.000Z",
+   "source": "Daryo",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Экология — последние новости и статьи | Daryo — страница 2",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBfcmhLMjNUdEpUMUtLMDdlNHJQQ2RJR2lyOXdBWVNSRTVCUkg2MUpMQlBYMUV5Q0ZDdXJSa05COUszZVhucDBSbDNNVG9ydWU2cUMyNnhB?oc=5",
+   "image": "",
+   "date": "2026-09-29T20:08:38.000Z",
+   "source": "Daryo",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Миллиард порций в мусор: как пищевые отходы разогревают планету",
+   "summary": "Каждый день несъеденными остаются около миллиарда порций еды – это результат перепроизводства, порчи или неграмотного планирования рациона. Выброшенные продукты, 60 процентов из которых приходится на домохозяйства, представляют серьезную…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468800",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/27-03-2026_Unsplash_food-waste.jpg/image560x340cropped.jpg",
+   "date": "2026-09-29T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Узбекистан и Египет расширяют сотрудничество в сфере сельского хозяйства, водных ресурсов и экологии",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPV0VDSUE3SE14WTQ0bUVlY1F1cHJWd3FDbFJLX0pHamNtTnd1THBhZjJPSVBjM05ZZDVSQ0M1Y1NfLW5EZlRQSmEwR3VLNDJ5b3g3NjVSOHFPeWZrYjdqOW10ZnYxbjhUVUp5NldJT251S3dyaEZOb093VXhKV3h6ZXRHVllORG1hRzhyWjlqNVJqZjdwaV9F?oc=5",
+   "image": "",
+   "date": "2026-09-29T07:22:53.000Z",
+   "source": "Dunyo",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Суд сократил экологическую компенсацию «Узбекнефтегаза» в 13 000 раз",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOSFlRN1M1cWxlQTdOLV9tc2dvaXNYbXozV0RLUjRGRmJHNEFka09pdUtKQkpsbGZGWkVQQW5OQ3luSkhVTm92NG5YeXBSdkVkWGRIM0pVYVc0RGxsNkswd1hCVlVMZkJETkVwb2NleG1YM21FU2pQLUE4UW9YeG1neENtYUFZVUpRTm41UlBxdWg5d2sxY0Zla2hyNkhONjFNQ2JSU3FrUQ?oc=5",
+   "image": "",
+   "date": "2026-09-29T05:15:50.000Z",
+   "source": "Kun.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Суд снизил экологический штраф «Узбекнефтегазу» почти в 13 тысяч раз",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOT2ViUlhFLXlsT1RMS2hIczJYZTNSeEVmQ014cWtPc0ZtQVNDOUQzdmE3X2NWUV93LXZoYVhzV2t0Wk1nTlp6encydWc5SnNhRXYyTXU5anM2Ulh5ZkFib1B0em5CV1hLUWFCdTRhLVpYT2J6aGpFcmZjUmJwQjJoXzRVZi1vaEl4WUVLUnJuNFhmcVlDMVQ2X2VMcC1OU2F5Smg1am4xNWRqQQ?oc=5",
+   "image": "",
+   "date": "2026-09-28T13:25:00.000Z",
+   "source": "Podrobno.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В Андижанской области приостановили работу предприятия из-за загрязнения воздуха",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPb0RRV2Q4RjAxazBjbXdJMDBEMFlJSnRNU0w4YzBzLUE1TnQwUnloU3lycnNaMGd5dFFqbzNBVmlPbFpUanFTS3pMdW9xZE5JMkZJWFVTN1Z1bGRndEJGcTNNblJwVnhBcVdzUThDOWMwTEdpZV9uMU42VEpwT0hfTlhqX1RsSHg4UzRzWUZLNVQ2YjJvVTNXcFFyTlJabzdvSjgzYzZoZFR0MWlfVXE4VzcwMkZIdVZwN0o4WmVR?oc=5",
+   "image": "",
+   "date": "2026-09-28T12:30:00.000Z",
+   "source": "Podrobno.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Доклад ООН: восстановление лесов окупается – опыт Калмыкии, Казахстана и Приаралья",
+   "summary": "Восстановление деградированных лесов и ландшафтов – экономически эффективный способ решения проблем продовольственной безопасности, климата и развития: при благоприятных условиях каждый вложенный доллар приносит до 30 долларов отдачи. Об…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468788",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/06/05-11-2025-US-forest.jpg/image560x340cropped.jpg",
+   "date": "2026-09-28T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Озеленение засушливых зон сопровождается ростом нестабильности растительности — исследование",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNSkg2TlNFbmZ3eHNQTTZFNzAzWno4VnEyQ1hWNlZpNG1STjBhV2NIUVZYUnJSS0cxYWlQZGpPak4zalpGcEhqRkExSmFMVDJsOFJiWlRPbWFUNlBua1VTVW1ZZktBRnpJMzllM0JBRm9UbFdQZjFTS3RFSE1TaDVXRnV6VUpzR05YWk02WnBzS3ZSY1FxZENqYm42b1I2OWpJOWhONWpPei1EejlVZmhSdUoyc3lzNjF3UXdBSG4tc2k2Qm02X3c?oc=5",
+   "image": "",
+   "date": "2026-09-28T07:43:41.000Z",
+   "source": "Kun.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "В Узбекистане в 2026 году прекратят работу ещё 18 полигонов отходов",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPc0dkZTRtcll1aVRFRHRWd19SLVhPTVlaemVvTmdNeFFUMmg2Rl9pOEs2aDdULUFYM283RWE0QS12ZkQ0dnN0Tl9CTVZNWXdQX0x6ZUpONWtTMDhqeWx5ZjZSVVhCNnAtSU84UVI5NEtpMFB0VnloeEZ5YW4zMENkemdzc3U5aGdBcmJKUHF6OEVITTNoNjZLUEJhbnNfSEE?oc=5",
+   "image": "",
+   "date": "2026-09-28T07:10:00.000Z",
+   "source": "Nuz.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "“Ekologik audit to‘g‘risida”gi qonunning ijrosi o‘rganildi",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNTXdoM2lPUmFrQnVBLXpOQWtNaDM2X3Z4SEJYU2g0eHZLWkpDUTFHdzdSdTFWdmN5dzVSUDN2SVpVdDlLX2h1WHdxbzBQeHd0LTRrMmZoenZQSGtyNEZlbjBsSGdTdFpLZm5rYzBuSE1sRnktTTlJOUZLUWptRHgwRl9UdDNYUF9LX0ZsMg?oc=5",
+   "image": "",
+   "date": "2026-09-28T06:43:21.000Z",
+   "source": "UZA.uz",
+   "lang": "uz",
+   "region": "uz"
+  },
+  {
+   "title": "В Узбекистане обсудили переработку опасных отходов в цементных печах",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOU3pjbWQ2VFJTWFdJMnRlbGJSNlgyWHRLOVdOaVFibkZ6NzV2RTZYcTI1R0t4YlJvWENiNzZZbTR5NHQ2ZzhXSzZqcEstY29yNVRTOVVZODBfVVEtWnVEaW1QR3NYV240V2RjOGFzV3J1ODUySTdxcGVURDE2VmFEV2pVbEdEeFpKZUpXZG9Vdlp5Yk1Ud2pOSHphcmNtLWZibkhzTkdn?oc=5",
+   "image": "",
+   "date": "2026-09-28T06:10:11.000Z",
+   "source": "Kun.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "Экологи Ферганской области проверили информацию о приготовлении воробьёв в пищу",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE55S0p2cEpYaDI1LWhsWEc2aWE2QmEtQmlYSEpmY1FPUGUzQVZnLUJfMy1oREd5V1VPY0tKelhVRVA5ZlBKa3NIcUFn?oc=5",
+   "image": "",
+   "date": "2026-09-28T04:46:43.000Z",
+   "source": "Новости Узбекистана — Upl.uz",
+   "lang": "ru",
+   "region": "uz"
+  },
+  {
+   "title": "«Повышение уровня моря лишает людей будущего», предупредил Генеральный секретарь ООН",
+   "summary": "В четверг мировые лидеры консенсусом приняли Декларацию ООН о повышении уровня моря. Открывая встречу высокого уровня, Генеральный секретарь ООН Антониу Гутерриш предупредил, что наступающее море уже угрожает будущему прибрежных сообществ.",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468756",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/07-08-2024-UNICEF-Tuvalu-04.jpg/image560x340cropped.jpg",
+   "date": "2026-09-24T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Гутерриш призвал страны установить четкие сроки отказа от ископаемого топлива",
+   "summary": "«Мы – первое поколение, у которого есть средства, чтобы положить конец эпохе ископаемого топлива, и последнее, которое может предотвратить климатическую катастрофу», – заявил в среду Генеральный секретарь ООН Антониу Гутерриш. Он призвал…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468745",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/15-05-2026-WMO-Uruguay.jpg/image560x340cropped.jpg",
+   "date": "2026-09-23T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Скорость действий, финансирование и сотрудничество становятся ключевыми факторами в борьбе с изменением климата",
+   "summary": "Временное превышение температуры больше, чем на 1,5°C – порога, установленного Парижским соглашением, – считается сегодня практически неизбежным. Главная задача теперь – свести масштабы и продолжительность этого превышения к минимуму. Для…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468724",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/06/29-06-2026-FAO-women.jpg/image560x340cropped.jpg",
+   "date": "2026-09-21T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "ИНТЕРВЬЮ | Повышение уровня моря вынуждает мир готовиться к масштабному переселению людей",
+   "summary": "Если к концу века уровень моря повысится на полметра – а ученые не исключают этого, от 150 до 300 миллионов человек могут быть вынуждены покинуть свои дома. Еще около 500 миллионов могут столкнуться с потерей доступа к пресной воде и…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468684",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/08/27-08-2026-UNDP-Maldives-01.jpg/image560x340cropped.jpg",
+   "date": "2026-09-19T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Доклад ООН о водных ресурсах: запасы пресной воды в мире сокращаются, ледники отступают",
+   "summary": "В 2025 году реки по всему миру пережили один из самых засушливых периодов более чем за три десятилетия, говорится в новом докладе Всемирной метеорологической организации (ВМО). Доклад свидетельствует о продолжении долгосрочного сокращения…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468697",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Libraries/Production%20Library/16-05-2025-UN-News-Nepal-01.jpg/image560x340cropped.jpg",
+   "date": "2026-09-17T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "ВМО: озоновый слой восстанавливается, но УФ-излучение остается серьезной угрозой",
+   "summary": "Озоновая дыра над Антарктикой в 2025 году была одной из самых небольших за последние десятилетия. Это свидетельствует об успехе международных усилий по защите озонового слоя, заявили во Всемирной метеорологической организации (ВМО)…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468686",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/16-09-2025_Unsplash_ozone.jpg/image560x340cropped.jpg",
+   "date": "2026-09-16T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Эксперт ООН: высокостойкие токсичные отходы ставят под угрозу «многие – если не все – права человека»",
+   "summary": "Ненадлежащее обращение с токсичными химикатами и другими опасными отходами угрожает «многим – если не всем – правам человека». Такое заявление сделала в понедельник на заседании Совета по правам человека вновь назначенный независимый…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468674",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/09/14-09-2026_Adobe_pollution.jpg/image560x340cropped.jpg",
+   "date": "2026-09-14T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Пострадавший в результате смертоносных наводнений Непал призывает к климатической справедливости",
+   "summary": "Непал запросил финансовую компенсацию для возмещения ущерба, полученного в результате недавних разрушительных наводнений. Страны, которые меньше всего причастны к изменению климата, все чаще сталкиваются с его самыми смертоносными…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468646",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/09/04-09-2026-WFP-Nepal-floods-03.jpg/image560x340cropped.jpg",
+   "date": "2026-09-09T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "От компоста до электромобилей: как Центральный парк в Нью-Йорке приспосабливается к изменению климата",
+   "summary": "В самом сердце Манхэттена можно наблюдать, как меняется климат. В Центральном парке Нью-Йорка – одной из самых узнаваемых достопримечательностей мира – все чаще идут проливные дожди, отдельные участки затапливает, почву размывает, а…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468618",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/26-08-2026-Adobe-Stock-Central-Park-NY.jpg/image560x340cropped.jpg",
+   "date": "2026-09-05T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Эль-Ниньо набирает силу: планету ждет полугодие аномальной жары",
+   "summary": "Климатическое явление Эль-Ниньо, подпитываемое аномально теплыми водами Тихого океана, стремительно набирает силу и пока не достигло своего пика. Синоптики практически не сомневаются: этот природный феномен продлится как минимум до конца…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468606",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/27-08-2026-Adobe-Stock-drought.jpg/image560x340cropped.jpg",
+   "date": "2026-09-03T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Лесные пожары угрожают новым регионам Европы: ВОЗ поддерживает подготовку к чрезвычайным ситуациям",
+   "summary": "Большинство лесных пожаров в Европе возникает по вине человека – в результате поджога или случайно. При этом рост масштабов, скорости распространения и интенсивности возгораний во многом определяется более теплыми и сухими условиями…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468600",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/07/31-07-2026_Adobe_France.jpg/image560x340cropped.jpg",
+   "date": "2026-09-02T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "«Борьба за человечество»: чтобы избежать климатической катастрофы, нужно действовать прямо сейчас",
+   "summary": "Человечество еще способно избежать климатической катастрофы, но для этого нужно действовать немедленно. Таков главный тезис опубликованного во вторник доклада Программы ООН по окружающей среде (ЮНЕП). Рекордные волны жары, разрушительные…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/09/1468596",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/27-08-2026-Adobe-Stock-drought-01.jpg/image560x340cropped.jpg",
+   "date": "2026-09-02T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "ОБЪЯСНЯЕМ | Чем грозит человечеству повышение уровня моря",
+   "summary": "Научный факт: уровень моря на планете поднимается сейчас быстрее, чем когда-либо в истории. Последствия уже ощущаются, а угрозы продолжают расти: затапливаются дома и посевные земли, люди лишаются средств к существованию, безопасное…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468574",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/25-08-2026-UNDP-Papua-New-Guinea.jpg/image560x340cropped.jpg",
+   "date": "2026-08-30T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Когда тают Гималаи: фатальные наводнения становятся нормой",
+   "summary": "Всего за день до того, как гигантская стена из льда, горных пород и грязи сошла на гималайские долины рядом с непало-китайской границей, климатолог Дипеш Чапагайн обсуждал с коллегой масштабы катастрофы, к которой могло бы привести…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468579",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/23-04-2026-UN-RCO-Nepal.JPG/image560x340cropped.jpg",
+   "date": "2026-08-28T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Засуха и жара в Европе и Северной Америке усиливают нагрузку на леса и городскую природу",
+   "summary": "По данным Европейской обсерватории засухи, в настоящее время 50 процентов территории Европейского союза и Соединенного Королевства находится в условиях засухи различной степени. Критический дефицит осадков приводит к резкому снижению…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468572",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/07/24-07-2026-Adobe-France.jpg/image560x340cropped.jpg",
+   "date": "2026-08-28T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Участники КС-17 в Монголии договорились мобилизовать ресурсы для восстановления пастбищных земель",
+   "summary": "После двух недель переговоров о путях борьбы с деградацией земель, опустыниванием и засухой сегодня в Улан-Баторе завершилась семнадцатая сессия Конференции Сторон Конвенции ООН по борьбе с опустыниванием (КС-17 КБО ООН). Ее участникам…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468569",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/15-11-2024-UNCCD-Kenya-01.jpg/image560x340cropped.jpg",
+   "date": "2026-08-28T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Тихие гиганты планеты: мир отмечает Всемирный день озер",
+   "summary": "Сегодня, 27 августа, мир отмечает Всемирный день озер, учрежденный Организацией Объединенных Наций для повышения осведомленности о значении озер и необходимости устойчивого управления озерными экосистемами. Эта дата призвана напомнить…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468562",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Production%20Library/2026/08/27-08-2026_Lake%20Norway.jpg/image560x340cropped.jpg",
+   "date": "2026-08-27T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Центральная Азия теряет землю: как преодолеть экологический кризис",
+   "summary": "На необъятных просторах в сердце Евразии разворачивается тихий кризис. Регион Центральной Азии некогда славился своими бескрайними степями и плодородными оазисами, а теперь является одним из крупнейших мировых очагов деградации земель. Об…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468553",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/10-08-2026-UNDP-Kazakhstan-rangelands.jpg/image560x340cropped.jpg",
+   "date": "2026-08-26T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  },
+  {
+   "title": "Восстановление земель помогает создавать рабочие места, доказывают молодые предприниматели",
+   "summary": "Новое поколение предпринимателей по всему миру – от Эквадора до Бангладеш – превращает восстановление почв в источник экономического роста. Внедряя технологии на базе ИИ и перерабатывая сельхозотходы при поддержке ООН, они доказывают…",
+   "link": "https://news.un.org/feed/view/ru/story/2026/08/1468545",
+   "image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/Collections/Embargoed/2026/08/24-08-2026_LandRestoration.jpg/image560x340cropped.jpg",
+   "date": "2026-08-25T12:00:00.000Z",
+   "source": "BMT yangiliklari",
+   "lang": "ru",
+   "region": "world"
+  }
+ ]
+}
