@@ -46,7 +46,7 @@ jobs:
 
       - name: Tozalash aksiyalari va volontyorlik e'lonlarini yig'ish
         # bu bosqich ishlamasa ham yangiliklar yozilaveradi (eski events.json saqlanadi)
-        run: node scripts/fetch-events.mjs prev-events.json events.json || cp prev-events.json events.json
+        run: node scripts/fetch-events.mjs prev-events.json events.json news.json || cp prev-events.json events.json
 
       - name: news-data branchiga yozish
         run: |

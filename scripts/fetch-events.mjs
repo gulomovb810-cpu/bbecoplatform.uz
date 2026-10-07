@@ -12,7 +12,7 @@
 //   eventDate — matndan topilgan tadbir sanasi (YYYY-MM-DD) yoki null
 //   region    — ilovadagi viloyat kodi (tashkent_city, samarkand, ...) yoki null
 //
-// Ishlatish:  node scripts/fetch-events.mjs [eski.json] [yangi.json]
+// Ishlatish:  node scripts/fetch-events.mjs [eski.json] [yangi.json] [news.json]
 // =====================================================================
 import { readFile, writeFile } from "node:fs/promises";
 import { parseFeed, fetchText } from "./fetch-news.mjs";
@@ -37,6 +37,15 @@ export const SOURCES = [
   { name: "Gazeta.uz", url: "https://www.gazeta.uz/ru/rss/", lang: "ru", region: "uz", filter: false },
   { name: "Daryo", url: "https://daryo.uz/feed/", lang: "uz", region: "uz", filter: false },
   { name: "Daryo", url: "https://daryo.uz/ru/feed/", lang: "ru", region: "uz", filter: false },
+  // qo'shimcha O'zbekiston saytlari (ishlamasa — o'tkazib yuboriladi)
+  { name: "UzA", url: "https://uza.uz/uz/rss", lang: "uz", region: "uz", filter: false },
+  { name: "UzA", url: "https://uza.uz/ru/rss", lang: "ru", region: "uz", filter: false },
+  { name: "Xabar.uz", url: "https://xabar.uz/rss", lang: "uz", region: "uz", filter: false },
+  { name: "Qalampir.uz", url: "https://qalampir.uz/rss", lang: "uz", region: "uz", filter: false },
+  { name: "Nuz.uz", url: "https://nuz.uz/feed", lang: "ru", region: "uz", filter: false },
+  { name: "Anhor.uz", url: "https://anhor.uz/feed/", lang: "ru", region: "uz", filter: false },
+  { name: "Podrobno.uz", url: "https://podrobno.uz/rss/", lang: "ru", region: "uz", filter: false },
+  { name: "UzDaily", url: "https://uzdaily.uz/ru/rss", lang: "ru", region: "uz", filter: false },
 ];
 
 const MAX_AGE_DAYS = 60;
@@ -48,7 +57,7 @@ const has = (t, list) => list.some((k) => t.includes(k));
 // Turi bo'yicha kalit so'zlar (o'zak, kichik harflarda)
 const TYPE_WORDS = {
   clean: ["hashar", "shanbalik", "tozalash aksiya", "tozalash ishlari", "tozalash tadbir", "chiqindi yig'", "axlat yig'", "obodonlashtirish hashar",
-    "субботник", "хашар", "уборк", "сбор мусора", "собрали мусор", "очистк", "очистили", "clean-up", "cleanup", "clean up",
+    "субботник", "хашар", "уборк", "сбор мусора", "собрали мусор", "очистка территори", "очистке территори", "очистили от мусора", "очистили территори", "clean-up", "cleanup", "clean up",
     "ҳашар", "шанбалик", "тозалаш", "toza hudud", "чиқинди йиғ"],
   tree: ["ko'chat", "daraxt ek", "daraxt o'tqaz", "daraxtlar ekil", "yashil makon", "o'rmon barpo", "ihota daraxt",
     "посадк", "саженц", "высадил", "высадят", "высажен", "озеленен", "яшил макон", "зеленое пространство", "зелёное пространство",
@@ -147,8 +156,8 @@ export function findEventDate(text, pub) {
 export function langOf(title, lang) {
   if (/[ўқғҳЎҚҒҲ]/.test(title)) return "uz";
   if (/[а-яё]/i.test(title)) return "ru";
-  if (/[‘’ʻʼ']|\b(va|bilan|uchun|hudud|yoshlar|aksiya|ekildi|o'tkazildi|tadbir)\b/i.test(title) || /(lar|dagi|da|ga|ni)\b/.test(title)) return "uz";
-  return /^[\x00-\x7F\s]+$/.test(title) ? "en" : lang;
+  if (/[og][‘’ʻʼ'`]/i.test(title) || /\b(va|bilan|uchun|hudud|yoshlar|aksiya|ekildi|tadbir|bo'yicha|hashar|ko'chat)\b/i.test(title) || /\w(lar|dagi|ning)\b/.test(title)) return "uz";
+  return /^[\x00-\x7F\s]+$/.test(title.replace(/[‘’“”«»—–…]/g, "")) ? "en" : lang;
 }
 
 export function toEvent(it) {
@@ -187,7 +196,7 @@ export function mergeEvents(prev, fresh, now = Date.now()) {
 }
 
 async function main() {
-  const [prevPath, outPath = "events.json"] = process.argv.slice(2);
+  const [prevPath, outPath = "events.json", newsPath] = process.argv.slice(2);
   let prev = [];
   if (prevPath) {
     try { prev = JSON.parse(await readFile(prevPath, "utf8")).items || []; } catch { prev = []; }
@@ -205,6 +214,15 @@ async function main() {
       console.warn(`! ${src.name} (${src.lang}): ${e.message}`);
     }
   }));
+  // ekologik yangiliklar lentasidagi (news.json) mos xabarlar ham qo'shiladi
+  if (newsPath) {
+    try {
+      const news = JSON.parse(await readFile(newsPath, "utf8")).items || [];
+      const items = news.filter((it) => it.region !== "world").map((it) => toEvent({ ...it, summary: it.summary || "" })).filter(Boolean);
+      fresh.push(...items);
+      status.push({ name: "Ekologik yangiliklar", lang: "uz", ok: true, count: items.length });
+    } catch { /* yo'q */ }
+  }
   const okCount = status.filter((s) => s.ok).length;
   console.log(`Manbalar: ${okCount}/${SOURCES.length} ishladi, ${fresh.length} ta aksiya xabari topildi.`);
   if (!okCount && !prev.length) { console.error("Hech bir manbadan ma'lumot olinmadi."); process.exit(1); }
