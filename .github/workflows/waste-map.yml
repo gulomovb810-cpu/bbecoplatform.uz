@@ -1,0 +1,45 @@
+# Chiqindi shoxobchalari xaritasi: har kuni OpenStreetMap'dan O'zbekistondagi
+# chiqindi qabul qilish joylarini olib, waste-points.json faylini alohida
+# "map-data" branchiga yozadi. Ilova faylni shu manzildan o'qiydi:
+#   https://raw.githubusercontent.com/<owner>/<repo>/map-data/waste-points.json
+name: Chiqindi xaritasi
+
+on:
+  schedule:
+    - cron: "40 2 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/fetch-waste-points.mjs
+      - .github/workflows/waste-map.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: waste-map
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: OpenStreetMap'dan olish
+        run: node scripts/fetch-waste-points.mjs waste-points.json
+
+      - name: map-data branchiga yozish
+        run: |
+          mkdir out && cp waste-points.json out/ && cd out
+          git init -q -b map-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add waste-points.json
+          git commit -q -m "Chiqindi shoxobchalari: $(date -u +%Y-%m-%d)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" map-data

@@ -9,5 +9,11 @@
 window.ECO_CONFIG = {
   SUPABASE_URL: 'https://YOUR-PROJECT.supabase.co',
   SUPABASE_ANON_KEY: 'YOUR-ANON-PUBLIC-KEY',
-  MEDIA_BUCKET: 'report-media'
+  MEDIA_BUCKET: 'report-media',
+  // Ixtiyoriy: Google Maps JavaScript API kaliti (Google Cloud Console → APIs & Services).
+  // Bo'sh qolsa, joylashuv xaritasi OpenStreetMap orqali ishlaydi.
+  GOOGLE_MAPS_API_KEY: '',
+  // Ixtiyoriy: ekologik yangiliklar fayli (news.json) manzili.
+  // Bo'sh qolsa, GitHub'dagi "news-data" branchidan olinadi (har soatda yangilanadi).
+  NEWS_URL: ''
 };
