@@ -633,12 +633,117 @@ create policy "report-media delete staff" on storage.objects for delete to authe
   using (bucket_id = 'report-media' and public.is_staff());
 
 -- ---------------------------------------------------------------------
+-- 7b. TOZALASH AKSIYALARI: rasmiy e'lonlar va "Qatnashaman"
+-- Vazirlik/tashkilotlar portalda e'lon qiladi, fuqarolar ilovada ko'radi
+-- va qatnashishini belgilaydi. Ishtirokchilar ro'yxatini fuqarolar
+-- ko'rmaydi: faqat soni (event_counts) ochiq.
+-- ---------------------------------------------------------------------
+create table if not exists public.eco_events (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null check (char_length(title) between 5 and 160),
+  description text check (char_length(description) <= 3000),
+  type        text not null default 'clean' check (type in ('clean','tree','volunteer','action')),
+  region      text,
+  place       text check (char_length(place) <= 300),
+  lat         double precision check (lat between -90 and 90),
+  lng         double precision check (lng between -180 and 180),
+  starts_at   timestamptz not null,
+  ends_at     timestamptz,
+  organizer   text check (char_length(organizer) <= 160),
+  contact     text check (char_length(contact) <= 160),
+  link        text check (link ~ '^https://' and char_length(link) <= 500),
+  max_people  int check (max_people > 0),
+  org_id      uuid references public.organizations(id) on delete set null,
+  status      text not null default 'published' check (status in ('draft','published','cancelled')),
+  created_by  uuid default auth.uid() references auth.users(id) on delete set null,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  check (ends_at is null or ends_at >= starts_at)
+);
+create index if not exists eco_events_starts_idx on public.eco_events (starts_at);
+
+create table if not exists public.event_participants (
+  event_id   uuid not null references public.eco_events(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (event_id, user_id)
+);
+
+create or replace function public.eco_events_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  new.updated_at := now();
+  if tg_op = 'INSERT' then new.created_by := auth.uid(); new.created_at := now();
+  else new.created_by := old.created_by; new.created_at := old.created_at; end if;
+  -- tashkilot rahbari faqat o'z tashkiloti nomidan e'lon qiladi
+  if not public.is_staff() and public.is_org_head() then
+    new.org_id := public.my_org();
+  end if;
+  return new;
+end $$;
+drop trigger if exists eco_events_before_write on public.eco_events;
+create trigger eco_events_before_write before insert or update on public.eco_events
+  for each row execute function public.eco_events_before_write();
+
+-- Qatnashish: faqat e'lon qilingan, hali tugamagan, joyi bor tadbirga;
+-- bloklangan foydalanuvchi qatnasha olmaydi.
+create or replace function public.can_join_event(p_event uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.eco_events e
+    where e.id = p_event and e.status = 'published'
+      and coalesce(e.ends_at, e.starts_at + interval '1 day') > now()
+      and (e.max_people is null
+           or (select count(*) from public.event_participants p where p.event_id = e.id) < e.max_people))
+  and not exists (select 1 from public.profiles where id = auth.uid() and blocked);
+$$;
+
+create or replace function public.event_counts(p_ids uuid[]) returns table(event_id uuid, going bigint)
+language sql stable security definer set search_path = public as $$
+  select p.event_id, count(*) from public.event_participants p
+  join public.eco_events e on e.id = p.event_id and e.status <> 'draft'
+  where p.event_id = any(p_ids) group by p.event_id;
+$$;
+revoke all on function public.event_counts(uuid[]) from public;
+grant execute on function public.event_counts(uuid[]) to anon, authenticated;
+revoke all on function public.can_join_event(uuid) from public;
+grant execute on function public.can_join_event(uuid) to authenticated;
+
+alter table public.eco_events enable row level security;
+alter table public.event_participants enable row level security;
+
+drop policy if exists "eco_events read" on public.eco_events;
+create policy "eco_events read" on public.eco_events for select to anon, authenticated
+  using (status in ('published','cancelled') or public.is_staff()
+         or (public.is_org_head() and org_id = public.my_org()));
+drop policy if exists "eco_events insert" on public.eco_events;
+create policy "eco_events insert" on public.eco_events for insert to authenticated
+  with check (public.is_staff() or public.is_org_head());
+drop policy if exists "eco_events update" on public.eco_events;
+create policy "eco_events update" on public.eco_events for update to authenticated
+  using (public.is_staff() or (public.is_org_head() and org_id = public.my_org()))
+  with check (public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+drop policy if exists "eco_events delete" on public.eco_events;
+create policy "eco_events delete" on public.eco_events for delete to authenticated
+  using (public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+
+drop policy if exists "event_participants own read" on public.event_participants;
+create policy "event_participants own read" on public.event_participants for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "event_participants join" on public.event_participants;
+create policy "event_participants join" on public.event_participants for insert to authenticated
+  with check (user_id = auth.uid() and public.can_join_event(event_id));
+drop policy if exists "event_participants leave" on public.event_participants;
+create policy "event_participants leave" on public.event_participants for delete to authenticated
+  using (user_id = auth.uid());
+
+-- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)
 -- ---------------------------------------------------------------------
 do $$
 declare t text;
 begin
-  foreach t in array array['reports','profiles','report_status_history','report_comments'] loop
+  foreach t in array array['reports','profiles','report_status_history','report_comments','eco_events'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I', t);
     exception when duplicate_object then null;

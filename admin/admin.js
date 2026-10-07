@@ -291,6 +291,7 @@ function navItems() {
   items.push({ sec: T('Ma’lumotnoma') });
   if (isStaff()) items.push({ id: 'orgs', ic: '🏛️', t: T('Tashkilotlar') });
   if (isStaff() || isHead()) items.push({ id: 'staff', ic: '👥', t: T('Xodimlar') });
+  items.push({ id: 'events', ic: '🧹', t: T('Tozalash aksiyalari') });
   items.push({ id: 'templates', ic: '📝', t: T('Javob shablonlari') });
   items.push({ id: 'journal', ic: '🧾', t: T('Faoliyat jurnali') });
   if (me().role === 'admin') items.push({ id: 'settings', ic: '⚙️', t: T('Sozlamalar') });
@@ -1087,6 +1088,81 @@ async function staffDialog(p) {
   if (v) { S.data = await S.store.load(); toast(T('Saqlandi')); route(true); }
 }
 
+// ---------- Tozalash aksiyalari (fuqarolar ilovasida e'lon qilinadi) ----------
+const EV_TYPES = { clean: ['🧹', 'Tozalash / hashar'], tree: ['🌳', 'Daraxt ekish'], volunteer: ['🤝', 'Volontyorlik'], action: ['🌍', 'Ekologik aksiya'] };
+const toLocalInput = d => { if (!d) return ''; const x = new Date(d); return x.getFullYear() + '-' + pad(x.getMonth() + 1) + '-' + pad(x.getDate()) + 'T' + pad(x.getHours()) + ':' + pad(x.getMinutes()); };
+PAGES.events = async el => {
+  const canAdd = isStaff() || isHead();
+  const canEdit = e => isStaff() || (isHead() && e.org_id === me().org_id);
+  const view = S.route.q.view || 'upcoming';
+  el.innerHTML = `<div class="page-head"><div><h1>🧹 ${esc(T('Tozalash aksiyalari'))}</h1><p>${esc(T('Hashar, ko‘chat ekish va volontyorlik tadbirlari. E’lon qilinganlari fuqarolar ilovasida darhol ko‘rinadi, ular “Qatnashaman” tugmasini bosadi.'))}</p></div><div class="row">${canAdd ? `<button class="btn btn-primary" id="addE">➕ ${esc(T('Aksiya e’lon qilish'))}</button>` : ''}</div></div><div class="empty">${esc(T('Yuklanmoqda…'))}</div>`;
+  let list;
+  try { list = await S.store.loadEvents(); } catch (e) { el.querySelector('.empty').textContent = T('Aksiyalarni yuklab bo‘lmadi') + ': ' + e.message; return; }
+  const now = Date.now(), endOf = e => new Date(e.ends_at || new Date(new Date(e.starts_at).getTime() + 864e5)).getTime();
+  const groups = {
+    upcoming: list.filter(e => e.status === 'published' && endOf(e) > now).sort((a, b) => a.starts_at < b.starts_at ? -1 : 1),
+    draft: list.filter(e => e.status === 'draft'),
+    past: list.filter(e => e.status === 'cancelled' || (e.status === 'published' && endOf(e) <= now))
+  };
+  const L = groups[view] || groups.upcoming;
+  const going = groups.upcoming.reduce((a, e) => a + (e.going || 0), 0);
+  const tab = (k, t) => `<a class="btn btn-sm ${view === k ? 'btn-primary' : ''}" href="#/events?view=${k}">${esc(T(t))} <b>${groups[k].length}</b></a>`;
+  const card = e => {
+    const ty = EV_TYPES[e.type] || EV_TYPES.action, full = e.max_people && (e.going || 0) >= e.max_people;
+    return `<div class="card ev-card"><div class="card-h"><h3>${ty[0]} ${esc(e.title)}</h3></div><div class="card-b">
+      <div class="row" style="gap:6px; margin-bottom:8px"><span class="chip">${esc(T(ty[1]))}</span>${e.status === 'draft' ? `<span class="chip chip-warn">${esc(T('Qoralama'))}</span>` : e.status === 'cancelled' ? `<span class="chip chip-danger">${esc(T('Bekor qilingan'))}</span>` : endOf(e) <= now ? `<span class="chip">${esc(T('O‘tkazildi'))}</span>` : `<span class="chip chip-ok">${esc(T('E’lon qilingan'))}</span>`}${e.region ? `<span class="chip">${esc(regT(e.region))}</span>` : ''}</div>
+      <div class="ev-meta">📅 <b>${esc(fmtDT(e.starts_at))}</b>${e.ends_at ? ' — ' + esc(fmtDT(e.ends_at)) : ''}</div>
+      ${e.place ? `<div class="ev-meta">📍 ${esc(e.place)}${e.lat != null ? ` · <a href="https://www.google.com/maps?q=${e.lat},${e.lng}" target="_blank" rel="noopener">${esc(T('xaritada'))}</a>` : ''}</div>` : ''}
+      <div class="ev-meta">🏛️ ${esc(e.organizer || (e.org_id ? orgShort(e.org_id) : '—'))}${e.contact ? ' · ' + esc(e.contact) : ''}</div>
+      <div class="ev-meta">🙋 <b>${e.going || 0}</b>${e.max_people ? ' / ' + e.max_people : ''} ${esc(T('kishi qatnashadi'))}${full ? ` <span class="chip chip-warn">${esc(T('Joy qolmadi'))}</span>` : ''}</div>
+      ${e.description ? `<p class="ev-desc">${esc(e.description)}</p>` : ''}
+      ${canEdit(e) ? `<div class="row" style="margin-top:10px"><button class="btn btn-sm" data-eed="${e.id}">✏️ ${esc(T('Tahrirlash'))}</button>${e.status === 'published' && endOf(e) > now ? `<button class="btn btn-sm" data-ecan="${e.id}">⛔ ${esc(T('Bekor qilish'))}</button>` : ''}<button class="btn btn-sm btn-danger" data-edel="${e.id}">🗑️ ${esc(T('O‘chirish'))}</button></div>` : ''}
+    </div></div>`;
+  };
+  el.innerHTML = `<div class="page-head"><div><h1>🧹 ${esc(T('Tozalash aksiyalari'))}</h1><p>${esc(T('Hashar, ko‘chat ekish va volontyorlik tadbirlari. E’lon qilinganlari fuqarolar ilovasida darhol ko‘rinadi, ular “Qatnashaman” tugmasini bosadi.'))}</p></div><div class="row">${canAdd ? `<button class="btn btn-primary" id="addE">➕ ${esc(T('Aksiya e’lon qilish'))}</button>` : ''}</div></div>
+    <div class="row" style="margin-bottom:14px; gap:8px; flex-wrap:wrap">${tab('upcoming', 'Kelgusi')}${canAdd ? tab('draft', 'Qoralamalar') : ''}${tab('past', 'O‘tganlar')}<span class="muted" style="margin-left:auto">🙋 ${esc(T('Kelgusi aksiyalarga yozilganlar'))}: <b>${going}</b></span></div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${L.map(card).join('') || `<div class="empty">${esc(T('Bu bo‘limda aksiya yo‘q'))}</div>`}</div>`;
+  const reload = () => route(true);
+  if ($('#addE')) $('#addE').onclick = () => eventDialog({ type: 'clean', status: 'published', org_id: me().org_id || null, region: me().org_id ? (orgById(me().org_id) || {}).region : null }).then(ok => ok && reload());
+  const byId = id => list.find(e => e.id === id);
+  $$('[data-eed]').forEach(b => b.onclick = () => eventDialog(Object.assign({}, byId(b.dataset.eed))).then(ok => ok && reload()));
+  $$('[data-ecan]').forEach(b => b.onclick = async () => { const e = byId(b.dataset.ecan); if (await confirmBox(T('Aksiyani bekor qilish'), T('Fuqarolar ilovasida aksiya “Bekor qilingan” deb ko‘rsatiladi.'), T('Bekor qilish'), true)) { try { await S.store.saveEvent(Object.assign({}, e, { status: 'cancelled' })); toast(T('Saqlandi')); reload(); } catch (err) { toast(T(err.message), 'err'); } } });
+  $$('[data-edel]').forEach(b => b.onclick = async () => { if (await confirmBox(T('Aksiyani o‘chirish'), T('Aksiya va unga yozilganlar ro‘yxati butunlay o‘chiriladi.'), T('O‘chirish'), true)) { try { await S.store.deleteEvent(b.dataset.edel); reload(); } catch (err) { toast(T(err.message), 'err'); } } });
+};
+async function eventDialog(e) {
+  const v = await modal({ wide: true, title: e.id ? T('Aksiyani tahrirlash') : T('Yangi aksiya'), body: `
+    <label class="field"><span>${esc(T('Sarlavha'))}</span><input id="eT" maxlength="160" value="${esc(e.title || '')}" placeholder="${esc(T('Masalan: Chilonzor tumanida umumshahar shanbaligi'))}"></label>
+    <div class="grid2"><label class="field"><span>${esc(T('Turi'))}</span><select id="eY">${Object.entries(EV_TYPES).map(([k, t]) => `<option value="${k}" ${e.type === k ? 'selected' : ''}>${t[0]} ${esc(T(t[1]))}</option>`).join('')}</select></label>
+    <label class="field"><span>${esc(T('Hudud'))}</span><select id="eR"><option value="">${esc(T('Respublika miqyosida'))}</option>${REGIONS.map(r => `<option value="${r.code}" ${e.region === r.code ? 'selected' : ''}>${esc(T(r.uz))}</option>`).join('')}</select></label></div>
+    <div class="grid2"><label class="field"><span>${esc(T('Boshlanishi'))}</span><input id="eS" type="datetime-local" value="${toLocalInput(e.starts_at)}"></label><label class="field"><span>${esc(T('Tugashi (ixtiyoriy)'))}</span><input id="eE" type="datetime-local" value="${toLocalInput(e.ends_at)}"></label></div>
+    <label class="field"><span>${esc(T('Joy (manzil, mo‘ljal)'))}</span><input id="eP" maxlength="300" value="${esc(e.place || '')}"></label>
+    <div class="grid3"><label class="field"><span>${esc(T('Kenglik (lat)'))}</span><input id="eLa" inputmode="decimal" value="${e.lat ?? ''}" placeholder="41.31"></label><label class="field"><span>${esc(T('Uzunlik (lng)'))}</span><input id="eLo" inputmode="decimal" value="${e.lng ?? ''}" placeholder="69.28"></label><label class="field"><span>${esc(T('Ishtirokchilar chegarasi'))}</span><input id="eM" type="number" min="1" value="${e.max_people || ''}" placeholder="${esc(T('cheksiz'))}"></label></div>
+    <div class="grid2"><label class="field"><span>${esc(T('Tashkilotchi'))}</span><input id="eO" maxlength="160" value="${esc(e.organizer || (e.org_id ? orgShort(e.org_id) : ''))}"></label><label class="field"><span>${esc(T('Aloqa (telefon yoki Telegram)'))}</span><input id="eC" maxlength="160" value="${esc(e.contact || '')}"></label></div>
+    <label class="field"><span>${esc(T('Batafsil havola (https://, ixtiyoriy)'))}</span><input id="eLk" maxlength="500" value="${esc(e.link || '')}"></label>
+    <label class="field"><span>${esc(T('Tavsif: nima qilinadi, nima olib kelish kerak'))}</span><textarea id="eD" maxlength="3000" style="min-height:110px">${esc(e.description || '')}</textarea></label>
+    ${isStaff() ? `<label class="field"><span>${esc(T('Tashkilot'))}</span><select id="eG"><option value="">—</option>${S.data.orgs.map(o => `<option value="${o.id}" ${e.org_id === o.id ? 'selected' : ''}>${esc(o.short_name || o.name)}</option>`).join('')}</select></label>` : ''}
+    <label class="check"><input type="checkbox" id="eDr" ${e.status === 'draft' ? 'checked' : ''}> ${esc(T('Qoralama sifatida saqlash (fuqarolarga ko‘rinmaydi)'))}</label><div class="form-error"></div>`,
+    actions: [{ t: T('Bekor qilish'), v: null }, { t: e.id ? T('Saqlash') : T('E’lon qilish'), cls: 'btn-primary', run: async ov => {
+      const num = id => { const x = $(id, ov).value.trim().replace(',', '.'); return x === '' ? null : Number(x); };
+      const st = $('#eS', ov).value, en = $('#eE', ov).value;
+      const n = { id: e.id, title: $('#eT', ov).value.trim(), type: $('#eY', ov).value, region: $('#eR', ov).value || null,
+        starts_at: st ? new Date(st).toISOString() : null, ends_at: en ? new Date(en).toISOString() : null,
+        place: $('#eP', ov).value.trim(), lat: num('#eLa'), lng: num('#eLo'), max_people: num('#eM'),
+        organizer: $('#eO', ov).value.trim(), contact: $('#eC', ov).value.trim(), link: $('#eLk', ov).value.trim(), description: $('#eD', ov).value.trim(),
+        org_id: isStaff() ? ($('#eG', ov).value || null) : me().org_id,
+        status: $('#eDr', ov).checked ? 'draft' : (e.status === 'cancelled' ? 'cancelled' : 'published') };
+      if (n.title.length < 5) throw new Error('Sarlavha kamida 5 belgidan iborat bo‘lsin');
+      if (!n.starts_at) throw new Error('Boshlanish vaqtini kiriting');
+      if (n.ends_at && n.ends_at < n.starts_at) throw new Error('Tugash vaqti boshlanishdan keyin bo‘lsin');
+      if ((n.lat == null) !== (n.lng == null) || (n.lat != null && (!isFinite(n.lat) || !isFinite(n.lng) || Math.abs(n.lat) > 90 || Math.abs(n.lng) > 180))) throw new Error('Koordinatalarni to‘g‘ri kiriting (ikkalasini ham)');
+      if (n.max_people != null && !(n.max_people >= 1)) throw new Error('Ishtirokchilar chegarasi musbat son bo‘lsin');
+      if (n.link && !/^https:\/\/\S+$/.test(n.link)) throw new Error('Havola https:// bilan boshlansin');
+      await S.store.saveEvent(n);
+    } }] });
+  if (v) toast(T('Saqlandi'));
+  return !!v;
+}
+
 // ---------- Javob shablonlari ----------
 PAGES.templates = el => {
   const mine = t => me().role === 'admin' || (isHead() && t.org_id === me().org_id);
@@ -1210,6 +1286,54 @@ function donut(box, items) {
 // RUS TILI LUG'ATI
 // =====================================================================
 const RU = {
+  "Tozalash aksiyalari": "Экологические акции",
+  "Hashar, ko‘chat ekish va volontyorlik tadbirlari. E’lon qilinganlari fuqarolar ilovasida darhol ko‘rinadi, ular “Qatnashaman” tugmasini bosadi.": "Субботники, посадка деревьев и волонтёрские мероприятия. Опубликованные сразу видны гражданам в приложении, они нажимают «Участвую».",
+  "Aksiya e’lon qilish": "Объявить акцию",
+  "Yuklanmoqda…": "Загрузка…",
+  "Aksiyalarni yuklab bo‘lmadi": "Не удалось загрузить акции",
+  "Tozalash / hashar": "Уборка / хашар",
+  "Daraxt ekish": "Посадка деревьев",
+  "Volontyorlik": "Волонтёрство",
+  "Ekologik aksiya": "Экологическая акция",
+  "Qoralama": "Черновик",
+  "O‘tkazildi": "Проведена",
+  "E’lon qilingan": "Опубликована",
+  "xaritada": "на карте",
+  "kishi qatnashadi": "участников",
+  "Joy qolmadi": "Мест нет",
+  "Kelgusi": "Предстоящие",
+  "Qoralamalar": "Черновики",
+  "O‘tganlar": "Прошедшие",
+  "Kelgusi aksiyalarga yozilganlar": "Записались на предстоящие",
+  "Bu bo‘limda aksiya yo‘q": "В этом разделе нет акций",
+  "Aksiyani bekor qilish": "Отменить акцию",
+  "Fuqarolar ilovasida aksiya “Bekor qilingan” deb ko‘rsatiladi.": "В приложении граждан акция будет показана как «Отменена».",
+  "Aksiyani o‘chirish": "Удалить акцию",
+  "Aksiya va unga yozilganlar ro‘yxati butunlay o‘chiriladi.": "Акция и список записавшихся будут удалены полностью.",
+  "Aksiyani tahrirlash": "Редактировать акцию",
+  "Yangi aksiya": "Новая акция",
+  "Masalan: Chilonzor tumanida umumshahar shanbaligi": "Например: общегородской субботник в Чиланзарском районе",
+  "Turi": "Тип",
+  "Boshlanishi": "Начало",
+  "Tugashi (ixtiyoriy)": "Окончание (необязательно)",
+  "Joy (manzil, mo‘ljal)": "Место (адрес, ориентир)",
+  "Kenglik (lat)": "Широта (lat)",
+  "Uzunlik (lng)": "Долгота (lng)",
+  "Ishtirokchilar chegarasi": "Лимит участников",
+  "cheksiz": "без лимита",
+  "Tashkilotchi": "Организатор",
+  "Aloqa (telefon yoki Telegram)": "Контакт (телефон или Telegram)",
+  "Batafsil havola (https://, ixtiyoriy)": "Ссылка на подробности (https://, необязательно)",
+  "Tavsif: nima qilinadi, nima olib kelish kerak": "Описание: что будет, что взять с собой",
+  "Tashkilot": "Организация",
+  "Qoralama sifatida saqlash (fuqarolarga ko‘rinmaydi)": "Сохранить как черновик (не видно гражданам)",
+  "E’lon qilish": "Опубликовать",
+  "Sarlavha kamida 5 belgidan iborat bo‘lsin": "Заголовок — не короче 5 символов",
+  "Boshlanish vaqtini kiriting": "Укажите время начала",
+  "Tugash vaqti boshlanishdan keyin bo‘lsin": "Окончание должно быть позже начала",
+  "Koordinatalarni to‘g‘ri kiriting (ikkalasini ham)": "Введите корректные координаты (обе)",
+  "Ishtirokchilar chegarasi musbat son bo‘lsin": "Лимит участников — положительное число",
+  "Havola https:// bilan boshlansin": "Ссылка должна начинаться с https://",
   'Fuqaro bloklangan: yangi ariza yubora olmaydi': 'Гражданин заблокирован: не может отправлять новые обращения', 'Blokdan chiqarish': 'Разблокировать', 'Fuqaroni bloklash (spam, haqorat)': 'Заблокировать гражданина (спам, оскорбления)', 'Fuqaroni bloklash': 'Блокировка гражданина',
   'Bloklangan fuqaro ilovadan yangi ariza yubora olmaydi. Avvalgi arizalari ko‘rib chiqilishda davom etadi.': 'Заблокированный гражданин не сможет отправлять новые обращения. Прежние обращения продолжают рассматриваться.', 'Bloklash': 'Заблокировать', 'Fuqaro bloklandi': 'Гражданин заблокирован', 'Fuqaro blokdan chiqarildi': 'Гражданин разблокирован',
   'Ilovadagi e’lon': 'Объявление в приложении', 'Yoqilgan e’lon fuqarolar ilovasining bosh sahifasida ko‘rinadi (masalan, shanbalik yoki texnik ishlar haqida).': 'Включённое объявление отображается на главной странице приложения граждан (например, о субботнике или техработах).', 'E’lonni ko‘rsatish': 'Показывать объявление', 'Matn (o‘zbekcha)': 'Текст (узбекский)', 'Matn (ruscha)': 'Текст (русский)', 'E’lon matnini kiriting': 'Введите текст объявления',

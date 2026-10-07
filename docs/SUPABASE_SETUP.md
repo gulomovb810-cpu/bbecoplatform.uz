@@ -155,6 +155,17 @@ AI Yordamchi `supabase/functions/ai-chat` Edge Function orqali Google Gemini bil
 - “AI yordamchi hozir band” chiqsa, Gemini’ning daqiqalik yoki kunlik limiti tugagan. Bir ozdan keyin qayta urinib ko‘ring yoki pullik tarifga o‘ting.
 - Supabase → **Edge Functions → ai-chat → Logs** bo‘limida faqat xato turi ko‘rinadi (masalan, `provider error: key 403` — kalit noto‘g‘ri). Savol matnlari logga yozilmaydi.
 
+## 11. Tozalash aksiyalari (rasmiy e’lonlar va “Qatnashaman”)
+
+`schema.sql` `eco_events` (aksiyalar) va `event_participants` (kim qatnashadi) jadvallarini yaratadi.
+
+- **E’lon qilish:** portalda **🧹 Tozalash aksiyalari → ➕ Aksiya e’lon qilish**. Administrator, moderator va idora rahbari e’lon qila oladi; idora rahbari faqat o‘z idorasi nomidan.
+- **Fuqarolar ilovasida:** “Tozalash aksiyalari” bo‘limida e’lon darhol (Realtime orqali) ko‘rinadi. Fuqaro “Qatnashaman” tugmasini bosadi, kalendarga qo‘shadi, xaritada ko‘radi yoki ulashadi.
+- **Maxfiylik:** fuqarolar ishtirokchilar ro‘yxatini ko‘rmaydi, faqat sonini (`event_counts`). Ro‘yxatni faqat administrator va moderator ko‘radi. Bloklangan foydalanuvchi qatnasha olmaydi, joy tugaganda yozilish to‘xtaydi.
+- **Qoralama** fuqarolarga ko‘rinmaydi; **Bekor qilish** e’lonni ilovada “Bekor qilindi” deb ko‘rsatadi.
+
+Bo‘limdagi **“Saytlardan xabarlar”** qismi Supabase’siz ham ishlaydi: `scripts/fetch-events.mjs` har soatda Google News, Kun.uz, Gazeta.uz, Daryo, UzA va boshqa saytlardan hashar, ko‘chat ekish va volontyorlik xabarlarini yig‘ib, `news-data` branchidagi `events.json` ga yozadi. Har soatlik yangilanish faqat workflow `main` branchida bo‘lganda ishlaydi.
+
 ## Muammolar
 | Belgi | Sabab / yechim |
 |---|---|

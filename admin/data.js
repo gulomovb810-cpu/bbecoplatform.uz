@@ -350,6 +350,20 @@ function demoPhoto(r, kind) {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
+// Demo tozalash aksiyalari (sanalar bugungi kunga nisbatan)
+function demoEvents() {
+  const at = (days, h) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, 0, 0, 0); return d.toISOString(); };
+  const sat = n => { const d = new Date(); return ((6 - d.getDay() + 7) % 7 || 7) + 7 * n; };
+  return [
+    { id: 'e1', title: 'Umumshahar shanbaligi: Chilonzor tumani ko‘chalarini tozalash', type: 'clean', region: 'tashkent_city', place: 'Chilonzor tumani, Bunyodkor ko‘chasi, “Chilonzor” metro bekati yonida', lat: 41.2756, lng: 69.2034, starts_at: at(sat(0), 9), ends_at: at(sat(0), 13), organizer: 'Toshkent sh. Obodonlashtirish', contact: '+998 71 200-00-02', max_people: 200, org_id: 'org-tsh-obod', status: 'published', description: 'Mahalla faollari, yoshlar va barcha xohlovchilar taklif etiladi. Qo‘lqop, qop va suv tashkilotchilar tomonidan beriladi. Qulay kiyim va bosh kiyim kiyib keling.', going: 64 },
+    { id: 'e2', title: '“Yashil makon”: Yunusobodda 1000 tup ko‘chat ekamiz', type: 'tree', region: 'tashkent_city', place: 'Yunusobod tumani, Bodomzor yo‘li bo‘yi', lat: 41.3409, lng: 69.2847, starts_at: at(sat(1), 8), ends_at: at(sat(1), 12), organizer: 'Toshkent sh. Ekologiya boshqarmasi', contact: '+998 71 200-00-01', max_people: 150, org_id: 'org-tsh-eco', status: 'published', description: '“Yashil makon” umummilliy loyihasi doirasida chinor, eman va akas ko‘chatlari ekiladi. Ko‘chat va asbob-uskunalar joyida beriladi.', going: 41 },
+    { id: 'e3', title: 'Chorvoq suv ombori qirg‘oqlarini plastikdan tozalash', type: 'volunteer', region: 'tashkent', place: 'Bo‘stonliq tumani, Chorvoq suv ombori, Yusufxona qirg‘og‘i', lat: 41.6271, lng: 70.0294, starts_at: at(sat(0) + 1, 9), ends_at: at(sat(0) + 1, 15), organizer: 'Toshkent vil. Ekologiya', contact: '@chorvoq_toza', max_people: 60, org_id: 'org-tv-eco', status: 'published', description: 'Ekologik volontyorlar uchun bir kunlik aksiya. Toshkentdan avtobus soat 7:30 da jo‘naydi (joy cheklangan). Yig‘ilgan plastik qayta ishlashga topshiriladi.', going: 37 },
+    { id: 'e4', title: 'Samarqand: Siyob bozori atrofida ekologik hashar', type: 'clean', region: 'samarkand', place: 'Samarqand sh., Siyob bozori va Shohizinda yo‘li', lat: 39.6627, lng: 66.9874, starts_at: at(sat(1), 9), ends_at: null, organizer: 'Samarqand Ekologiya', contact: '+998 66 200-00-05', max_people: null, org_id: 'org-sam-eco', status: 'published', description: 'Tarixiy obidalar atrofini tozalash va axlat qutilarini o‘rnatish.', going: 18 },
+    { id: 'e5', title: 'Orolbo‘yida saksovul ekish ekologik aksiyasi', type: 'action', region: 'karakalpakstan', place: 'Mo‘ynoq tumani, Orolning qurigan tubi', lat: 43.7686, lng: 59.0218, starts_at: at(sat(2), 8), ends_at: at(sat(2) + 1, 17), organizer: 'Qoraqalpog‘iston Ekologiya', contact: '+998 61 200-00-09', max_people: 80, org_id: 'org-kk-eco', status: 'draft', description: 'Ikki kunlik aksiya: saksovul va qandim ko‘chatlarini ekish. Turar joy va ovqat tashkilotchilar zimmasida.', going: 0 },
+    { id: 'e6', title: 'Farg‘ona: “Toza hovli” mahalla shanbaligi', type: 'clean', region: 'fergana', place: 'Farg‘ona sh., Al-Farg‘oniy bog‘i', lat: 40.3864, lng: 71.7864, starts_at: at(-6, 9), ends_at: at(-6, 12), organizer: 'Farg‘ona Ekologiya', contact: '', max_people: null, org_id: 'org-fer-eco', status: 'published', description: 'O‘tkazildi: 3,2 tonna chiqindi yig‘ildi, 120 nafar ishtirokchi.', going: 120 }
+  ];
+}
+
 const NEW_REPORT_POOL = [
   ['Chiqindi', 'tashkent_city'], ['Havo', 'tashkent_city'], ['Daraxt', 'tashkent_city'], ['Suv', 'samarkand'], ['Chiqindi', 'fergana'], ['Havo', 'tashkent'], ['Chiqindi', 'namangan'], ['Suv', 'tashkent_city'], ['Tuproq', 'bukhara']
 ];
@@ -479,6 +493,31 @@ class DemoStore {
     if (!t || !(m.role === 'admin' || (m.role === 'org_head' && t.org_id === m.org_id))) throw new Error('Ruxsat yo‘q');
     this.db.templates = this.db.templates.filter(x => x.id !== id); this._write(); this._emit({ type: 'templates' });
   }
+  // ---- Tozalash aksiyalari (RLS bilan bir xil qoidalar)
+  _canEditEvent(e) { const m = this.me; return isStaffRole(m.role) || (m.role === 'org_head' && e.org_id === m.org_id); }
+  async loadEvents() {
+    if (!this.db.events) { this.db.events = demoEvents(); this._write(); }
+    const m = this.me;
+    return this.db.events.filter(e => e.status !== 'draft' || isStaffRole(m.role) || (m.role === 'org_head' && e.org_id === m.org_id))
+      .map(e => Object.assign({}, e)).sort((a, b) => a.starts_at < b.starts_at ? 1 : -1);
+  }
+  async saveEvent(e) {
+    const m = this.me;
+    if (!isStaffRole(m.role) && m.role !== 'org_head') throw new Error('Ruxsat yo‘q');
+    if (m.role === 'org_head') e.org_id = m.org_id;
+    if (!this.db.events) this.db.events = demoEvents();
+    if (e.id) {
+      const i = this.db.events.findIndex(x => x.id === e.id);
+      if (i < 0 || !this._canEditEvent(this.db.events[i])) throw new Error('Ruxsat yo‘q');
+      this.db.events[i] = Object.assign({}, this.db.events[i], e);
+    } else { e.id = 'e' + Date.now().toString(36); e.going = 0; this.db.events.push(e); }
+    this._audit('event', null, e.title); this._write(); this._emit({ type: 'events' }); return e;
+  }
+  async deleteEvent(id) {
+    const e = (this.db.events || []).find(x => x.id === id);
+    if (!e || !this._canEditEvent(e)) throw new Error('Ruxsat yo‘q');
+    this.db.events = this.db.events.filter(x => x.id !== id); this._write(); this._emit({ type: 'events' });
+  }
   async saveSettings(s) {
     if (this.me.role !== 'admin') throw new Error('Faqat administrator uchun');
     this.db.settings = Object.assign({}, this.db.settings, s); this._write(); this._emit({ type: 'settings' });
@@ -606,6 +645,22 @@ class LiveStore {
     const { error } = await q; if (error) throw new Error(error.message);
   }
   async deleteTemplate(id) { const { error } = await this.sb.from('response_templates').delete().eq('id', id); if (error) throw new Error(error.message); }
+  async loadEvents() {
+    const ev = await this._all(this.sb.from('eco_events').select('*').order('starts_at', { ascending: false }).limit(500));
+    if (ev.length) {
+      const { data } = await this.sb.rpc('event_counts', { p_ids: ev.map(e => e.id) });
+      const c = Object.fromEntries((data || []).map(r => [r.event_id, Number(r.going)]));
+      ev.forEach(e => { e.going = c[e.id] || 0; });
+    }
+    return ev;
+  }
+  async saveEvent(e) {
+    const row = {};
+    ['title', 'description', 'type', 'region', 'place', 'lat', 'lng', 'starts_at', 'ends_at', 'organizer', 'contact', 'link', 'max_people', 'org_id', 'status'].forEach(k => { row[k] = e[k] === '' || e[k] === undefined ? null : e[k]; });
+    const q = e.id ? this.sb.from('eco_events').update(row).eq('id', e.id) : this.sb.from('eco_events').insert(row);
+    const { error } = await q; if (error) throw new Error(error.message);
+  }
+  async deleteEvent(id) { const { error } = await this.sb.from('eco_events').delete().eq('id', id); if (error) throw new Error(error.message); }
   async saveSettings(s) {
     const rows = Object.entries(s).map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() }));
     const { error } = await this.sb.from('app_settings').upsert(rows); if (error) throw new Error(error.message);

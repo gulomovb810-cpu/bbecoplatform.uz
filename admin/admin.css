@@ -388,3 +388,8 @@ table.tbl{width:100%; border-collapse:collapse; font-size:13px}
   .modal-f .btn{flex:1}
 }
 .leaflet-container{isolation:isolate; z-index:0}
+
+/* Tozalash aksiyalari */
+.ev-card .card-h h3{font-size:15px; line-height:1.35}
+.ev-meta{font-size:13px; color:var(--ink-2); margin:4px 0; overflow-wrap:anywhere}
+.ev-desc{margin:10px 0 0; font-size:13px; color:var(--ink-2); white-space:pre-wrap; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden}
