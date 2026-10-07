@@ -1,5 +1,6 @@
-# Ekologik yangiliklar: har soatda RSS lentalardan xabarlarni yig'ib,
-# news.json faylini alohida "news-data" branchiga yozadi.
+# Ekologik yangiliklar va tozalash aksiyalari: har soatda RSS lentalardan
+# xabarlarni yig'ib, news.json va events.json fayllarini alohida
+# "news-data" branchiga yozadi.
 # Ilova faylni shu manzildan o'qiydi:
 #   https://raw.githubusercontent.com/<owner>/<repo>/news-data/news.json
 # Asosiy (main) branch tarixi har soatlik commitlar bilan to'lmasligi uchun
@@ -13,6 +14,7 @@ on:
   push:
     paths:
       - scripts/fetch-news.mjs
+      - scripts/fetch-events.mjs
       - .github/workflows/eco-news.yml
 
 permissions:
@@ -35,17 +37,23 @@ jobs:
 
       - name: Oldingi xabarlarni olish
         run: |
-          git fetch --depth=1 origin news-data 2>/dev/null && git show origin/news-data:news.json > prev.json || echo '{}' > prev.json
+          git fetch --depth=1 origin news-data 2>/dev/null || true
+          git show origin/news-data:news.json > prev.json 2>/dev/null || echo '{}' > prev.json
+          git show origin/news-data:events.json > prev-events.json 2>/dev/null || echo '{}' > prev-events.json
 
       - name: Yangiliklarni yig'ish
         run: node scripts/fetch-news.mjs prev.json news.json
 
+      - name: Tozalash aksiyalari va volontyorlik e'lonlarini yig'ish
+        # bu bosqich ishlamasa ham yangiliklar yozilaveradi (eski events.json saqlanadi)
+        run: node scripts/fetch-events.mjs prev-events.json events.json || cp prev-events.json events.json
+
       - name: news-data branchiga yozish
         run: |
-          mkdir out && cp news.json out/ && cd out
+          mkdir out && cp news.json events.json out/ && cd out
           git init -q -b news-data
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add news.json
+          git add news.json events.json
           git commit -q -m "Ekologik yangiliklar: $(date -u +%Y-%m-%dT%H:%MZ)"
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" news-data

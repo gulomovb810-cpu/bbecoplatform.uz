@@ -179,7 +179,7 @@ export function parseFeed(xml, src) {
   return items;
 }
 
-async function fetchText(url) {
+export async function fetchText(url) {
   const res = await fetch(url, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; bbecoplatform-news/1.0; +https://bbecoplatform.uz)", Accept: "application/rss+xml, application/xml, text/xml, */*" },
     signal: AbortSignal.timeout(FETCH_TIMEOUT),
