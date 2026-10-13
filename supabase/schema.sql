@@ -45,7 +45,7 @@ create table if not exists public.organizations (
   name        text not null,
   short_name  text,
   region      text,                      -- viloyat kodi (null = respublika miqyosida)
-  categories  text[] not null default '{}', -- Chiqindi, Havo, Suv, Daraxt, Tuproq, Boshqa
+  categories  text[] not null default '{}', -- Chiqindi, Havo, Suv, Daraxt, Tuproq, Hayvon, Boshqa
   head        text,
   phone       text,
   email       text,
@@ -61,7 +61,7 @@ create table if not exists public.reports (
   case_no           text not null unique,
   user_id           uuid default auth.uid(),
   description       text not null check (char_length(description) between 3 and 5000),
-  category          text not null check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Boshqa')),
+  category          text not null check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa')),
   region            text,
   address           text,
   lat               double precision,
@@ -738,12 +738,308 @@ create policy "event_participants leave" on public.event_participants for delete
   using (user_id = auth.uid());
 
 -- ---------------------------------------------------------------------
+-- 7c. EKOTIZIM REYTINGI: eko-ballar, raqamli nishonlar, "Daraxtlarim"
+-- Ballar tasdiqlangan amallardan bazada hisoblanadi (fuqaro o'zi yoza olmaydi).
+-- Nishonlarni faqat mas'ullar beradi: vazirlik xodimi yoki idora rahbari;
+-- "Tabiat Himoyachisi" (oliy maqom) — faqat vazirlik xodimi.
+-- Reytingda fuqaro ismi faqat o'zi rozilik bersa ko'rsatiladi (rating_public),
+-- aks holda taxallus: "Faol fuqaro #A1B2". Telefon/email hech qachon chiqmaydi.
+-- ---------------------------------------------------------------------
+alter table public.profiles add column if not exists rating_public boolean not null default false;
+
+-- "Hayvonot dunyosi" toifasi (brakonerlik, hayvonlarga shafqatsizlik)
+alter table public.reports drop constraint if exists reports_category_check;
+alter table public.reports add constraint reports_category_check
+  check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'));
+update public.app_settings set value = value || '{"Hayvon":3}'::jsonb
+  where key = 'sla_days' and not (value ? 'Hayvon');
+
+create table if not exists public.badge_awards (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null references public.profiles(id) on delete cascade,
+  badge         text not null check (badge in ('eco_detective','green_hands','animal_friend','nature_guardian')),
+  note          text check (char_length(note) <= 500),
+  report_ids    uuid[] not null default '{}',
+  awarded_by    uuid default auth.uid() references public.profiles(id) on delete set null,
+  org_id        uuid references public.organizations(id) on delete set null,
+  created_at    timestamptz not null default now(),
+  revoked_at    timestamptz,
+  revoked_by    uuid references public.profiles(id) on delete set null,
+  revoke_reason text check (char_length(revoke_reason) <= 300)
+);
+create unique index if not exists badge_awards_active_uq on public.badge_awards (user_id, badge) where revoked_at is null;
+
+create table if not exists public.user_trees (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  species     text not null check (char_length(species) between 2 and 80),
+  region      text,
+  address     text check (char_length(address) <= 200),
+  lat         double precision check (lat between -90 and 90),
+  lng         double precision check (lng between -180 and 180),
+  photo_path  text,
+  planted_on  date,
+  status      text not null default 'pending' check (status in ('pending','verified','rejected')),
+  checked_by  uuid references public.profiles(id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+create index if not exists user_trees_user_idx on public.user_trees (user_id);
+
+create table if not exists public.tree_waterings (
+  id          bigint generated always as identity primary key,
+  tree_id     uuid not null references public.user_trees(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  photo_path  text,
+  day         date not null default (now() at time zone 'Asia/Tashkent')::date,
+  created_at  timestamptz not null default now(),
+  unique (tree_id, day)          -- kuniga bitta hisobot (ball ko'paytirib bo'lmaydi)
+);
+
+-- Fuqaro daraxtni faqat o'z nomidan, kuniga 10 tagacha qo'sha oladi; holatini o'zgartira olmaydi
+create or replace function public.user_trees_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    if not (public.is_staff() or public.is_org_head()) then
+      new.user_id := auth.uid(); new.status := 'pending'; new.checked_by := null; new.created_at := now();
+      if (select count(*) from public.user_trees where user_id = auth.uid() and created_at > now() - interval '1 day') >= 10 then
+        raise exception 'Bir kunda 10 tadan ortiq daraxt qo‘shib bo‘lmaydi';
+      end if;
+    end if;
+  else
+    if public.is_staff() or public.is_org_head() then
+      new.user_id := old.user_id; new.checked_by := auth.uid();
+    else
+      new.user_id := old.user_id; new.status := old.status; new.checked_by := old.checked_by; new.created_at := old.created_at;
+    end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists user_trees_before_write on public.user_trees;
+create trigger user_trees_before_write before insert or update on public.user_trees
+  for each row execute function public.user_trees_before_write();
+
+-- Nishon qoidalari (ilova va portaldagi BADGE_RULES bilan bir xil)
+create or replace function public.eco_stats(p_user uuid)
+returns table(dumps_confirmed int, trees_watered int, animal_resolved int, major_resolved int,
+              confirmed int, resolved int, trees int, waterings int, events int)
+language sql stable security definer set search_path = public as $$
+  with r as (
+    select * from public.reports
+    where user_id = p_user and not cancelled and coalesce(reject_reason, '') = ''
+  )
+  select
+    (select count(*) from r where category = 'Chiqindi' and status >= 2)::int,
+    (select count(*) from public.user_trees t where t.user_id = p_user and t.status <> 'rejected'
+       and exists (select 1 from public.tree_waterings w where w.tree_id = t.id))::int,
+    (select count(*) from r where category = 'Hayvon' and status >= 3)::int,
+    (select count(*) from r where priority >= 1 and status >= 3)::int,
+    (select count(*) from r where status >= 2)::int,
+    (select count(*) from r where status >= 3)::int,
+    (select count(*) from public.user_trees t where t.user_id = p_user and t.status <> 'rejected')::int,
+    (select count(*) from public.tree_waterings w join public.user_trees t on t.id = w.tree_id
+       where w.user_id = p_user and t.status <> 'rejected')::int,
+    (select count(*) from public.event_participants p join public.eco_events e on e.id = p.event_id
+       where p.user_id = p_user and e.status = 'published'
+         and coalesce(e.ends_at, e.starts_at + interval '1 day') < now())::int;
+$$;
+
+-- Eko-ball: tasdiqlangan ariza 10, hal qilingan +15, muhim muammo hal qilingan +10,
+-- daraxt 5, sug'orish hisoboti 2, o'tgan aksiyada qatnashish 10, nishonlar 50/50/50/150
+create or replace function public.eco_points(p_user uuid) returns int
+language sql stable security definer set search_path = public as $$
+  select coalesce((select s.confirmed * 10 + s.resolved * 15 + s.major_resolved * 10
+                        + s.trees * 5 + s.waterings * 2 + s.events * 10
+                   from public.eco_stats(p_user) s), 0)
+       + coalesce((select sum(case badge when 'nature_guardian' then 150 else 50 end)::int
+                   from public.badge_awards where user_id = p_user and revoked_at is null), 0);
+$$;
+
+-- Fuqaroning asosiy hududi: eng ko'p ariza yuborgan viloyati
+create or replace function public.home_region(p_user uuid) returns text
+language sql stable security definer set search_path = public as $$
+  select region from public.reports where user_id = p_user and region is not null and not cancelled
+  group by region order by count(*) desc, max(created_at) desc limit 1;
+$$;
+
+create or replace function public.rating_alias(p_user uuid, p_public boolean, p_name text) returns text
+language sql immutable as $$
+  select case when p_public and coalesce(trim(p_name),'') <> ''
+              then split_part(trim(p_name),' ',1) || coalesce(' ' || nullif(left(split_part(trim(p_name),' ',2),1),'') || '.', '')
+              else 'Faol fuqaro #' || upper(left(md5(p_user::text), 4)) end;
+$$;
+
+-- Reyting jadvali: faqat taxallus/ism, hudud, ball va nishonlar
+create or replace function public.eco_leaderboard(p_region text default null, p_limit int default 50)
+returns table(pos bigint, alias text, region text, points int, badges text[], is_me boolean)
+language sql stable security definer set search_path = public as $$
+  with base as (
+    select p.id, p.rating_public, p.full_name, public.home_region(p.id) as region, public.eco_points(p.id) as pts
+    from public.profiles p
+    where p.role = 'user' and not p.blocked
+      and (exists (select 1 from public.reports r where r.user_id = p.id)
+           or exists (select 1 from public.user_trees t where t.user_id = p.id)
+           or exists (select 1 from public.badge_awards b where b.user_id = p.id))
+  ), ranked as (
+    select b.*, rank() over (order by b.pts desc) as rk from base b
+    where b.pts > 0 and (p_region is null or b.region = p_region)
+  )
+  select rk, public.rating_alias(id, rating_public, full_name), region, pts,
+         coalesce((select array_agg(a.badge order by a.created_at) from public.badge_awards a
+                   where a.user_id = ranked.id and a.revoked_at is null), '{}'),
+         id = auth.uid()
+  from ranked
+  where rk <= least(greatest(p_limit, 1), 100) or id = auth.uid()
+  order by rk, id;
+$$;
+
+-- Fuqaroning o'z reytingi: ballar, o'rinlar, nishon progressi va berilgan nishonlar
+create or replace function public.my_eco_rating() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_uid uuid := auth.uid(); v_reg text; v_pts int; s record; res jsonb;
+begin
+  if v_uid is null then return null; end if;
+  v_reg := public.home_region(v_uid); v_pts := public.eco_points(v_uid);
+  select * into s from public.eco_stats(v_uid);
+  select jsonb_build_object(
+    'points', v_pts, 'region', v_reg,
+    'rank', (select count(*) + 1 from public.profiles p where p.role = 'user' and not p.blocked and p.id <> v_uid and public.eco_points(p.id) > v_pts),
+    'rank_region', case when v_reg is null then null else
+       (select count(*) + 1 from public.profiles p where p.role = 'user' and not p.blocked and p.id <> v_uid
+          and public.home_region(p.id) = v_reg and public.eco_points(p.id) > v_pts) end,
+    'stats', to_jsonb(s),
+    'public', (select rating_public from public.profiles where id = v_uid),
+    'awards', coalesce((select jsonb_agg(jsonb_build_object('id', a.id, 'badge', a.badge, 'note', a.note, 'at', a.created_at,
+                       'org', coalesce(o.short_name, o.name)) order by a.created_at)
+                        from public.badge_awards a left join public.organizations o on o.id = a.org_id
+                        where a.user_id = v_uid and a.revoked_at is null), '[]'::jsonb)
+  ) into res;
+  return res;
+end $$;
+
+-- Mas'ullar uchun nomzodlar: mezonga yetgan, lekin hali nishon olmagan fuqarolar.
+-- Idora rahbari faqat o'z idorasiga kelgan arizalar egalarini ko'radi.
+create or replace function public.badge_candidates()
+returns table(user_id uuid, full_name text, region text, badge text, progress int, need int, report_ids uuid[], case_nos text[])
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not (public.is_staff() or public.is_org_head()) then raise exception 'Ruxsat yo‘q'; end if;
+  return query
+  with u as (
+    select p.id, p.full_name, public.home_region(p.id) as reg, s.*
+    from public.profiles p cross join lateral public.eco_stats(p.id) s
+    where p.role = 'user' and not p.blocked
+      and (public.is_staff() or exists (select 1 from public.reports r where r.user_id = p.id and r.org_id = public.my_org()))
+  ), c as (
+    select u.id, u.full_name, u.reg, 'eco_detective'::text b, u.dumps_confirmed v, 3 n from u where u.dumps_confirmed >= 3
+    union all select u.id, u.full_name, u.reg, 'green_hands', u.trees_watered, 5 from u where u.trees_watered >= 5
+    union all select u.id, u.full_name, u.reg, 'animal_friend', u.animal_resolved, 1 from u where u.animal_resolved >= 1
+    union all select u.id, u.full_name, u.reg, 'nature_guardian', u.major_resolved, 5 from u where u.major_resolved >= 5 and public.is_staff()
+  )
+  select c.id, c.full_name, c.reg, c.b, c.v, c.n,
+    coalesce(array_agg(r.id order by r.created_at) filter (where r.id is not null), '{}'),
+    coalesce(array_agg(r.case_no order by r.created_at) filter (where r.id is not null), '{}')
+  from c
+  left join public.reports r on r.user_id = c.id and not r.cancelled and coalesce(r.reject_reason, '') = ''
+    and ((c.b = 'eco_detective' and r.category = 'Chiqindi' and r.status >= 2)
+      or (c.b = 'animal_friend' and r.category = 'Hayvon' and r.status >= 3)
+      or (c.b = 'nature_guardian' and r.priority >= 1 and r.status >= 3))
+    and (public.is_staff() or r.org_id = public.my_org())   -- idora rahbari: dalil o'z idorasidagi arizalardan
+  where not exists (select 1 from public.badge_awards a where a.user_id = c.id and a.badge = c.b and a.revoked_at is null)
+  group by c.id, c.full_name, c.reg, c.b, c.v, c.n
+  having c.b = 'green_hands' or public.is_staff() or count(r.id) >= c.n;
+end $$;
+
+create or replace function public.award_badge(p_user uuid, p_badge text, p_note text, p_reports uuid[] default '{}')
+returns uuid language plpgsql security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  if not (public.is_staff() or public.is_org_head()) then raise exception 'Ruxsat yo‘q'; end if;
+  if p_badge = 'nature_guardian' and not public.is_staff() then
+    raise exception '“Tabiat Himoyachisi” nishonini faqat vazirlik beradi';
+  end if;
+  if not exists (select 1 from public.profiles where id = p_user and role = 'user') then raise exception 'Fuqaro topilmadi'; end if;
+  if not public.is_staff() and not exists (select 1 from public.reports r where r.user_id = p_user and r.org_id = public.my_org())
+     and not exists (select 1 from public.user_trees t join public.organizations o on o.id = public.my_org()
+                     where t.user_id = p_user and t.region = o.region) then
+    raise exception 'Bu fuqaro sizning idorangizga murojaat qilmagan';
+  end if;
+  insert into public.badge_awards (user_id, badge, note, report_ids, awarded_by, org_id)
+  values (p_user, p_badge, nullif(trim(p_note), ''), coalesce(p_reports, '{}'), auth.uid(),
+          coalesce(public.my_org(), (select id from public.organizations where region is null order by created_at limit 1)))
+  returning id into v_id;
+  return v_id;
+exception when unique_violation then raise exception 'Fuqaroda bu nishon allaqachon bor';
+end $$;
+
+create or replace function public.revoke_badge(p_award uuid, p_reason text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_staff() then raise exception 'Nishonni faqat vazirlik bekor qila oladi'; end if;
+  update public.badge_awards set revoked_at = now(), revoked_by = auth.uid(), revoke_reason = nullif(trim(p_reason), '')
+  where id = p_award and revoked_at is null;
+end $$;
+
+revoke all on function public.eco_stats(uuid) from public, anon, authenticated;
+revoke all on function public.eco_points(uuid) from public, anon, authenticated;
+revoke all on function public.home_region(uuid) from public, anon, authenticated;
+revoke all on function public.eco_leaderboard(text, int) from public, anon;
+grant execute on function public.eco_leaderboard(text, int) to authenticated;
+revoke all on function public.my_eco_rating() from public, anon;
+grant execute on function public.my_eco_rating() to authenticated;
+revoke all on function public.badge_candidates() from public, anon;
+grant execute on function public.badge_candidates() to authenticated;
+revoke all on function public.award_badge(uuid, text, text, uuid[]) from public, anon;
+grant execute on function public.award_badge(uuid, text, text, uuid[]) to authenticated;
+revoke all on function public.revoke_badge(uuid, text) from public, anon;
+grant execute on function public.revoke_badge(uuid, text) to authenticated;
+
+alter table public.badge_awards enable row level security;
+alter table public.user_trees enable row level security;
+alter table public.tree_waterings enable row level security;
+
+-- Nishonlar: fuqaro o'zinikini, mas'ullar hammasini ko'radi; yozish faqat award_badge/revoke_badge orqali
+drop policy if exists "badge_awards read" on public.badge_awards;
+create policy "badge_awards read" on public.badge_awards for select to authenticated
+  using (user_id = auth.uid() or public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+
+drop policy if exists "user_trees read" on public.user_trees;
+create policy "user_trees read" on public.user_trees for select to authenticated
+  using (user_id = auth.uid() or public.is_staff()
+         or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())));
+drop policy if exists "user_trees insert" on public.user_trees;
+create policy "user_trees insert" on public.user_trees for insert to authenticated
+  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "user_trees update" on public.user_trees;
+create policy "user_trees update" on public.user_trees for update to authenticated
+  using (public.is_staff() or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())))
+  with check (true);
+drop policy if exists "user_trees delete" on public.user_trees;
+create policy "user_trees delete" on public.user_trees for delete to authenticated
+  using ((user_id = auth.uid() and status = 'pending') or public.is_staff());
+
+drop policy if exists "tree_waterings read" on public.tree_waterings;
+create policy "tree_waterings read" on public.tree_waterings for select to authenticated
+  using (user_id = auth.uid() or exists (select 1 from public.user_trees t where t.id = tree_id));
+drop policy if exists "tree_waterings insert" on public.tree_waterings;
+create policy "tree_waterings insert" on public.tree_waterings for insert to authenticated
+  with check (user_id = auth.uid() and exists (select 1 from public.user_trees t
+              where t.id = tree_id and t.user_id = auth.uid() and t.status <> 'rejected'));
+
+-- Daraxt suratlari: <user_id>/trees/<fayl> — egasi yuklaydi, mas'ullar ko'radi
+drop policy if exists "report-media read trees" on storage.objects;
+create policy "report-media read trees" on storage.objects for select to authenticated
+  using (bucket_id = 'report-media' and (storage.foldername(name))[2] = 'trees' and public.is_org_head()
+         and (exists (select 1 from public.user_trees t where t.photo_path = name)
+              or exists (select 1 from public.tree_waterings w where w.photo_path = name)));
+
+-- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)
 -- ---------------------------------------------------------------------
 do $$
 declare t text;
 begin
-  foreach t in array array['reports','profiles','report_status_history','report_comments','eco_events'] loop
+  foreach t in array array['reports','profiles','report_status_history','report_comments','eco_events','badge_awards'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I', t);
     exception when duplicate_object then null;
@@ -787,15 +1083,15 @@ insert into public.app_settings (key, value) values
   ('edit_days',         '5'::jsonb),
   ('daily_limit',       '10'::jsonb),
   ('auto_assign',       'false'::jsonb),
-  ('sla_days',          '{"Chiqindi":5,"Havo":3,"Suv":5,"Daraxt":7,"Tuproq":10,"Boshqa":15}'::jsonb),
+  ('sla_days',          '{"Chiqindi":5,"Havo":3,"Suv":5,"Daraxt":7,"Tuproq":10,"Hayvon":3,"Boshqa":15}'::jsonb),
   ('announcement',      '{"enabled": false, "uz": "", "ru": ""}'::jsonb)
 on conflict (key) do nothing;
 
 insert into public.organizations (name, short_name, region, categories, phone, email)
 select * from (values
   ('O‘zbekiston Respublikasi Ekologiya, atrof-muhitni muhofaza qilish va iqlim o‘zgarishi vazirligi', 'Ekologiya vazirligi', null::text,
-     array['Chiqindi','Havo','Suv','Daraxt','Tuproq','Boshqa'], '+998 71 207-07-70', null::text),
-  ('Toshkent shahar Ekologiya boshqarmasi', 'Toshkent sh. ekologiya', 'tashkent_city', array['Havo','Suv','Daraxt','Tuproq','Boshqa'], null, null),
+     array['Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'], '+998 71 207-07-70', null::text),
+  ('Toshkent shahar Ekologiya boshqarmasi', 'Toshkent sh. ekologiya', 'tashkent_city', array['Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'], null, null),
   ('“Toshkent shahar obodonlashtirish” boshqarmasi', 'Obodonlashtirish', 'tashkent_city', array['Chiqindi','Daraxt'], null, null),
   ('Chiqindilar bilan ishlash agentligi', 'Chiqindi agentligi', null, array['Chiqindi'], null, null)
 ) as v(name, short_name, region, categories, phone, email)

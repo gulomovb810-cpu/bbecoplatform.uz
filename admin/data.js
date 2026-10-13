@@ -20,6 +20,7 @@ const CATEGORIES = [
   { k: 'Suv',      icon: '💧', t: 'Suv ifloslanishi' },
   { k: 'Daraxt',   icon: '🌳', t: 'Daraxt kesish' },
   { k: 'Tuproq',   icon: '🪨', t: 'Tuproq / yer' },
+  { k: 'Hayvon',   icon: '🦌', t: 'Hayvonot dunyosi' },
   { k: 'Boshqa',   icon: '❗', t: 'Boshqa' }
 ];
 const REGIONS = [
@@ -54,10 +55,45 @@ const PORTAL_ROLES = ['admin', 'moderator', 'org_head', 'org_staff'];
 const DEFAULT_SETTINGS = {
   accepting_reports: true,
   auto_assign: true,
-  sla_days: { Chiqindi: 5, Havo: 3, Suv: 5, Daraxt: 7, Tuproq: 10, Boshqa: 15 },
+  sla_days: { Chiqindi: 5, Havo: 3, Suv: 5, Daraxt: 7, Tuproq: 10, Hayvon: 3, Boshqa: 15 },
   edit_days: 5, daily_limit: 10,
   announcement: { enabled: false, uz: '', ru: '' }
 };
+
+// ---- Ekotizim reytingi: nishonlar va eko-ballar (supabase/schema.sql 7c bilan bir xil qoidalar)
+const BADGES = [
+  { k: 'eco_detective',   icon: '🕵️', t: 'Eko-Detektiv',       need: 3, pts: 50,  rule: 'Kamida 3 ta noqonuniy chiqindixona haqidagi xabari tasdiqlangan', unit: 'tasdiqlangan chiqindixona' },
+  { k: 'green_hands',     icon: '🌳', t: 'Yashil Qo‘llar',     need: 5, pts: 50,  rule: '5 ta daraxtni xaritaga kiritib, ularni sug‘organi haqida hisobot bergan', unit: 'sug‘orilgan daraxt' },
+  { k: 'animal_friend',   icon: '🦌', t: 'Hayvonlar Do‘sti',   need: 1, pts: 50,  rule: 'Brakonerlik yoki hayvonlarga shafqatsizlik holatini to‘xtatishga hissa qo‘shgan', unit: 'hal qilingan holat' },
+  { k: 'nature_guardian', icon: '🛡️', t: 'Tabiat Himoyachisi', need: 5, pts: 150, rule: 'Kamida 5 ta yirik ekologik muammo mutasaddilar tomonidan to‘liq hal etilgan', unit: 'hal qilingan yirik muammo', top: true }
+];
+const badgeOf = k => BADGES.find(b => b.k === k) || BADGES[0];
+const repOk = r => !r.cancelled && !r.reject_reason;
+const BADGE_EVIDENCE = {
+  eco_detective: r => repOk(r) && r.category === 'Chiqindi' && r.status >= 2,
+  animal_friend: r => repOk(r) && r.category === 'Hayvon' && r.status >= 3,
+  nature_guardian: r => repOk(r) && r.priority >= 1 && r.status >= 3
+};
+function ecoStats(uid, reports, trees) {
+  const R = reports.filter(r => r.user_id === uid && repOk(r)), T = (trees || []).filter(t => t.user_id === uid && t.status !== 'rejected');
+  return {
+    dumps_confirmed: R.filter(BADGE_EVIDENCE.eco_detective).length,
+    trees_watered: T.filter(t => (t.waterings || 0) > 0).length,
+    animal_resolved: R.filter(BADGE_EVIDENCE.animal_friend).length,
+    major_resolved: R.filter(BADGE_EVIDENCE.nature_guardian).length,
+    confirmed: R.filter(r => r.status >= 2).length, resolved: R.filter(r => r.status >= 3).length,
+    trees: T.length, waterings: T.reduce((a, t) => a + (t.waterings || 0), 0), events: 0
+  };
+}
+const BADGE_STAT = { eco_detective: 'dumps_confirmed', green_hands: 'trees_watered', animal_friend: 'animal_resolved', nature_guardian: 'major_resolved' };
+function ecoPoints(st, awards) {
+  return st.confirmed * 10 + st.resolved * 15 + st.major_resolved * 10 + st.trees * 5 + st.waterings * 2 + st.events * 10
+    + (awards || []).filter(a => !a.revoked_at).reduce((a, x) => a + badgeOf(x.badge).pts, 0);
+}
+function homeRegion(reports) {
+  const c = {}; reports.filter(r => r.region && !r.cancelled).forEach(r => { c[r.region] = (c[r.region] || 0) + 1; });
+  return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || null;
+}
 const MAX_TERM_DAYS = 30;   // murojaat kelgan kundan boshlab eng uzoq muddat
 
 const DAY = 86400000;
@@ -204,6 +240,13 @@ const DEMO_TEXTS = {
     'Daryo o‘zanidan ruxsatsiz qum-shag‘al qazilmoqda, qirg‘oq yemirilyapti.',
     'Eski fabrika hududida bochkalarda noma’lum kimyoviy moddalar qolib ketgan.'
   ],
+  Hayvon: [
+    'Tog‘ etagida brakonerlar qopqon qo‘yib, tog‘ echkilarini ovlamoqda.',
+    'Bozorda Qizil kitobga kiritilgan toshbaqalar sotilyapti.',
+    'Hovlida mushuk va itlarga zahar sepilgan ovqat tashlab ketilgan.',
+    'Ko‘l bo‘yida ruxsatsiz baliq ovlash to‘ri o‘rnatilgan, qushlar ilinib qolmoqda.',
+    'Sirk tashqarisida hayvonlar qafasda suvsiz va oftobda saqlanmoqda.'
+  ],
   Boshqa: [
     'Ko‘chadagi daraxtlarga reklama bannerlari mixlab qo‘yilgan.',
     'Hovlida adashgan itlar ko‘payib ketgan, bolalarga xavf tug‘diryapti.',
@@ -218,6 +261,7 @@ const DEMO_ANSWERS = {
   Suv: 'Murojaatingiz o‘rganildi. Oqova suvni chiqarish manbai aniqlanib, faoliyati to‘xtatildi. Suv namunalari laboratoriyada tahlil qilindi, aybdor shaxsga nisbatan qonunchilikda belgilangan choralar ko‘rildi.',
   Daraxt: 'Murojaatingiz bo‘yicha joyida o‘rganish o‘tkazildi. Daraxtlar ruxsatsiz kesilgani aniqlanib, aybdorlarga nisbatan jarima qo‘llanildi va yetkazilgan zararni qoplash uchun 10 barobar ko‘p ko‘chat ekish majburiyati yuklatildi.',
   Tuproq: 'Murojaatingiz o‘rganildi. Ifloslangan yer maydoni aniqlanib, tozalash ishlari tashkil etildi. Tuproq namunalari tahlilga yuborildi, mas’ul shaxsga nisbatan choralar ko‘rildi.',
+  Hayvon: 'Murojaatingiz bo‘yicha inspektorlar joyiga chiqdi. Qoidabuzarlik to‘xtatildi, ov qurollari va qopqonlar olib qo‘yildi, aybdorlarga nisbatan bayonnoma rasmiylashtirildi. Hayvonlar veterinariya ko‘rigidan o‘tkazildi.',
   Boshqa: 'Murojaatingiz ko‘rib chiqildi. Ko‘rsatilgan holat bo‘yicha tegishli choralar ko‘rildi va mas’ul xizmatlarga topshiriq berildi. Murojaatingiz uchun rahmat.'
 };
 const DEMO_REJECTS = [
@@ -230,10 +274,10 @@ const NAMES_F = ['Dilnoza Rasulova', 'Malika Hamidova', 'Gulnora Yo‘ldosheva',
 const CITIZENS = ['Aziz Normatov', 'Lola Karimova', 'Timur Ganiyev', 'Sevara Olimova', 'Bahodir Xasanov', 'Nodira Umarova', 'Eldor Sattorov', 'Munisa Valiyeva', 'Jamshid Murodov', 'Ozoda Hakimova', 'Laziz Qurbonov', 'Durdona Azimova', 'Sanjar Pulatov', 'Kamron Ibragimov', 'Mohira Tojiyeva', 'Abdulla Yo‘ldoshev'];
 
 function demoOrgs() {
-  const all = ['Chiqindi', 'Havo', 'Suv', 'Daraxt', 'Tuproq', 'Boshqa'];
+  const all = ['Chiqindi', 'Havo', 'Suv', 'Daraxt', 'Tuproq', 'Hayvon', 'Boshqa'];
   return [
     { id: 'org-min', name: 'O‘zbekiston Respublikasi Ekologiya, atrof-muhitni muhofaza qilish va iqlim o‘zgarishi vazirligi', short_name: 'Ekologiya vazirligi', region: null, categories: all, central: true, phone: '+998 71 207-07-70', email: 'info@eco.gov.uz', address: 'Toshkent sh.' },
-    { id: 'org-tsh-eco', name: 'Toshkent shahar Ekologiya va atrof-muhitni muhofaza qilish boshqarmasi', short_name: 'Toshkent sh. Ekologiya boshqarmasi', region: 'tashkent_city', categories: ['Havo', 'Suv', 'Daraxt', 'Tuproq', 'Boshqa'], phone: '+998 71 200-00-01', email: 'toshkent@eco.gov.uz', address: 'Toshkent sh., Yunusobod tumani' },
+    { id: 'org-tsh-eco', name: 'Toshkent shahar Ekologiya va atrof-muhitni muhofaza qilish boshqarmasi', short_name: 'Toshkent sh. Ekologiya boshqarmasi', region: 'tashkent_city', categories: ['Havo', 'Suv', 'Daraxt', 'Tuproq', 'Hayvon', 'Boshqa'], phone: '+998 71 200-00-01', email: 'toshkent@eco.gov.uz', address: 'Toshkent sh., Yunusobod tumani' },
     { id: 'org-tsh-obod', name: 'Toshkent shahar Obodonlashtirish bosh boshqarmasi', short_name: 'Toshkent sh. Obodonlashtirish', region: 'tashkent_city', categories: ['Chiqindi', 'Daraxt'], phone: '+998 71 200-00-02', email: 'obod@tashkent.uz', address: 'Toshkent sh., Mirobod tumani' },
     { id: 'org-waste', name: 'Chiqindilar bilan ishlash agentligi', short_name: 'Chiqindi agentligi', region: null, categories: ['Chiqindi'], phone: '+998 71 200-00-03', email: 'info@waste.uz', address: 'Toshkent sh.' },
     { id: 'org-tv-eco', name: 'Toshkent viloyati Ekologiya boshqarmasi', short_name: 'Toshkent vil. Ekologiya', region: 'tashkent', categories: all, phone: '+998 70 200-00-04', email: 'tv@eco.gov.uz', address: 'Nurafshon sh.' },
@@ -270,7 +314,7 @@ function buildDemo() {
   profiles.push(...citizens);
 
   const regionBag = ['tashkent_city', 'tashkent_city', 'tashkent_city', 'tashkent_city', 'tashkent_city', 'tashkent_city', 'tashkent', 'tashkent', 'samarkand', 'samarkand', 'fergana', 'fergana', 'bukhara', 'andijan', 'namangan', 'karakalpakstan', 'kashkadarya', 'navoi', 'khorezm', 'jizzakh', 'syrdarya', 'surkhandarya'];
-  const catBag = ['Chiqindi', 'Chiqindi', 'Chiqindi', 'Chiqindi', 'Havo', 'Havo', 'Havo', 'Suv', 'Suv', 'Daraxt', 'Daraxt', 'Daraxt', 'Tuproq', 'Boshqa'];
+  const catBag = ['Chiqindi', 'Chiqindi', 'Chiqindi', 'Chiqindi', 'Havo', 'Havo', 'Havo', 'Suv', 'Suv', 'Daraxt', 'Daraxt', 'Daraxt', 'Tuproq', 'Hayvon', 'Boshqa'];
   const sla = DEFAULT_SETTINGS.sla_days;
   const N = 264;
   let hid = 0, cid = 0;
@@ -340,7 +384,7 @@ function buildDemo() {
 
 // Demo suratlar: kategoriya bo'yicha chizilgan rasm (haqiqiy surat o'rniga)
 function demoPhoto(r, kind) {
-  const pal = { Chiqindi: ['#6B4F2A', '#A0784A', '#D9C29C'], Havo: ['#4B5563', '#9CA3AF', '#E5E7EB'], Suv: ['#1E3A5F', '#2F6E9E', '#A9D3EE'], Daraxt: ['#1F4D2B', '#3F8A4E', '#BFE3B4'], Tuproq: ['#5B3A1E', '#9A6B3F', '#E3C9A8'], Boshqa: ['#3B2F63', '#6E5BB5', '#D7CEF5'] }[r.category] || ['#333', '#777', '#ddd'];
+  const pal = { Chiqindi: ['#6B4F2A', '#A0784A', '#D9C29C'], Havo: ['#4B5563', '#9CA3AF', '#E5E7EB'], Suv: ['#1E3A5F', '#2F6E9E', '#A9D3EE'], Daraxt: ['#1F4D2B', '#3F8A4E', '#BFE3B4'], Tuproq: ['#5B3A1E', '#9A6B3F', '#E3C9A8'], Hayvon: ['#5C3D1E', '#B07A3C', '#F1DDBF'], Boshqa: ['#3B2F63', '#6E5BB5', '#D7CEF5'] }[r.category] || ['#333', '#777', '#ddd'];
   const ic = catOf(r.category).icon, after = kind === 'proof';
   const seed = parseInt(String(r.id).replace(/\D/g, '') || '1', 10);
   const R = rng(seed * 7 + (after ? 3 : 0));
@@ -367,6 +411,36 @@ function demoEvents() {
 const NEW_REPORT_POOL = [
   ['Chiqindi', 'tashkent_city'], ['Havo', 'tashkent_city'], ['Daraxt', 'tashkent_city'], ['Suv', 'samarkand'], ['Chiqindi', 'fergana'], ['Havo', 'tashkent'], ['Chiqindi', 'namangan'], ['Suv', 'tashkent_city'], ['Tuproq', 'bukhara']
 ];
+
+
+// Ekotizim reytingi uchun namunaviy daraxtlar va berilgan nishonlar
+const TREE_SPECIES = ['Chinor', 'Archa', 'Qayrag‘och', 'Tut', 'Terak', 'Akatsiya', 'O‘rik', 'Yong‘oq', 'Shumtol'];
+function demoRating(db) {
+  const R = rng(20261014), pick = a => a[Math.floor(R() * a.length)], now = Date.now();
+  const cits = db.profiles.filter(p => p.role === 'user');
+  const trees = []; let tid = 0;
+  [[1, 6], [3, 5], [5, 3], [9, 7], [12, 2], [14, 5]].forEach(([ci, n]) => {
+    const c = cits[ci]; if (!c) return;
+    const reg = homeRegion(db.reports.filter(r => r.user_id === c.id)) || 'tashkent_city', rg = regionOf(reg);
+    for (let k = 0; k < n; k++) {
+      const age = 5 + R() * 50;
+      trees.push({ id: 't' + (++tid), user_id: c.id, species: pick(TREE_SPECIES), region: reg, address: pick(rg.d) + ', ' + pick(['maktab hovlisi', 'mahalla bog‘i', 'ko‘cha bo‘yi', 'ariq yoqasi', 'uy oldi']),
+        lat: +(rg.lat + (R() - 0.5) * 0.1).toFixed(5), lng: +(rg.lng + (R() - 0.5) * 0.1).toFixed(5),
+        status: k < n - 1 ? 'verified' : 'pending', waterings: Math.floor(R() * 9) + (k === n - 1 && ci === 12 ? 0 : 1),
+        created_at: new Date(now - age * DAY).toISOString(), last_watered: new Date(now - R() * 4 * DAY).toISOString() });
+    }
+  });
+  const by = (role, org) => (db.profiles.find(p => p.role === role && (!org || p.org_id === org)) || {}).id;
+  const awards = [];
+  const give = (ci, badge, org, role, note, daysAgo) => { const c = cits[ci]; if (!c) return;
+    const ev = BADGE_EVIDENCE[badge] ? db.reports.filter(r => r.user_id === c.id && BADGE_EVIDENCE[badge](r)).slice(0, badgeOf(badge).need) : [];
+    awards.push({ id: 'b' + (awards.length + 1), user_id: c.id, badge, note, report_ids: ev.map(r => r.id), awarded_by: by(role, role === 'org_head' ? org : null), org_id: org, created_at: new Date(now - daysAgo * DAY).toISOString(), revoked_at: null }); };
+  give(0, 'eco_detective', 'org-tsh-obod', 'org_head', 'Mahallangizdagi noqonuniy chiqindixonalarni aniqlashdagi faolligingiz uchun rahmat!', 12);
+  give(3, 'green_hands', 'org-tsh-eco', 'org_head', 'Ko‘chat ekib, ularni muntazam parvarish qilganingiz uchun tashakkur!', 6);
+  give(7, 'eco_detective', 'org-min', 'admin', 'Faol fuqarolik pozitsiyangiz uchun minnatdorchilik bildiramiz.', 20);
+  give(2, 'nature_guardian', 'org-min', 'admin', 'Yirik ekologik muammolarni hal etishga qo‘shgan katta hissangiz uchun.', 3);
+  return { trees, awards };
+}
 
 class DemoStore {
   constructor() { this.mode = 'demo'; this.listeners = []; this.sim = null; }
@@ -518,6 +592,60 @@ class DemoStore {
     if (!e || !this._canEditEvent(e)) throw new Error('Ruxsat yo‘q');
     this.db.events = this.db.events.filter(x => x.id !== id); this._write(); this._emit({ type: 'events' });
   }
+  // ---- Ekotizim reytingi (RLS va award_badge() bilan bir xil qoidalar)
+  _rating() { if (!this.db.awards || !this.db.trees) { const d = demoRating(this.db); this.db.awards = this.db.awards || d.awards; this.db.trees = this.db.trees || d.trees; this._write(); } }
+  async loadBadges() {
+    this._rating();
+    const d = this.db, m = this.me, staff = isStaffRole(m.role), myOrg = d.orgs.find(o => o.id === m.org_id);
+    const name = id => (d.profiles.find(p => p.id === id) || {}).full_name || '—';
+    const cits = d.profiles.filter(p => p.role === 'user' && !p.blocked);
+    const candidates = [];
+    cits.forEach(c => {
+      const reps = d.reports.filter(r => r.user_id === c.id);
+      if (!staff && !reps.some(r => r.org_id === m.org_id)) return;
+      const st = ecoStats(c.id, d.reports, d.trees);
+      BADGES.forEach(b => {
+        if (b.top && !staff) return;
+        const v = st[BADGE_STAT[b.k]]; if (v < b.need) return;
+        if (d.awards.some(a => a.user_id === c.id && a.badge === b.k && !a.revoked_at)) return;
+        const ev = BADGE_EVIDENCE[b.k] ? reps.filter(BADGE_EVIDENCE[b.k]).filter(r => staff || r.org_id === m.org_id) : [];
+        if (!staff && b.k !== 'green_hands' && ev.length < b.need) return;
+        candidates.push({ user_id: c.id, full_name: c.full_name, region: homeRegion(reps), badge: b.k, progress: v, need: b.need, report_ids: ev.map(r => r.id), case_nos: ev.map(r => r.case_no) });
+      });
+    });
+    const awards = d.awards.filter(a => staff || a.org_id === m.org_id).map(a => Object.assign({}, a, { full_name: name(a.user_id), awarded_by_name: name(a.awarded_by), revoked_by_name: a.revoked_by ? name(a.revoked_by) : null }))
+      .sort((a, b) => a.created_at < b.created_at ? 1 : -1);
+    const trees = d.trees.filter(t => staff || (m.role === 'org_head' && myOrg && t.region === myOrg.region)).map(t => Object.assign({}, t, { full_name: name(t.user_id) }))
+      .sort((a, b) => a.created_at < b.created_at ? 1 : -1);
+    const board = cits.map(c => { const reps = d.reports.filter(r => r.user_id === c.id), aw = d.awards.filter(a => a.user_id === c.id && !a.revoked_at);
+      return { user_id: c.id, alias: c.full_name, region: homeRegion(reps), points: ecoPoints(ecoStats(c.id, d.reports, d.trees), aw), badges: aw.map(a => a.badge) }; })
+      .filter(x => x.points > 0).sort((a, b) => b.points - a.points).slice(0, 20).map((x, i) => Object.assign(x, { pos: i + 1 }));
+    return { candidates, awards, trees, board };
+  }
+  async awardBadge(userId, badge, note, reportIds) {
+    this._rating();
+    const m = this.me, staff = isStaffRole(m.role), b = badgeOf(badge);
+    if (!(staff || m.role === 'org_head')) throw new Error('Ruxsat yo‘q');
+    if (b.top && !staff) throw new Error('“Tabiat Himoyachisi” nishonini faqat vazirlik beradi');
+    const c = this.db.profiles.find(p => p.id === userId && p.role === 'user'); if (!c) throw new Error('Fuqaro topilmadi');
+    if (!staff && !this.db.reports.some(r => r.user_id === userId && r.org_id === m.org_id)) throw new Error('Bu fuqaro sizning idorangizga murojaat qilmagan');
+    if (this.db.awards.some(a => a.user_id === userId && a.badge === badge && !a.revoked_at)) throw new Error('Fuqaroda bu nishon allaqachon bor');
+    const a = { id: 'b' + Date.now().toString(36), user_id: userId, badge, note: (note || '').trim() || null, report_ids: reportIds || [], awarded_by: m.id, org_id: m.org_id || 'org-min', created_at: new Date().toISOString(), revoked_at: null };
+    this.db.awards.push(a); this._audit('badge', null, b.t + ' — ' + c.full_name); this._write(); this._emit({ type: 'badges' }); return a;
+  }
+  async revokeBadge(id, reason) {
+    if (!isStaffRole(this.me.role)) throw new Error('Nishonni faqat vazirlik bekor qila oladi');
+    const a = this.db.awards.find(x => x.id === id && !x.revoked_at); if (!a) throw new Error('Nishon topilmadi');
+    Object.assign(a, { revoked_at: new Date().toISOString(), revoked_by: this.me.id, revoke_reason: (reason || '').trim() || null });
+    this._audit('badge_revoke', null, badgeOf(a.badge).t); this._write(); this._emit({ type: 'badges' });
+  }
+  async setTreeStatus(id, status) {
+    this._rating();
+    const m = this.me, t = this.db.trees.find(x => x.id === id), myOrg = this.db.orgs.find(o => o.id === m.org_id);
+    if (!t || !(isStaffRole(m.role) || (m.role === 'org_head' && myOrg && t.region === myOrg.region))) throw new Error('Ruxsat yo‘q');
+    t.status = status; t.checked_by = m.id; this._write(); this._emit({ type: 'badges' });
+  }
+  async treePhotoUrl(t) { return null; }
   async saveSettings(s) {
     if (this.me.role !== 'admin') throw new Error('Faqat administrator uchun');
     this.db.settings = Object.assign({}, this.db.settings, s); this._write(); this._emit({ type: 'settings' });
@@ -661,6 +789,33 @@ class LiveStore {
     const { error } = await q; if (error) throw new Error(error.message);
   }
   async deleteEvent(id) { const { error } = await this.sb.from('eco_events').delete().eq('id', id); if (error) throw new Error(error.message); }
+  async loadBadges() {
+    const sb = this.sb, name = id => (this.profilesById && this.profilesById[id] || {}).full_name || '—';
+    const [c, a, t, b] = await Promise.all([
+      sb.rpc('badge_candidates'),
+      sb.from('badge_awards').select('*').order('created_at', { ascending: false }).limit(1000),
+      sb.from('user_trees').select('*, tree_waterings(count)').order('created_at', { ascending: false }).limit(1000),
+      sb.rpc('eco_leaderboard', { p_region: null, p_limit: 20 })
+    ]);
+    [c, a, t, b].forEach(x => { if (x.error) throw new Error(x.error.message); });
+    return {
+      candidates: (c.data || []).map(x => Object.assign({}, x, { full_name: x.full_name || name(x.user_id) })),
+      awards: (a.data || []).map(x => Object.assign({}, x, { full_name: name(x.user_id), awarded_by_name: name(x.awarded_by), revoked_by_name: x.revoked_by ? name(x.revoked_by) : null })),
+      trees: (t.data || []).map(x => Object.assign({}, x, { full_name: name(x.user_id), waterings: (x.tree_waterings && x.tree_waterings[0] && x.tree_waterings[0].count) || 0 })),
+      board: (b.data || []).map(x => Object.assign({}, x, { pos: Number(x.pos) }))
+    };
+  }
+  async awardBadge(userId, badge, note, reportIds) {
+    const { error } = await this.sb.rpc('award_badge', { p_user: userId, p_badge: badge, p_note: note || '', p_reports: reportIds || [] });
+    if (error) throw new Error(error.message);
+  }
+  async revokeBadge(id, reason) { const { error } = await this.sb.rpc('revoke_badge', { p_award: id, p_reason: reason || '' }); if (error) throw new Error(error.message); }
+  async setTreeStatus(id, status) { const { error } = await this.sb.from('user_trees').update({ status }).eq('id', id); if (error) throw new Error(error.message); }
+  async treePhotoUrl(t) {
+    if (!t.photo_path) return null;
+    const { data } = await this.sb.storage.from('report-media').createSignedUrl(t.photo_path, 600);
+    return data ? data.signedUrl : null;
+  }
   async saveSettings(s) {
     const rows = Object.entries(s).map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() }));
     const { error } = await this.sb.from('app_settings').upsert(rows); if (error) throw new Error(error.message);

@@ -292,6 +292,7 @@ function navItems() {
   if (isStaff()) items.push({ id: 'orgs', ic: '🏛️', t: T('Tashkilotlar') });
   if (isStaff() || isHead()) items.push({ id: 'staff', ic: '👥', t: T('Xodimlar') });
   items.push({ id: 'events', ic: '🧹', t: T('Tozalash aksiyalari') });
+  if (isStaff() || isHead()) items.push({ id: 'badges', ic: '🏅', t: T('Ekotizim reytingi') });
   items.push({ id: 'templates', ic: '📝', t: T('Javob shablonlari') });
   items.push({ id: 'journal', ic: '🧾', t: T('Faoliyat jurnali') });
   if (me().role === 'admin') items.push({ id: 'settings', ic: '⚙️', t: T('Sozlamalar') });
@@ -727,6 +728,7 @@ PAGES.report = async el => {
     if (canAssign(r)) A.push(`<button class="btn" data-act="prio">⚡ ${esc(T('Muhimlik darajasi'))}</button>`);
     if (canForward(r) && r.org_id) A.push(`<button class="btn" data-act="forward">↪️ ${esc(T('Boshqa idoraga yo‘naltirish'))}</button>`);
     if (r.status < 3 && work && r.org_id) A.push(`<button class="btn btn-danger" data-act="reject">⛔ ${esc(T('Rad etish (asossiz)'))}</button>`);
+    if ((isStaff() || isHead()) && r.citizen && r.status >= 2 && !r.reject_reason) A.push(`<button class="btn" data-act="award">🏅 ${esc(T('Fuqaroni taqdirlash'))}</button>`);
   }
   $('#acts').innerHTML = A.join('');
   $$('#acts [data-act]').forEach(b => b.onclick = () => doAction(b.dataset.act, r));
@@ -790,6 +792,7 @@ async function doAction(a, r) {
   if (a === 'accept') return act(r, { status: 1, assignee_id: r.assignee_id || (me().role === 'org_staff' ? me().id : r.assignee_id) }, T('Ariza ko‘rib chiqishga qabul qilindi'));
   if (a === 'work') return act(r, { status: 2 }, T('Ariza ijroga olindi'));
   if (a === 'assign') return assignDialog([r]);
+  if (a === 'award') return awardFromReport(r);
   if (a === 'forward') return forwardDialog([r]);
   if (a === 'close') { if (await confirmBox(T('Arizani yopish'), T('Javob va bajarilgan ish tasdiqlanadi, ariza yopiladi. Fuqaro ilovada “Yakunlandi” holatini ko‘radi.'), T('Yopish'))) act(r, { status: 4 }, T('Ariza yopildi')); return; }
   if (a === 'reopen') { if (await confirmBox(T('Qayta ijroga qaytarish'), T('Ariza “Ijroda” holatiga qaytadi va ijrochi qayta ishlaydi.'), T('Qaytarish'))) act(r, { status: 2 }, T('Ariza qayta ijroga qaytarildi')); return; }
@@ -1163,6 +1166,99 @@ async function eventDialog(e) {
   return !!v;
 }
 
+// ---------- Ekotizim reytingi: raqamli nishonlar ----------
+const BADGE_COLORS = { eco_detective: ['#1C7ED6', '#4DABF7'], green_hands: ['#2B8A3E', '#69DB7C'], animal_friend: ['#D9480F', '#FFA94D'], nature_guardian: ['#B08900', '#FFD43B'] };
+const medal = (k, size) => { const b = badgeOf(k), c = BADGE_COLORS[k] || BADGE_COLORS.eco_detective;
+  return `<span class="medal ${b.top ? 'top' : ''}" style="--m1:${c[0]};--m2:${c[1]};${size ? `--ms:${size}px` : ''}" title="${esc(T(b.t))}">${b.icon}</span>`; };
+const canAward = () => isStaff() || isHead();
+PAGES.badges = async el => {
+  const view = S.route.q.view || 'cand';
+  el.innerHTML = `<div class="page-head"><div><h1>🏅 ${esc(T('Ekotizim reytingi'))}</h1></div></div><div class="empty">${esc(T('Yuklanmoqda...'))}</div>`;
+  let D;
+  try { D = await S.store.loadBadges(); } catch (e) { el.querySelector('.empty').textContent = T('Ma’lumotlarni yuklab bo‘lmadi') + ': ' + T(e.message); return; }
+  const act = D.awards.filter(a => !a.revoked_at), pendTrees = D.trees.filter(t => t.status === 'pending');
+  const tab = (k, t, n) => `<a class="btn btn-sm ${view === k ? 'btn-primary' : ''}" href="#/badges?view=${k}">${esc(T(t))} <b>${n}</b></a>`;
+  const kpis = BADGES.map(b => `<div class="card badge-kpi"><div class="card-b">${medal(b.k, 54)}<div><b>${esc(T(b.t))}</b>${b.top ? `<span class="chip chip-warn">${esc(T('Oliy maqom'))}</span>` : ''}<p>${esc(T(b.rule))}</p>
+      <div class="bk-n"><span><b>${act.filter(a => a.badge === b.k).length}</b> ${esc(T('berilgan'))}</span><span><b>${D.candidates.filter(c => c.badge === b.k).length}</b> ${esc(T('nomzod'))}</span></div></div></div></div>`).join('');
+  let body = '';
+  if (view === 'cand') {
+    body = D.candidates.length ? `<div class="tbl-wrap"><table class="tbl cards-sm"><thead><tr><th>${esc(T('Fuqaro'))}</th><th>${esc(T('Hudud'))}</th><th>${esc(T('Nishon'))}</th><th>${esc(T('Mezon'))}</th><th>${esc(T('Dalillar'))}</th><th></th></tr></thead><tbody>
+      ${D.candidates.map((c, i) => { const b = badgeOf(c.badge), dis = b.top && !isStaff();
+        return `<tr><td data-l="${esc(T('Fuqaro'))}"><b>${esc(c.full_name || '—')}</b></td><td data-l="${esc(T('Hudud'))}">${esc(regT(c.region))}</td>
+        <td data-l="${esc(T('Nishon'))}"><span class="bname">${medal(c.badge, 30)} ${esc(T(b.t))}</span></td>
+        <td data-l="${esc(T('Mezon'))}"><div class="bprog"><i style="width:${Math.min(100, c.progress / c.need * 100)}%"></i></div><small>${c.progress} / ${c.need} ${esc(T(b.unit))}</small></td>
+        <td data-l="${esc(T('Dalillar'))}">${(c.case_nos || []).slice(0, 6).map((n, k) => `<a class="chip" href="#/report/${encodeURIComponent(c.report_ids[k])}">${esc(n)}</a>`).join(' ') || (c.badge === 'green_hands' ? `<a class="chip" href="#/badges?view=trees">🌳 ${esc(T('Daraxtlar'))}</a>` : '—')}</td>
+        <td><button class="btn btn-sm btn-primary" data-aw="${i}" ${dis ? 'disabled' : ''}>🏅 ${esc(T('Nishon berish'))}</button></td></tr>`; }).join('')}</tbody></table></div>`
+      : `<div class="empty">${esc(T('Hozircha mezonga yetgan yangi nomzod yo‘q'))}</div>`;
+  } else if (view === 'given') {
+    body = D.awards.length ? `<div class="tbl-wrap"><table class="tbl cards-sm"><thead><tr><th>${esc(T('Sana'))}</th><th>${esc(T('Fuqaro'))}</th><th>${esc(T('Nishon'))}</th><th>${esc(T('Kim berdi'))}</th><th>${esc(T('Tabriknoma'))}</th><th></th></tr></thead><tbody>
+      ${D.awards.map(a => `<tr class="${a.revoked_at ? 'muted-row' : ''}"><td data-l="${esc(T('Sana'))}">${esc(fmtD(a.created_at))}</td><td data-l="${esc(T('Fuqaro'))}"><b>${esc(a.full_name)}</b></td>
+        <td data-l="${esc(T('Nishon'))}"><span class="bname">${medal(a.badge, 30)} ${esc(T(badgeOf(a.badge).t))}</span>${a.revoked_at ? `<span class="chip chip-danger">${esc(T('Bekor qilingan'))}</span>` : ''}</td>
+        <td data-l="${esc(T('Kim berdi'))}">${esc(a.awarded_by_name)}<br><small class="muted">${esc(orgShort(a.org_id) || '')}</small></td>
+        <td data-l="${esc(T('Tabriknoma'))}"><small>${esc(a.note || '—')}</small>${a.revoked_at && a.revoke_reason ? `<br><small class="muted">⛔ ${esc(a.revoke_reason)}</small>` : ''}</td>
+        <td>${isStaff() && !a.revoked_at ? `<button class="btn btn-sm btn-danger" data-rv="${esc(a.id)}">${esc(T('Bekor qilish'))}</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty">${esc(T('Hali nishon berilmagan'))}</div>`;
+  } else if (view === 'trees') {
+    const stc = { pending: ['chip-warn', 'Tekshirilmoqda'], verified: ['chip-ok', 'Tasdiqlangan'], rejected: ['chip-danger', 'Rad etilgan'] };
+    body = D.trees.length ? `<div class="tbl-wrap"><table class="tbl cards-sm"><thead><tr><th>${esc(T('Fuqaro'))}</th><th>${esc(T('Daraxt'))}</th><th>${esc(T('Joy'))}</th><th>${esc(T('Sug‘orish hisobotlari'))}</th><th>${esc(T('Holat'))}</th><th></th></tr></thead><tbody>
+      ${D.trees.map(t => `<tr><td data-l="${esc(T('Fuqaro'))}"><b>${esc(t.full_name)}</b><br><small class="muted">${esc(fmtD(t.created_at))}</small></td><td data-l="${esc(T('Daraxt'))}">🌳 ${esc(t.species)}</td>
+        <td data-l="${esc(T('Joy'))}">${esc(regT(t.region))}${t.address ? '<br><small class="muted">' + esc(t.address) + '</small>' : ''}${t.lat != null ? ` · <a href="https://www.google.com/maps?q=${t.lat},${t.lng}" target="_blank" rel="noopener">${esc(T('xaritada'))}</a>` : ''}</td>
+        <td data-l="${esc(T('Sug‘orish hisobotlari'))}">💧 <b>${t.waterings || 0}</b></td>
+        <td data-l="${esc(T('Holat'))}"><span class="chip ${stc[t.status][0]}">${esc(T(stc[t.status][1]))}</span></td>
+        <td><div class="row" style="gap:6px">${t.photo_path ? `<button class="btn btn-sm" data-tph="${esc(t.id)}">📷</button>` : ''}${t.status !== 'verified' ? `<button class="btn btn-sm" data-tst="${esc(t.id)}|verified">✅ ${esc(T('Tasdiqlash'))}</button>` : ''}${t.status !== 'rejected' ? `<button class="btn btn-sm" data-tst="${esc(t.id)}|rejected">⛔ ${esc(T('Rad etish'))}</button>` : ''}</div></td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty">${esc(T('Fuqarolar hali daraxt qo‘shmagan'))}</div>`;
+  } else {
+    body = D.board.length ? `<div class="tbl-wrap"><table class="tbl rank cards-sm"><thead><tr><th>#</th><th>${esc(T('Fuqaro'))}</th><th>${esc(T('Hudud'))}</th><th>${esc(T('Nishonlar'))}</th><th>${esc(T('Eko-ball'))}</th></tr></thead><tbody>
+      ${D.board.map(x => `<tr><td>${x.pos <= 3 ? ['🥇', '🥈', '🥉'][x.pos - 1] : x.pos}</td><td><b>${esc(x.alias)}</b></td><td>${esc(regT(x.region))}</td><td>${(x.badges || []).map(k => medal(k, 26)).join(' ') || '—'}</td><td><b>${nf(x.points)}</b></td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty">${esc(T('Reyting hali shakllanmagan'))}</div>`;
+  }
+  el.innerHTML = `<div class="page-head"><div><h1>🏅 ${esc(T('Ekotizim reytingi'))}</h1><p>${esc(T('Faol fuqarolarga raqamli nishonlar. Tizim mezonga yetgan fuqarolarni o‘zi taklif qiladi, nishonni esa faqat mas’ul xodim beradi. Fuqaro uni ilovada darhol ko‘radi.'))}</p></div></div>
+    <div class="cards badge-kpis">${kpis}</div>
+    <div class="row" style="margin:14px 0; gap:8px; flex-wrap:wrap">${tab('cand', 'Nomzodlar', D.candidates.length)}${tab('given', 'Berilgan nishonlar', act.length)}${tab('trees', 'Daraxtlar', pendTrees.length)}${tab('board', 'Reyting', D.board.length)}
+      ${!isStaff() ? `<span class="muted" style="margin-left:auto">ℹ️ ${esc(T('“Tabiat Himoyachisi” oliy maqomini faqat vazirlik beradi'))}</span>` : ''}</div>
+    ${body}`;
+  $$('[data-aw]').forEach(b => b.onclick = async () => { const c = D.candidates[+b.dataset.aw]; if (await awardDialog(c)) route(true); });
+  $$('[data-rv]').forEach(b => b.onclick = async () => {
+    const v = await modal({ title: T('Nishonni bekor qilish'), body: `<p>${esc(T('Nishon fuqaro profilidan olib tashlanadi va eko-ballari kamayadi.'))}</p><label class="field"><span>${esc(T('Sabab'))}</span><textarea id="rvR" maxlength="300"></textarea></label><div class="form-error"></div>`,
+      actions: [{ t: T('Yopish'), v: null }, { t: T('Bekor qilish'), cls: 'btn-danger', run: async ov => { const r = $('#rvR', ov).value.trim(); if (r.length < 5) throw new Error('Sababini yozing'); await S.store.revokeBadge(b.dataset.rv, r); } }] });
+    if (v) { toast(T('Nishon bekor qilindi')); route(true); }
+  });
+  $$('[data-tst]').forEach(b => b.onclick = async () => { const [id, st] = b.dataset.tst.split('|'); try { await S.store.setTreeStatus(id, st); toast(st === 'verified' ? T('Daraxt tasdiqlandi') : T('Daraxt rad etildi')); route(true); } catch (e) { toast(T(e.message), 'err'); } });
+  $$('[data-tph]').forEach(b => b.onclick = async () => { const t = D.trees.find(x => x.id === b.dataset.tph); const u = await S.store.treePhotoUrl(t); if (u) window.open(u, '_blank', 'noopener'); else toast(T('Surat topilmadi'), 'err'); });
+};
+async function awardDialog(c) {
+  const b = badgeOf(c.badge);
+  const v = await modal({ title: T('Nishon berish'), body: `
+    <div class="award-head">${medal(c.badge, 88)}<div><b>${esc(T(b.t))}</b>${b.top ? ` <span class="chip chip-warn">${esc(T('Oliy maqom'))}</span>` : ''}<p>${esc(T(b.rule))}</p></div></div>
+    <div class="kv"><span>${esc(T('Fuqaro'))}</span><b>${esc(c.full_name || '—')}</b></div>
+    <div class="kv"><span>${esc(T('Mezon'))}</span><b>${c.progress} / ${c.need} ${esc(T(b.unit))}</b></div>
+    ${(c.case_nos || []).length ? `<div class="kv"><span>${esc(T('Dalillar'))}</span><b>${c.case_nos.map(esc).join(', ')}</b></div>` : ''}
+    <label class="field"><span>${esc(T('Tabriknoma (fuqaro ilovada ko‘radi)'))}</span><textarea id="awN" maxlength="500">${esc(T('Ekologik faolligingiz va atrof-muhitga qo‘shgan hissangiz uchun rahmat!'))}</textarea></label>
+    <p class="muted" style="font-size:12.5px">${esc(T('Berishdan oldin dalillarni tekshiring: nishon rasmiy e’tirof hisoblanadi va kim bergani qayd etiladi.'))}</p><div class="form-error"></div>`,
+    actions: [{ t: T('Bekor qilish'), v: null }, { t: '🏅 ' + T('Nishon berish'), cls: 'btn-primary', run: async ov => { await S.store.awardBadge(c.user_id, c.badge, $('#awN', ov).value.trim(), c.report_ids || []); } }] });
+  if (v) toast(T('Nishon berildi'), null, null, (c.full_name || '') + ' · ' + T(b.t));
+  return !!v;
+}
+// Ariza kartasidan: fuqaroni taqdirlash (mezon bajarilmagan bo'lsa ham mas'ul o'z qarori bilan berishi mumkin)
+async function awardFromReport(r) {
+  let D; try { D = await S.store.loadBadges(); } catch (e) { return toast(T(e.message), 'err'); }
+  const uid = r.citizen.id, has = k => D.awards.some(a => a.user_id === uid && a.badge === k && !a.revoked_at);
+  const cand = k => D.candidates.find(c => c.user_id === uid && c.badge === k);
+  const def = (BADGES.find(b => cand(b.k) && !(b.top && !isStaff())) || BADGES.find(b => !has(b.k) && !(b.top && !isStaff())) || {}).k;
+  if (!def) return toast(T('Fuqaroda berish mumkin bo‘lgan barcha nishonlar bor'));
+  const v = await modal({ title: T('Fuqaroni taqdirlash'), body: `
+    <div class="kv"><span>${esc(T('Fuqaro'))}</span><b>${esc(r.citizen.name || '—')}</b></div>
+    <div class="award-pick">${BADGES.map(b => { const c = cand(b.k), dis = has(b.k) || (b.top && !isStaff());
+      return `<label class="${dis ? 'dis' : ''}"><input type="radio" name="awB" value="${b.k}" ${b.k === def ? 'checked' : ''} ${dis ? 'disabled' : ''}>${medal(b.k, 40)}<div><b>${esc(T(b.t))}</b><small>${has(b.k) ? '✅ ' + esc(T('Allaqachon berilgan')) : b.top && !isStaff() ? esc(T('Faqat vazirlik beradi')) : c ? '✔️ ' + esc(T('Mezon bajarilgan')) + ` (${c.progress}/${c.need})` : esc(T(b.rule))}</small></div></label>`; }).join('')}</div>
+    <label class="field"><span>${esc(T('Tabriknoma (fuqaro ilovada ko‘radi)'))}</span><textarea id="awN" maxlength="500">${esc(T('Ekologik faolligingiz va atrof-muhitga qo‘shgan hissangiz uchun rahmat!'))}</textarea></label>
+    <p class="muted" style="font-size:12.5px">${esc(T('Mezon to‘liq bajarilmagan bo‘lsa ham, asosli holatda nishonni o‘z qaroringiz bilan berishingiz mumkin. Ushbu ariza dalil sifatida biriktiriladi.'))}</p><div class="form-error"></div>`,
+    actions: [{ t: T('Bekor qilish'), v: null }, { t: '🏅 ' + T('Nishon berish'), cls: 'btn-primary', run: async ov => {
+      const k = ($('input[name="awB"]:checked', ov) || {}).value; if (!k) throw new Error('Nishonni tanlang');
+      const c = cand(k); await S.store.awardBadge(uid, k, $('#awN', ov).value.trim(), Array.from(new Set([r.id].concat(c ? c.report_ids : []))));
+      return k; } }] });
+  if (v) toast(T('Nishon berildi'), null, null, (r.citizen.name || '') + ' · ' + T(badgeOf(v).t));
+}
+
 // ---------- Javob shablonlari ----------
 PAGES.templates = el => {
   const mine = t => me().role === 'admin' || (isHead() && t.org_id === me().org_id);
@@ -1470,7 +1566,8 @@ const RU = {
   'Arizani yopishdan oldin fuqaroga javob yozing': 'Перед закрытием напишите ответ гражданину', 'Ariza topilmadi': 'Обращение не найдено', 'Tashkilot topilmadi yoki faol emas': 'Организация не найдена или неактивна', 'Ariza allaqachon shu tashkilotda': 'Обращение уже в этой организации',
   'Faqat administrator uchun': 'Только для администратора', 'O‘zingizni admin rolidan chiqara yoki bloklay olmaysiz': 'Нельзя снять с себя роль администратора или заблокировать себя', 'Izoh bo‘sh': 'Комментарий пуст',
   'Faqat rasm fayli yuklanadi': 'Можно загрузить только изображение', 'Fayl hajmi 15 MB dan oshmasligi kerak': 'Размер файла не более 15 МБ', 'Rasmni o‘qib bo‘lmadi': 'Не удалось прочитать изображение',
-  'Yangi xodimni avval Supabase → Authentication → Users bo‘limida yarating, keyin bu yerda unga idora va rol tanlang.': 'Сначала создайте сотрудника в Supabase → Authentication → Users, затем назначьте ему ведомство и роль здесь.'
+  'Yangi xodimni avval Supabase → Authentication → Users bo‘limida yarating, keyin bu yerda unga idora va rol tanlang.': 'Сначала создайте сотрудника в Supabase → Authentication → Users, затем назначьте ему ведомство и роль здесь.',
+  "Ekotizim reytingi": "Рейтинг экосистемы", "Oliy maqom": "Высший статус", "berilgan": "выдано", "nomzod": "кандидатов", "Nishon": "Значок", "Mezon": "Критерий", "Dalillar": "Доказательства", "Daraxtlar": "Деревья", "Nishon berish": "Вручить значок", "Hozircha mezonga yetgan yangi nomzod yo‘q": "Пока нет новых кандидатов, выполнивших критерии", "Kim berdi": "Кто вручил", "Tabriknoma": "Поздравление", "Hali nishon berilmagan": "Значки ещё не вручались", "Daraxt": "Дерево", "Joy": "Место", "Sug‘orish hisobotlari": "Отчёты о поливе", "Fuqarolar hali daraxt qo‘shmagan": "Граждане ещё не добавляли деревья", "Nishonlar": "Значки", "Eko-ball": "Эко-баллы", "Reyting hali shakllanmagan": "Рейтинг ещё не сформирован", "Faol fuqarolarga raqamli nishonlar. Tizim mezonga yetgan fuqarolarni o‘zi taklif qiladi, nishonni esa faqat mas’ul xodim beradi. Fuqaro uni ilovada darhol ko‘radi.": "Цифровые значки для активных граждан. Система сама предлагает граждан, выполнивших критерии, а вручает значок только ответственный сотрудник. Гражданин сразу видит его в приложении.", "“Tabiat Himoyachisi” oliy maqomini faqat vazirlik beradi": "Высший статус «Защитник природы» присваивает только министерство", "Nishonni bekor qilish": "Отозвать значок", "Nishon fuqaro profilidan olib tashlanadi va eko-ballari kamayadi.": "Значок будет удалён из профиля гражданина, его эко-баллы уменьшатся.", "Sabab": "Причина", "Nishon bekor qilindi": "Значок отозван", "Daraxt tasdiqlandi": "Дерево подтверждено", "Daraxt rad etildi": "Дерево отклонено", "Surat topilmadi": "Фото не найдено", "Tabriknoma (fuqaro ilovada ko‘radi)": "Поздравление (гражданин увидит в приложении)", "Ekologik faolligingiz va atrof-muhitga qo‘shgan hissangiz uchun rahmat!": "Спасибо за вашу экологическую активность и вклад в охрану окружающей среды!", "Berishdan oldin dalillarni tekshiring: nishon rasmiy e’tirof hisoblanadi va kim bergani qayd etiladi.": "Перед вручением проверьте доказательства: значок — официальное признание, и фиксируется, кто его вручил.", "Nishon berildi": "Значок вручён", "Fuqaroda berish mumkin bo‘lgan barcha nishonlar bor": "У гражданина уже есть все доступные значки", "Fuqaroni taqdirlash": "Наградить гражданина", "Allaqachon berilgan": "Уже вручён", "Faqat vazirlik beradi": "Вручает только министерство", "Mezon bajarilgan": "Критерий выполнен", "Mezon to‘liq bajarilmagan bo‘lsa ham, asosli holatda nishonni o‘z qaroringiz bilan berishingiz mumkin. Ushbu ariza dalil sifatida biriktiriladi.": "Даже если критерий выполнен не полностью, при наличии оснований вы можете вручить значок своим решением. Это обращение будет приложено как доказательство.", "Eko-Detektiv": "Эко-детектив", "Yashil Qo‘llar": "Зелёные руки", "Hayvonlar Do‘sti": "Друг животных", "Tabiat Himoyachisi": "Защитник природы", "Hayvonot dunyosi": "Животный мир", "Kamida 3 ta noqonuniy chiqindixona haqidagi xabari tasdiqlangan": "Подтверждены не менее 3 сообщений о незаконных свалках", "5 ta daraxtni xaritaga kiritib, ularni sug‘organi haqida hisobot bergan": "Нанёс на карту 5 деревьев и отчитался об их поливе", "Brakonerlik yoki hayvonlarga shafqatsizlik holatini to‘xtatishga hissa qo‘shgan": "Помог остановить браконьерство или жестокое обращение с животными", "Kamida 5 ta yirik ekologik muammo mutasaddilar tomonidan to‘liq hal etilgan": "Не менее 5 крупных экологических проблем полностью решены ответственными органами", "tasdiqlangan chiqindixona": "подтверждённых свалок", "sug‘orilgan daraxt": "политых деревьев", "hal qilingan holat": "решённых случаев", "hal qilingan yirik muammo": "решённых крупных проблем", "Tekshirilmoqda": "На проверке", "Tasdiqlangan": "Подтверждено", "Sababini yozing": "Укажите причину", "Nishonni tanlang": "Выберите значок", "Bu fuqaro sizning idorangizga murojaat qilmagan": "Этот гражданин не обращался в ваше ведомство", "Fuqaroda bu nishon allaqachon bor": "У гражданина уже есть этот значок", "“Tabiat Himoyachisi” nishonini faqat vazirlik beradi": "Значок «Защитник природы» вручает только министерство", "Nishonni faqat vazirlik bekor qila oladi": "Отозвать значок может только министерство", "Nishon topilmadi": "Значок не найден", "Fuqaro topilmadi": "Гражданин не найден"
 };
 
 boot();

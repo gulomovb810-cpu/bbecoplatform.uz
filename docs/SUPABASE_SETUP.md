@@ -34,7 +34,7 @@ Skript yaratadi:
 | `app_settings` | Admin paneldan boshqariladigan sozlamalar | `accepting_reports`, `edit_days`, `daily_limit`, `auto_assign`, `announcement` |
 
 **Holatlar (`status`)**: 0 — Qabul qilindi, 1 — Tekshirilmoqda, 2 — Mas’ul tashkilotga yuborildi, 3 — Bartaraf etildi, 4 — Yakunlandi.
-**Kategoriyalar**: `Chiqindi`, `Havo`, `Suv`, `Daraxt`, `Tuproq`, `Boshqa`.
+**Kategoriyalar**: `Chiqindi`, `Havo`, `Suv`, `Daraxt`, `Tuproq`, `Hayvon` (hayvonot dunyosi: brakonerlik, shafqatsizlik), `Boshqa`.
 
 ### Xavfsizlik (RLS) — skriptga kiritilgan
 - Fuqaro **faqat o‘z arizalarini** ko‘radi. U faqat tavsif/kategoriyani (`edit_days` muddati ichida) tahrirlay oladi va arizani bekor qila oladi. Holat, tashkilot va javobni o‘zgartirishga urinsa, server bu o‘zgarishlarni e’tiborsiz qoldiradi.
@@ -165,6 +165,23 @@ AI Yordamchi `supabase/functions/ai-chat` Edge Function orqali Google Gemini bil
 - **Qoralama** fuqarolarga ko‘rinmaydi; **Bekor qilish** e’lonni ilovada “Bekor qilindi” deb ko‘rsatadi.
 
 Bo‘limdagi **“Saytlardan xabarlar”** qismi Supabase’siz ham ishlaydi: `scripts/fetch-events.mjs` har soatda Google News, Kun.uz, Gazeta.uz, Daryo, UzA va boshqa saytlardan hashar, ko‘chat ekish va volontyorlik xabarlarini yig‘ib, `news-data` branchidagi `events.json` ga yozadi. Har soatlik yangilanish faqat workflow `main` branchida bo‘lganda ishlaydi.
+
+## 12. Ekotizim reytingi (ballar va raqamli nishonlar)
+
+`schema.sql` dagi **7c** bo‘limi qo‘shadi: `badge_awards`, `user_trees`, `tree_waterings` jadvallari, `profiles.rating_public` ustuni va `my_eco_rating`, `eco_leaderboard`, `badge_candidates`, `award_badge`, `revoke_badge` funksiyalari. Faylni qayta ishga tushirish xavfsiz.
+
+| Nishon | Shart (avtomatik tekshiriladi) | Kim beradi | Ball |
+|---|---|---|---|
+| 🕵️ Eko-Detektiv | 3 ta «Chiqindi» arizasi tasdiqlangan (holat ≥ Ijroda) | Tashkilot rahbari yoki vazirlik | +50 |
+| 🌳 Yashil Qo‘llar | 5 ta daraxt xaritaga kiritilgan va har biri kamida 1 marta sug‘orilgan | Tashkilot rahbari yoki vazirlik | +50 |
+| 🦌 Hayvonlar Do‘sti | 1 ta «Hayvon» arizasi bartaraf etilgan | Tashkilot rahbari yoki vazirlik | +50 |
+| 🛡️ Tabiat Himoyachisi (oliy maqom) | 5 ta «Muhim/Shoshilinch» ariza to‘liq hal etilgan | Faqat vazirlik (admin/moderator) | +150 |
+
+- Nishon **avtomatik berilmaydi**: tizim nomzodlarni topadi, mas’ul portalning «🏅 Ekotizim reytingi» bo‘limida dalillarni ko‘rib, nishonni beradi (yoki ariza sahifasidagi «Fuqaroni taqdirlash» tugmasi). Tashkilot rahbari faqat o‘z tashkilotiga kelgan arizalar egalarini taqdirlay oladi. Nishonni faqat vazirlik bekor qiladi.
+- Ballar: tasdiqlangan ariza +10, bartaraf etilgan +15, yirik muammo +10, daraxt +5, sug‘orish hisoboti +2 (kuniga 1 ta), aksiyada qatnashish +10, nishon balli.
+- Maxfiylik: reytingda fuqaro «Faol fuqaro #XXXX» taxallusi bilan ko‘rinadi; ism faqat o‘zi ilovada yoqsa chiqadi. Telefon va email hech qachon ko‘rsatilmaydi. Reyting faqat tizimga kirganlarga ochiq.
+- Daraxt suratlari `report-media/<user_id>/trees/` ga yuklanadi; ularni egasi va mas’ullar ko‘radi. Fuqaro kuniga 10 tadan ortiq daraxt qo‘sha olmaydi va daraxt holatini o‘zgartira olmaydi.
+- Realtime: `badge_awards` nashrga qo‘shilgan, yangi nishon ilovada darhol tabrik oynasi bilan chiqadi.
 
 ## Muammolar
 | Belgi | Sabab / yechim |
