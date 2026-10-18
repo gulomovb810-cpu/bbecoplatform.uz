@@ -45,6 +45,9 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
     private WebChromeClient.FileChooserParams fileParams;
     private Uri cameraUri;
+    private File cameraFile;
+    private Uri videoUri;
+    private File videoFile;
 
     private GeolocationPermissions.Callback geoCallback;
     private String geoOrigin;
@@ -130,12 +133,49 @@ public class MainActivity extends Activity {
     }
 
     private static boolean wantsCamera(WebChromeClient.FileChooserParams params) {
+        return wantsType(params, "image") || wantsType(params, "video");
+    }
+
+    /** accept="image/*" / "video/*" / bo'sh — qaysi kamera rejimi kerakligini aniqlaydi */
+    private static boolean wantsType(WebChromeClient.FileChooserParams params, String kind) {
         String[] types = params.getAcceptTypes();
         if (types == null || types.length == 0) return true;
-        for (String t : types) {
-            if (t == null || t.isEmpty() || t.startsWith("image") || t.startsWith("video") || t.equals("*/*")) return true;
+        boolean any = false;
+        for (String raw : types) {
+            if (raw == null) continue;
+            for (String t : raw.split(",")) {
+                t = t.trim().toLowerCase();
+                if (t.isEmpty()) continue;
+                any = true;
+                if (t.startsWith(kind) || t.equals("*/*")) return true;
+            }
         }
-        return false;
+        return !any;
+    }
+
+    private Intent photoIntent() throws Exception {
+        File dir = new File(getCacheDir(), "camera");
+        if (!dir.exists()) dir.mkdirs();
+        cameraFile = new File(dir, "photo_" + System.currentTimeMillis() + ".jpg");
+        cameraUri = FileProvider.getUriForFile(this, getPackageName() + ".files", cameraFile);
+        Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cam.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+        cam.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        return cam;
+    }
+
+    private Intent videoIntent() throws Exception {
+        File dir = new File(getCacheDir(), "camera");
+        if (!dir.exists()) dir.mkdirs();
+        videoFile = new File(dir, "video_" + System.currentTimeMillis() + ".mp4");
+        videoUri = FileProvider.getUriForFile(this, getPackageName() + ".files", videoFile);
+        Intent cam = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        cam.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+        cam.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60);              // ilova 60 soniyagacha qabul qiladi
+        cam.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 48L * 1024 * 1024);   // serverdagi 50 MB chegaradan kichik
+        cam.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+        cam.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        return cam;
     }
 
     private void openChooser() {
@@ -150,20 +190,21 @@ public class MainActivity extends Activity {
             pick.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
         List<Intent> extra = new ArrayList<>();
-        cameraUri = null;
-        if (wantsCamera(fileParams) && hasPermission(Manifest.permission.CAMERA)) {
-            try {
-                File dir = new File(getCacheDir(), "camera");
-                if (!dir.exists()) dir.mkdirs();
-                File photo = new File(dir, "photo_" + System.currentTimeMillis() + ".jpg");
-                cameraUri = FileProvider.getUriForFile(this, getPackageName() + ".files", photo);
-                Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cam.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-                cam.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                extra.add(cam);
-            } catch (Exception ignored) {
-                cameraUri = null;
+        cameraUri = null; cameraFile = null; videoUri = null; videoFile = null;
+        boolean img = wantsType(fileParams, "image"), vid = wantsType(fileParams, "video");
+        if ((img || vid) && hasPermission(Manifest.permission.CAMERA)) {
+            // capture="environment": tanlov oynasisiz to'g'ridan-to'g'ri kamerani ochamiz
+            if (fileParams.isCaptureEnabled()) {
+                try {
+                    Intent direct = (vid && !img) ? videoIntent() : photoIntent();
+                    startActivityForResult(direct, REQ_FILE);
+                    return;
+                } catch (Exception ignored) {
+                    cameraUri = null; videoUri = null;
+                }
             }
+            try { if (img) extra.add(photoIntent()); } catch (Exception ignored) { cameraUri = null; }
+            try { if (vid) extra.add(videoIntent()); } catch (Exception ignored) { videoUri = null; }
         }
         Intent chooser = Intent.createChooser(pick, getString(R.string.pick_file));
         if (!extra.isEmpty()) chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extra.toArray(new Intent[0]));
@@ -192,7 +233,10 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < n; i++) result[i] = data.getClipData().getItemAt(i).getUri();
             } else if (data != null && data.getData() != null) {
                 result = new Uri[]{data.getData()};
-            } else if (cameraUri != null) {
+            } else if (videoUri != null && videoFile != null && videoFile.length() > 0) {
+                // Kamera videosi EXTRA_OUTPUT faylga yozildi
+                result = new Uri[]{videoUri};
+            } else if (cameraUri != null && (cameraFile == null || cameraFile.length() > 0)) {
                 // Kamera rasmi EXTRA_OUTPUT faylga yozildi
                 result = new Uri[]{cameraUri};
             }
@@ -227,10 +271,10 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Sahifadagi "←" tugmasini bosamiz; bosh sahifada esa ikki marta bosib chiqiladi
-        String js = "(function(){var s=document.querySelector('.screen.active');"
+        String js = "(function(){if(typeof app!=='undefined'&&app.rtBack&&app.rtBack())return 'ok';var s=document.querySelector('.screen.active');"
                 + "if(!s||s.id==='screen-home')return 'exit';"
                 + "var b=s.querySelector('.topbar .back');if(b){b.click();return 'ok';}"
-                + "if(window.app&&app.user){app.goto('home');return 'ok';}return 'exit';})()";
+                + "if(typeof app!=='undefined'&&app.user){app.goto('home');return 'ok';}return 'exit';})()";
         web.evaluateJavascript(js, value -> {
             if (value != null && value.contains("exit")) {
                 long now = System.currentTimeMillis();

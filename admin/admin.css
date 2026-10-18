@@ -418,3 +418,10 @@ table.tbl{width:100%; border-collapse:collapse; font-size:13px}
 .award-pick label.dis{opacity:.55; cursor:not-allowed}
 .award-pick small{display:block; color:var(--ink-3); font-size:12px; margin-top:2px}
 .bname{display:inline-flex; align-items:center; gap:8px; white-space:nowrap}
+
+.tmedia{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px}
+.tmedia figure{margin:0}
+.tmedia img,.tmedia video,.tm-none{width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; background:#0E2A20; display:block}
+.tmedia img{cursor:zoom-in}
+.tm-none{display:flex; align-items:center; justify-content:center; color:#fff}
+.tmedia figcaption{font-size:12px; color:var(--ink-3); margin-top:6px}

@@ -90,6 +90,14 @@ function ecoPoints(st, awards) {
   return st.confirmed * 10 + st.resolved * 15 + st.major_resolved * 10 + st.trees * 5 + st.waterings * 2 + st.events * 10
     + (awards || []).filter(a => !a.revoked_at).reduce((a, x) => a + badgeOf(x.badge).pts, 0);
 }
+// Daraxt dalillari: ekilgandagi va har bir sug'orishdagi rasm/videolar (photo_path + media_paths)
+const isVideoPath = p => /\.(mp4|m4v|mov|webm|3gp|3gpp|mkv)$/i.test(String(p || ''));
+function treeMediaList(t) {
+  const uniq = (p, a) => Array.from(new Set([p].concat(a || []).filter(Boolean)));
+  const out = uniq(t.photo_path, t.media_paths).map(path => ({ path, video: isVideoPath(path), cap: 'Ekilganda', day: t.planted_on || String(t.created_at || '').slice(0, 10) }));
+  (t.tree_waterings || []).slice().sort((a, b) => a.day < b.day ? -1 : 1).forEach(w => uniq(w.photo_path, w.media_paths).forEach(path => out.push({ path, video: isVideoPath(path), cap: 'Sug‘orish', day: w.day })));
+  return out;
+}
 function homeRegion(reports) {
   const c = {}; reports.filter(r => r.region && !r.cancelled).forEach(r => { c[r.region] = (c[r.region] || 0) + 1; });
   return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || null;
@@ -645,7 +653,7 @@ class DemoStore {
     if (!t || !(isStaffRole(m.role) || (m.role === 'org_head' && myOrg && t.region === myOrg.region))) throw new Error('Ruxsat yo‘q');
     t.status = status; t.checked_by = m.id; this._write(); this._emit({ type: 'badges' });
   }
-  async treePhotoUrl(t) { return null; }
+  async treeMedia(t) { return []; }   // demo: fuqaro yuklagan fayllar yo'q
   async saveSettings(s) {
     if (this.me.role !== 'admin') throw new Error('Faqat administrator uchun');
     this.db.settings = Object.assign({}, this.db.settings, s); this._write(); this._emit({ type: 'settings' });
@@ -794,14 +802,14 @@ class LiveStore {
     const [c, a, t, b] = await Promise.all([
       sb.rpc('badge_candidates'),
       sb.from('badge_awards').select('*').order('created_at', { ascending: false }).limit(1000),
-      sb.from('user_trees').select('*, tree_waterings(count)').order('created_at', { ascending: false }).limit(1000),
+      sb.from('user_trees').select('*, tree_waterings(day, photo_path, media_paths)').order('created_at', { ascending: false }).limit(1000),
       sb.rpc('eco_leaderboard', { p_region: null, p_limit: 20 })
     ]);
     [c, a, t, b].forEach(x => { if (x.error) throw new Error(x.error.message); });
     return {
       candidates: (c.data || []).map(x => Object.assign({}, x, { full_name: x.full_name || name(x.user_id) })),
       awards: (a.data || []).map(x => Object.assign({}, x, { full_name: name(x.user_id), awarded_by_name: name(x.awarded_by), revoked_by_name: x.revoked_by ? name(x.revoked_by) : null })),
-      trees: (t.data || []).map(x => Object.assign({}, x, { full_name: name(x.user_id), waterings: (x.tree_waterings && x.tree_waterings[0] && x.tree_waterings[0].count) || 0 })),
+      trees: (t.data || []).map(x => Object.assign({}, x, { full_name: name(x.user_id), waterings: (x.tree_waterings || []).length, media_count: treeMediaList(x).length })),
       board: (b.data || []).map(x => Object.assign({}, x, { pos: Number(x.pos) }))
     };
   }
@@ -811,10 +819,11 @@ class LiveStore {
   }
   async revokeBadge(id, reason) { const { error } = await this.sb.rpc('revoke_badge', { p_award: id, p_reason: reason || '' }); if (error) throw new Error(error.message); }
   async setTreeStatus(id, status) { const { error } = await this.sb.from('user_trees').update({ status }).eq('id', id); if (error) throw new Error(error.message); }
-  async treePhotoUrl(t) {
-    if (!t.photo_path) return null;
-    const { data } = await this.sb.storage.from('report-media').createSignedUrl(t.photo_path, 600);
-    return data ? data.signedUrl : null;
+  async treeMedia(t) {
+    const list = treeMediaList(t); if (!list.length) return [];
+    const { data } = await this.sb.storage.from('report-media').createSignedUrls(list.map(m => m.path), 900);
+    const u = {}; (data || []).forEach(x => { if (x.signedUrl) u[x.path] = x.signedUrl; });
+    return list.map(m => Object.assign(m, { url: u[m.path] || null }));
   }
   async saveSettings(s) {
     const rows = Object.entries(s).map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() }));

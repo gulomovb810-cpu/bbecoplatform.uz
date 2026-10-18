@@ -795,6 +795,21 @@ create table if not exists public.tree_waterings (
   unique (tree_id, day)          -- kuniga bitta hisobot (ball ko'paytirib bo'lmaydi)
 );
 
+-- Daraxt va sug'orish dalillari: 4 tagacha rasm yoki video (<user_id>/trees/... yo'llari)
+alter table public.user_trees     add column if not exists media_paths text[] not null default '{}';
+alter table public.tree_waterings add column if not exists media_paths text[] not null default '{}';
+alter table public.user_trees     drop constraint if exists user_trees_media_max;
+alter table public.user_trees     add constraint user_trees_media_max check (cardinality(media_paths) <= 4);
+alter table public.tree_waterings drop constraint if exists tree_waterings_media_max;
+alter table public.tree_waterings add constraint tree_waterings_media_max check (cardinality(media_paths) <= 4);
+
+-- Fuqaro faqat o'z papkasidagi faylni dalil qilib biriktira oladi
+create or replace function public.own_tree_media(p_photo text, p_media text[]) returns boolean
+language sql stable as $$
+  select (p_photo is null or p_photo like auth.uid()::text || '/trees/%')
+     and not exists (select 1 from unnest(coalesce(p_media, '{}')) m where m not like auth.uid()::text || '/trees/%');
+$$;
+
 -- Fuqaro daraxtni faqat o'z nomidan, kuniga 10 tagacha qo'sha oladi; holatini o'zgartira olmaydi
 create or replace function public.user_trees_before_write() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -1009,7 +1024,8 @@ create policy "user_trees read" on public.user_trees for select to authenticated
          or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())));
 drop policy if exists "user_trees insert" on public.user_trees;
 create policy "user_trees insert" on public.user_trees for insert to authenticated
-  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+  with check (user_id = auth.uid() and public.own_tree_media(photo_path, media_paths)
+              and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
 drop policy if exists "user_trees update" on public.user_trees;
 create policy "user_trees update" on public.user_trees for update to authenticated
   using (public.is_staff() or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())))
@@ -1023,15 +1039,16 @@ create policy "tree_waterings read" on public.tree_waterings for select to authe
   using (user_id = auth.uid() or exists (select 1 from public.user_trees t where t.id = tree_id));
 drop policy if exists "tree_waterings insert" on public.tree_waterings;
 create policy "tree_waterings insert" on public.tree_waterings for insert to authenticated
-  with check (user_id = auth.uid() and exists (select 1 from public.user_trees t
+  with check (user_id = auth.uid() and public.own_tree_media(photo_path, media_paths)
+              and exists (select 1 from public.user_trees t
               where t.id = tree_id and t.user_id = auth.uid() and t.status <> 'rejected'));
 
 -- Daraxt suratlari: <user_id>/trees/<fayl> — egasi yuklaydi, mas'ullar ko'radi
 drop policy if exists "report-media read trees" on storage.objects;
 create policy "report-media read trees" on storage.objects for select to authenticated
   using (bucket_id = 'report-media' and (storage.foldername(name))[2] = 'trees' and public.is_org_head()
-         and (exists (select 1 from public.user_trees t where t.photo_path = name)
-              or exists (select 1 from public.tree_waterings w where w.photo_path = name)));
+         and (exists (select 1 from public.user_trees t where t.photo_path = name or name = any(t.media_paths))
+              or exists (select 1 from public.tree_waterings w where w.photo_path = name or name = any(w.media_paths))));
 
 -- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)

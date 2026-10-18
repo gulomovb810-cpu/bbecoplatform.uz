@@ -746,6 +746,34 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 :root[data-theme="dark"] .rt-b-s.ok{color:#8CE99A;}
 :root[data-theme="dark"] .rt-how b{color:#8CE99A;}
 :root[data-theme="dark"] .rt-help{color:#fff;}
+/* daraxt dalillari: rasm va video */
+.rt-mpick{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px;}
+.rt-mbtn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-height:76px; padding:10px 6px; border-radius:16px; border:1.5px dashed color-mix(in srgb, #2FA65F 55%, var(--line)); background:color-mix(in srgb, #2FA65F 7%, var(--card)); color:var(--ink); cursor:pointer; text-align:center; font:700 12px/1.25 var(--font-body);}
+.rt-mbtn i{font-style:normal; font-size:24px; line-height:1;}
+.rt-mbtn:active{transform:scale(.97);}
+.rt-mbtn.off{opacity:.4; pointer-events:none;}
+.rt-mgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px;}
+.rt-mgrid:empty{display:none;}
+.rt-mt{position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#0E2A20;}
+.rt-mt img,.rt-mt video{width:100%; height:100%; object-fit:cover; display:block;}
+.rt-mt-v{position:absolute; left:5px; bottom:5px; font:800 10.5px var(--font-body); color:#fff; background:rgba(0,0,0,.6); padding:2px 6px; border-radius:8px;}
+.rt-mt-x{position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0; background:rgba(0,0,0,.65); color:#fff; font-size:12px; line-height:24px; padding:0; cursor:pointer;}
+.rt-m-hint{font-size:11.5px; color:var(--ink-soft); line-height:1.45; margin:8px 2px 0;}
+#rtMCount{float:right; font-weight:700;}
+.rt-cover{position:relative; border:0; padding:0; overflow:hidden; cursor:pointer; font-size:22px;}
+.rt-cover.has{background:#0E2A20;}
+.rt-cover img,.rt-cover video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.rt-cover-n{position:absolute; right:2px; bottom:2px; font:800 9.5px/1 var(--font-body); font-style:normal; color:#fff; background:rgba(0,0,0,.62); padding:2px 4px; border-radius:6px; z-index:1;}
+.rt-gal{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;}
+.rt-gi{cursor:pointer; min-width:0;}
+.rt-gi-m{position:relative; aspect-ratio:1; border-radius:14px; overflow:hidden; background:#0E2A20; display:flex; align-items:center; justify-content:center; color:#fff;}
+.rt-gi-m img,.rt-gi-m video{width:100%; height:100%; object-fit:cover; display:block;}
+.rt-gi-m .rt-mt-v{left:50%; top:50%; bottom:auto; transform:translate(-50%,-50%); font-size:16px; padding:8px 12px; border-radius:50%;}
+.rt-gi span{display:block; font-size:11.5px; color:var(--ink-soft); margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.rt-lb{position:fixed; inset:0; z-index:80; background:rgba(0,0,0,.92); display:flex; align-items:center; justify-content:center; padding:calc(16px + env(safe-area-inset-top,0px)) 12px calc(16px + env(safe-area-inset-bottom,0px)); animation:rtFade .15s;}
+.rt-lb img,.rt-lb video{max-width:100%; max-height:100%; border-radius:12px; background:#000;}
+.rt-lb-x{position:absolute; top:calc(12px + env(safe-area-inset-top,0px)); right:12px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.16); color:#fff; font-size:18px; cursor:pointer;}
+:root[data-theme="dark"] .rt-mbtn{background:rgba(47,166,95,.10); border-color:rgba(105,219,124,.35); color:#fff;}
 /* ===== Tozalash aksiyalari ===== */
 .ev-tabs{overflow-x:auto; scrollbar-width:none;}
 .ev-tabs::-webkit-scrollbar{display:none;}
@@ -1112,7 +1140,7 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
     <p class="rt-sec-d" data-i18n="rt_badges_d">Nishonlarni arizangizni ko‘rib chiqqan mas’ul tashkilot xodimlari beradi. Shartni bajarsangiz, nishon ular tasdiqlagach shu yerda paydo bo‘ladi.</p>
     <div class="rt-badges" id="rtBadges"></div>
     <div class="rt-sec-h" id="rtTreesH"><b data-i18n="rt_trees_h">🌳 Daraxtlarim</b><span id="rtTreesCount"></span></div>
-    <p class="rt-sec-d" data-i18n="rt_trees_d">Ekkan daraxtingizni xaritaga kiriting va har sug‘organingizda hisobot yuboring. Mas’ullar daraxtni joyida tekshirib tasdiqlaydi.</p>
+    <p class="rt-sec-d" data-i18n="rt_trees_d">Ekkan daraxtingizni rasm yoki videoga olib xaritaga kiriting va har sug‘organingizda hisobot yuboring. Mas’ullar daraxtni joyida tekshirib tasdiqlaydi.</p>
     <div id="rtTrees"></div>
     <button class="btn btn-primary rt-add" onclick="app.rtTreeForm()"><span data-i18n="rt_tree_add">＋ Daraxt qo‘shish</span></button>
     <div class="rt-sec-h"><b data-i18n="rt_board_h">🏆 Reyting jadvali</b></div>
@@ -1506,7 +1534,8 @@ const LANG = {
     personal_saved_note:''
   },
   ru: {
-    rt_title:"Экорейтинг", card_rt_d:"Цифровые значки и баллы →", rt_home_sub:"{p} баллов · {l} →", rt_new_badge:"Новый значок!", rt_points:"баллов", rt_next:"До уровня «{l}» ещё {n} баллов", rt_max:"Вы на высшем уровне!", rt_rank_all:"Место по республике", rt_no_region:"Регион не определён", rt_demo_note:"Демо-режим: баллы посчитаны по обращениям на этом устройстве.", rt_err:"Не удалось обновить данные. Проверьте интернет.", rt_badge_count:"Получено {n} / 4", rt_got:"Получен", rt_wait:"Ждёт подтверждения", rt_top:"Высший статус", rt_trees_count:"Полито {w} / {n}", rt_loading:"Загрузка...", rt_trees_empty:"Вы ещё не добавили деревья. Посадите первое и нанесите его на карту!", rt_planted:"посажено {d}", rt_ts_pending:"На проверке", rt_ts_verified:"Подтверждено", rt_ts_rejected:"Отклонено", rt_water:"💧 Полил", rt_watered_today:"✓ Сегодня", rt_pts_badge:"Значок «{b}»", rt_board_noreg:"Рейтинг региона откроется после первого обращения.", rt_board_empty:"В рейтинге пока никого нет. Будьте первым!", rt_board_demo:"Пример списка: настоящий рейтинг появится при подключении сервера.", rt_you:"Вы", rt_priv_anon:"Чтобы показывать имя, сначала зарегистрируйтесь по номеру телефона.", rt_priv_on:"Ваше имя видно в рейтинге.", rt_priv_off:"В рейтинге вы видны под псевдонимом.", rt_go_report:"Сообщить", rt_go_trees:"К моим деревьям", rt_by:"Вручил: {o}", rt_how_get:"Как получить", rt_progress:"Ваш результат", rt_wait_long:"Условие выполнено! Ответственная организация проверит доказательства и вручит значок.", rt_wait_min:"Условие выполнено! Министерство проверит доказательства и присвоит статус.", rt_who:"Кто вручает", rt_who_org:"Организация, рассмотревшая обращение", rt_who_top:"Только министерство", rt_share:"Поделиться", rt_close:"Закрыть", rt_share_text:"Я получил цифровой значок «{b}» в приложении bbecoplatform.uz! 🌿 Присоединяйтесь к защите природы.", rt_copied:"Текст скопирован", rt_cele_t:"Поздравляем!", rt_cele_ok:"Отлично!", rt_tree_new:"Новое дерево", rt_tree_new_d:"Добавляйте дерево, стоя рядом с ним: так геолокация будет точной и проверяющим будет проще его найти.", rt_f_species:"Вид дерева", rt_f_species_ph:"Например: Чинара", rt_f_place:"Местоположение", rt_f_loc:"Определить", rt_f_loc_none:"Местоположение не определено", rt_f_loc_denied:"Доступ не разрешён. Укажите адрес.", rt_f_addr_ph:"Адрес или ориентир (необязательно)", rt_f_date:"Дата посадки", rt_f_photo:"Фото (рекомендуется)", rt_f_photo_d:"Сфотографируйте дерево", rt_f_photo_ok:"Фото выбрано ✓", rt_f_photo_bad:"Можно загрузить только изображение.", rt_f_save:"Сохранить", rt_f_err_species:"Укажите вид дерева.", rt_f_err_place:"Определите местоположение или укажите адрес.", rt_f_err_region:"Выберите регион.", rt_f_err_limit:"Нельзя добавить больше 10 деревьев в день.", rt_f_err_net:"Не удалось сохранить. Проверьте интернет и попробуйте снова.", rt_tree_added:"Дерево добавлено! Его подтвердят после проверки.", rt_w_title:"Отчёт о поливе", rt_w_photo:"Фото (необязательно)", rt_w_note:"Принимается один отчёт в день. Если отчёт окажется ложным, дерево будет отклонено, а баллы аннулированы.", rt_w_send:"Отправить отчёт", rt_w_ok:"Спасибо! Отчёт принят 💧", rt_del_confirm:"Удалить это дерево из списка?", cat_hayvon:"Животный мир", rt_badges_h:"Цифровые значки", rt_badges_d:"Значки вручают сотрудники ответственной организации, рассмотревшей ваше обращение. Выполнив условие, вы увидите значок здесь после их подтверждения.", rt_trees_h:"🌳 Мои деревья", rt_trees_d:"Нанесите посаженное дерево на карту и отправляйте отчёт после каждого полива. Ответственные лица проверят дерево на месте.", rt_tree_add:"＋ Добавить дерево", rt_board_h:"🏆 Таблица рейтинга", rt_tab_all:"Республика", rt_tab_reg:"Мой регион", rt_priv_t:"Показывать моё имя в рейтинге", rt_priv_d:"Если выключено, вы видны как «Активный гражданин #XXXX». Номер телефона никогда не показывается.", rt_how_h:"Как начисляются баллы", rt_note_t:"🏛 Как вручаются значки", rt_note_d:"Система автоматически находит граждан, выполнивших условие. Руководитель ответственной организации, рассмотревшей обращение, проверяет доказательства и вручает значок. Высший статус «Защитник природы» присваивает только министерство. Необоснованно выданный значок может быть отозван.",
+    rt_m_label:"Фото и видео", rt_m_photo:"Сделать фото", rt_m_video:"Снять видео", rt_m_gallery:"Из галереи", rt_m_hint:"До 4 фото или видео. Видео до {s} секунд и до {mb} МБ. Фото сжимаются автоматически.", rt_m_err_max:"Можно прикрепить не более {n} файлов.", rt_m_err_type:"Можно загрузить только фото или видео.", rt_m_err_heic:"Формат HEIC не поддерживается. Выберите JPEG в настройках камеры.", rt_m_err_big:"Видео больше {mb} МБ. Снимите видео покороче.", rt_m_err_long:"Видео длиннее {s} секунд. Снимите видео покороче.", rt_m_err_need:"Чтобы дерево подтвердили, добавьте хотя бы 1 фото или видео.", rt_m_err_space:"На устройстве недостаточно места. Выберите видео поменьше.", rt_m_uploading:"Загрузка {i}/{n}...", rt_m_cap_tree:"При посадке", rt_m_cap_water:"Полив", rt_m_gal_d:"{n} фото и видео. Нажмите, чтобы посмотреть.", rt_m_none:"К этому дереву ещё не прикреплены фото или видео.",
+    rt_title:"Экорейтинг", card_rt_d:"Цифровые значки и баллы →", rt_home_sub:"{p} баллов · {l} →", rt_new_badge:"Новый значок!", rt_points:"баллов", rt_next:"До уровня «{l}» ещё {n} баллов", rt_max:"Вы на высшем уровне!", rt_rank_all:"Место по республике", rt_no_region:"Регион не определён", rt_demo_note:"Демо-режим: баллы посчитаны по обращениям на этом устройстве.", rt_err:"Не удалось обновить данные. Проверьте интернет.", rt_badge_count:"Получено {n} / 4", rt_got:"Получен", rt_wait:"Ждёт подтверждения", rt_top:"Высший статус", rt_trees_count:"Полито {w} / {n}", rt_loading:"Загрузка...", rt_trees_empty:"Вы ещё не добавили деревья. Посадите первое и нанесите его на карту!", rt_planted:"посажено {d}", rt_ts_pending:"На проверке", rt_ts_verified:"Подтверждено", rt_ts_rejected:"Отклонено", rt_water:"💧 Полил", rt_watered_today:"✓ Сегодня", rt_pts_badge:"Значок «{b}»", rt_board_noreg:"Рейтинг региона откроется после первого обращения.", rt_board_empty:"В рейтинге пока никого нет. Будьте первым!", rt_board_demo:"Пример списка: настоящий рейтинг появится при подключении сервера.", rt_you:"Вы", rt_priv_anon:"Чтобы показывать имя, сначала зарегистрируйтесь по номеру телефона.", rt_priv_on:"Ваше имя видно в рейтинге.", rt_priv_off:"В рейтинге вы видны под псевдонимом.", rt_go_report:"Сообщить", rt_go_trees:"К моим деревьям", rt_by:"Вручил: {o}", rt_how_get:"Как получить", rt_progress:"Ваш результат", rt_wait_long:"Условие выполнено! Ответственная организация проверит доказательства и вручит значок.", rt_wait_min:"Условие выполнено! Министерство проверит доказательства и присвоит статус.", rt_who:"Кто вручает", rt_who_org:"Организация, рассмотревшая обращение", rt_who_top:"Только министерство", rt_share:"Поделиться", rt_close:"Закрыть", rt_share_text:"Я получил цифровой значок «{b}» в приложении bbecoplatform.uz! 🌿 Присоединяйтесь к защите природы.", rt_copied:"Текст скопирован", rt_cele_t:"Поздравляем!", rt_cele_ok:"Отлично!", rt_tree_new:"Новое дерево", rt_tree_new_d:"Добавляйте дерево, стоя рядом с ним: так геолокация будет точной и проверяющим будет проще его найти.", rt_f_species:"Вид дерева", rt_f_species_ph:"Например: Чинара", rt_f_place:"Местоположение", rt_f_loc:"Определить", rt_f_loc_none:"Местоположение не определено", rt_f_loc_denied:"Доступ не разрешён. Укажите адрес.", rt_f_addr_ph:"Адрес или ориентир (необязательно)", rt_f_date:"Дата посадки", rt_f_photo:"Фото (рекомендуется)", rt_f_photo_d:"Сфотографируйте дерево", rt_f_photo_ok:"Фото выбрано ✓", rt_f_photo_bad:"Можно загрузить только изображение.", rt_f_save:"Сохранить", rt_f_err_species:"Укажите вид дерева.", rt_f_err_place:"Определите местоположение или укажите адрес.", rt_f_err_region:"Выберите регион.", rt_f_err_limit:"Нельзя добавить больше 10 деревьев в день.", rt_f_err_net:"Не удалось сохранить. Проверьте интернет и попробуйте снова.", rt_tree_added:"Дерево добавлено! Его подтвердят после проверки.", rt_w_title:"Отчёт о поливе", rt_w_photo:"Фото (необязательно)", rt_w_note:"Принимается один отчёт в день. Если отчёт окажется ложным, дерево будет отклонено, а баллы аннулированы.", rt_w_send:"Отправить отчёт", rt_w_ok:"Спасибо! Отчёт принят 💧", rt_del_confirm:"Удалить это дерево из списка?", cat_hayvon:"Животный мир", rt_badges_h:"Цифровые значки", rt_badges_d:"Значки вручают сотрудники ответственной организации, рассмотревшей ваше обращение. Выполнив условие, вы увидите значок здесь после их подтверждения.", rt_trees_h:"🌳 Мои деревья", rt_trees_d:"Сфотографируйте или снимите на видео посаженное дерево, нанесите его на карту и отправляйте отчёт после каждого полива. Ответственные лица проверят дерево на месте.", rt_tree_add:"＋ Добавить дерево", rt_board_h:"🏆 Таблица рейтинга", rt_tab_all:"Республика", rt_tab_reg:"Мой регион", rt_priv_t:"Показывать моё имя в рейтинге", rt_priv_d:"Если выключено, вы видны как «Активный гражданин #XXXX». Номер телефона никогда не показывается.", rt_how_h:"Как начисляются баллы", rt_note_t:"🏛 Как вручаются значки", rt_note_d:"Система автоматически находит граждан, выполнивших условие. Руководитель ответственной организации, рассмотревшей обращение, проверяет доказательства и вручает значок. Высший статус «Защитник природы» присваивает только министерство. Необоснованно выданный значок может быть отозван.",
     lx_hero_t:"Действующее экологическое законодательство", lx_search_ph:"Название, номер или тема документа...", lx_disc:"Краткое содержание упрощено для понятности. Официальный текст и последнюю редакцию смотрите на lex.uz (Национальная база данных законодательства).", lx_checked:"Источник: lex.uz · проверено на {d}", lx_tab_all:"Все", lx_tab_fav:"Избранное", lx_tab_kodeks:"Кодексы", lx_tab_qonun:"Законы", lx_tab_prez:"Акты Президента", lx_tab_vm:"Постановления КМ", lx_tab_xalqaro:"Международные договоры", lx_tab_standart:"Стандарты и нормы", lx_tab_jarima:"Штрафы", lx_tp_havo:"Воздух", lx_tp_suv:"Вода", lx_tp_chiqindi:"Отходы", lx_tp_yer:"Земля и почва", lx_tp_ormon:"Леса и деревья", lx_tp_hayvon:"Животный мир", lx_tp_hudud:"Охраняемые территории", lx_tp_ekspertiza:"Экспертиза", lx_tp_nazorat:"Контроль", lx_tp_javobgarlik:"Ответственность", lx_tp_iqlim:"Климат", lx_tp_radiatsiya:"Радиация", lx_tp_umumiy:"Общее", lx_type_kodeks:"Кодекс", lx_type_qonun:"Закон", lx_type_farmon:"Указ Президента", lx_type_qaror:"Постановление Президента", lx_type_vm:"Постановление КМ", lx_type_xalqaro:"Международный договор", lx_type_standart:"Стандарт", lx_fav:"В избранное", lx_fav_empty:"Пока ничего не сохранено. Отмечайте нужные документы знаком ☆.", lx_none:"Ничего не найдено.", lx_points:"Основные положения", lx_amended:"Последнее изменение", lx_full:"Полный текст", lx_open_lex:"Читать на lex.uz", lx_share:"Поделиться", lx_bhm:"Базовая расчётная величина (БРВ)", lx_sum:"сум", lx_since:"с", lx_fines_note:"Штрафы для граждан по Кодексу об административной ответственности (КоАО), в кратном размере БРВ. Для должностных лиц суммы выше.", lx_report:"Сообщить о нарушении", lx_src:"Источник",
     pill_cancelled:'Отменено', pill_edited:'Изменено',
     empty_no_cases:'Вы ещё не отправляли обращений.<br>Начните с раздела «Сообщить».',
@@ -1626,6 +1655,7 @@ const app = {
     document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(LANG.uz[k]===undefined) LANG.uz[k]=el.innerHTML; });
     document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(LANG.uz[k]===undefined) LANG.uz[k]=el.placeholder; });
     Object.assign(LANG.uz, {
+      rt_m_label:"Rasm va video", rt_m_photo:"Rasmga olish", rt_m_video:"Videoga olish", rt_m_gallery:"Galereyadan", rt_m_hint:"4 tagacha rasm yoki video. Video {s} soniyagacha va {mb} MB gacha. Rasmlar avtomatik siqiladi.", rt_m_err_max:"Ko‘pi bilan {n} ta fayl biriktirish mumkin.", rt_m_err_type:"Faqat rasm yoki video yuklash mumkin.", rt_m_err_heic:"Bu rasm formati (HEIC) qo‘llab-quvvatlanmaydi. Kamera sozlamasida JPEG ni tanlang.", rt_m_err_big:"Video {mb} MB dan katta. Qisqaroq video oling.", rt_m_err_long:"Video {s} soniyadan uzun. Qisqaroq video oling.", rt_m_err_need:"Daraxtni tasdiqlash uchun kamida 1 ta rasm yoki video qo‘shing.", rt_m_err_space:"Qurilmada joy yetarli emas. Kichikroq video tanlang.", rt_m_uploading:"Yuklanmoqda {i}/{n}...", rt_m_cap_tree:"Ekilganda", rt_m_cap_water:"Sug‘orish", rt_m_gal_d:"{n} ta rasm va video. Ko‘rish uchun ustiga bosing.", rt_m_none:"Bu daraxtga hali rasm yoki video biriktirilmagan.",
       rt_home_sub:"{p} ball · {l} →", rt_new_badge:"Yangi nishon!", rt_points:"ball", rt_next:"«{l}» darajasigacha yana {n} ball", rt_max:"Siz eng yuqori darajadasiz!", rt_rank_all:"Respublika bo‘yicha o‘rningiz", rt_no_region:"Viloyat aniqlanmagan", rt_demo_note:"Demo rejim: ballar shu qurilmadagi arizalaringiz asosida hisoblandi.", rt_err:"Ma’lumotni yangilab bo‘lmadi. Internetni tekshiring.", rt_badge_count:"{n} / 4 qo‘lga kiritildi", rt_got:"Qo‘lga kiritildi", rt_wait:"Mas’ul tasdig‘ini kutmoqda", rt_top:"Oliy maqom", rt_trees_count:"{w} / {n} sug‘orilgan", rt_loading:"Yuklanmoqda...", rt_trees_empty:"Hali daraxt qo‘shmagansiz. Birinchi daraxtingizni eking va xaritaga kiriting!", rt_planted:"{d} ekilgan", rt_ts_pending:"Tekshirilmoqda", rt_ts_verified:"Tasdiqlangan", rt_ts_rejected:"Rad etilgan", rt_water:"💧 Sug‘ordim", rt_watered_today:"✓ Bugun", rt_pts_badge:"«{b}» nishoni", rt_board_noreg:"Viloyat reytingi birinchi arizangizdan keyin ochiladi.", rt_board_empty:"Hozircha reytingda hech kim yo‘q. Birinchi bo‘ling!", rt_board_demo:"Namunaviy ro‘yxat: haqiqiy reyting server ulanganda ko‘rinadi.", rt_you:"Siz", rt_priv_anon:"Ismni ko‘rsatish uchun avval telefon raqam bilan ro‘yxatdan o‘ting.", rt_priv_on:"Ismingiz reytingda ko‘rinadi.", rt_priv_off:"Reytingda taxallus bilan ko‘rinasiz.", rt_go_report:"Xabar berish", rt_go_trees:"Daraxtlarimga o‘tish", rt_by:"Bergan: {o}", rt_how_get:"Qanday qo‘lga kiritiladi", rt_progress:"Sizning natijangiz", rt_wait_long:"Shart bajarildi! Mas’ul tashkilot dalillarni tekshirib, nishonni beradi.", rt_wait_min:"Shart bajarildi! Vazirlik mas’ullari dalillarni tekshirib, maqomni beradi.", rt_who:"Kim beradi", rt_who_org:"Arizani ko‘rib chiqqan mas’ul tashkilot", rt_who_top:"Faqat vazirlik mas’ullari", rt_share:"Ulashish", rt_close:"Yopish", rt_share_text:"Men bbecoplatform.uz ilovasida «{b}» raqamli nishonini qo‘lga kiritdim! 🌿 Siz ham tabiatni asrashga qo‘shiling.", rt_copied:"Matn nusxalandi", rt_cele_t:"Tabriklaymiz!", rt_cele_ok:"Ajoyib!", rt_tree_new:"Yangi daraxt", rt_tree_new_d:"Daraxt yonida turib qo‘shsangiz, joylashuv aniq bo‘ladi va mas’ullar uni oson topadi.", rt_f_species:"Daraxt turi", rt_f_species_ph:"Masalan: Chinor", rt_f_place:"Joylashuv", rt_f_loc:"Aniqlash", rt_f_loc_none:"Joylashuv aniqlanmagan", rt_f_loc_denied:"Ruxsat berilmadi. Manzilni yozing.", rt_f_addr_ph:"Manzil yoki mo‘ljal (ixtiyoriy)", rt_f_date:"Ekilgan sana", rt_f_photo:"Surat (tavsiya etiladi)", rt_f_photo_d:"Daraxt suratini oling", rt_f_photo_ok:"Surat tanlandi ✓", rt_f_photo_bad:"Faqat rasm yuklash mumkin.", rt_f_save:"Saqlash", rt_f_err_species:"Daraxt turini kiriting.", rt_f_err_place:"Joylashuvni aniqlang yoki manzilni yozing.", rt_f_err_region:"Viloyatni tanlang.", rt_f_err_limit:"Bir kunda 10 tadan ortiq daraxt qo‘shib bo‘lmaydi.", rt_f_err_net:"Saqlab bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.", rt_tree_added:"Daraxt qo‘shildi! Mas’ullar tekshirgach tasdiqlanadi.", rt_w_title:"Sug‘organlik hisoboti", rt_w_photo:"Surat (ixtiyoriy)", rt_w_note:"Kuniga bitta hisobot qabul qilinadi. Yolg‘on hisobotlar aniqlansa, daraxt rad etiladi va ballar bekor qilinadi.", rt_w_send:"Hisobot yuborish", rt_w_ok:"Rahmat! Hisobot qabul qilindi 💧", rt_del_confirm:"Bu daraxtni ro‘yxatdan o‘chirasizmi?", cat_hayvon:"Hayvonot dunyosi", card_rt_d:"Raqamli nishonlar va ballar →",
       lx_checked:"Manba: lex.uz · {d} holatiga tekshirilgan", lx_tab_all:"Hammasi", lx_tab_fav:"Saqlangan", lx_tab_kodeks:"Kodekslar", lx_tab_qonun:"Qonunlar", lx_tab_prez:"Prezident hujjatlari", lx_tab_vm:"Hukumat qarorlari", lx_tab_xalqaro:"Xalqaro shartnomalar", lx_tab_standart:"Standart va normalar", lx_tab_jarima:"Jarimalar", lx_tp_havo:"Havo", lx_tp_suv:"Suv", lx_tp_chiqindi:"Chiqindi", lx_tp_yer:"Yer va tuproq", lx_tp_ormon:"O‘rmon va daraxt", lx_tp_hayvon:"Hayvonot dunyosi", lx_tp_hudud:"Qo‘riqlanadigan hududlar", lx_tp_ekspertiza:"Ekspertiza", lx_tp_nazorat:"Nazorat", lx_tp_javobgarlik:"Javobgarlik", lx_tp_iqlim:"Iqlim", lx_tp_radiatsiya:"Radiatsiya", lx_tp_umumiy:"Umumiy", lx_type_kodeks:"Kodeks", lx_type_qonun:"Qonun", lx_type_farmon:"Prezident farmoni", lx_type_qaror:"Prezident qarori", lx_type_vm:"VM qarori", lx_type_xalqaro:"Xalqaro shartnoma", lx_type_standart:"Standart", lx_fav:"Saqlash", lx_fav_empty:"Hali hech narsa saqlanmagan. Kerakli hujjatni ☆ belgisi bilan saqlang.", lx_none:"Hech narsa topilmadi.", lx_points:"Asosiy qoidalar", lx_amended:"Oxirgi o‘zgartirish", lx_full:"To‘liq matn", lx_open_lex:"lex.uz’da o‘qish", lx_share:"Ulashish", lx_bhm:"Bazaviy hisoblash miqdori (BHM)", lx_sum:"so‘m", lx_since:"dan", lx_fines_note:"Jarimalar Ma’muriy javobgarlik to‘g‘risidagi kodeks (MJtK) bo‘yicha fuqarolarga qo‘llaniladigan miqdorda, BHM ga karrali ko‘rsatilgan. Mansabdor shaxslar uchun miqdorlar yuqoriroq.", lx_report:"Qoidabuzarlik haqida xabar berish", lx_src:"Manba",
       region_ph:'— Viloyatni tanlang —', loc_detected:'Joylashuv aniqlandi ✓', loc_denied:'Ruxsat berilmadi. Viloyatni qo‘lda tanlang.',
@@ -2172,6 +2202,7 @@ const app = {
       this.stopRealtime();
     }
     ['eco_user','eco_account','eco_cases','eco_ai_msgs','eco_rating','eco_badges_seen','eco_trees','eco_rating_public','eco_demo_awards'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
+    try{ this._idb = null; indexedDB.deleteDatabase('eco_media'); }catch(e){}
     this.rt.data = null; this.rt.trees = []; this.rt.board = {};
     this.user=null; this.account=null; this.cases=[]; this.aiMessages=[]; this.draft={};
     ['firstNameInput','lastNameInput','phoneInput','mailInput','passInput','passConfirmInput'].forEach(id=>{
@@ -2381,7 +2412,8 @@ const app = {
              public: !!safeGet('eco_rating_public'), awards, demo: true };
   },
   rtDemoTrees(){
-    return (safeGet('eco_trees') || []).map(t=>({...t, days:(t.waterings||[]).slice()}));
+    return (safeGet('eco_trees') || []).map(t=>({...t, days:(t.waterings||[]).slice(), media:(t.media||[]).slice(),
+      wmedia: Object.entries(t.wmedia||{}).map(([day, keys])=>({day, keys})).sort((a,b)=> a.day<b.day?-1:1)}));
   },
   async rtSession(){
     if(!SUPABASE_READY) return null;
@@ -2398,12 +2430,14 @@ const app = {
       try{
         const [me, tr] = await Promise.all([
           sb.rpc('my_eco_rating'),
-          sb.from('user_trees').select('id,species,region,address,lat,lng,planted_on,status,created_at,tree_waterings(day)')
+          sb.from('user_trees').select('id,species,region,address,lat,lng,planted_on,status,created_at,photo_path,media_paths,tree_waterings(day,photo_path,media_paths)')
             .eq('user_id', session.user.id).order('created_at', {ascending:false})
         ]);
         if(me.error) throw me.error;
         R.data = me.data || this.rtDemoData();
-        R.trees = (tr.data || []).map(t=>({...t, days:(t.tree_waterings||[]).map(w=>w.day).sort()}));
+        const uniq = (p, a)=> Array.from(new Set([p].concat(a||[]).filter(Boolean)));
+        R.trees = (tr.data || []).map(t=>({...t, days:(t.tree_waterings||[]).map(w=>w.day).sort(), media: uniq(t.photo_path, t.media_paths),
+          wmedia:(t.tree_waterings||[]).map(w=>({day:w.day, keys:uniq(w.photo_path, w.media_paths)})).filter(w=>w.keys.length).sort((a,b)=> a.day<b.day?-1:1)}));
         safeSet('eco_rating', R.data);
       } catch(e){
         console.warn('rating', e && e.message);
@@ -2468,11 +2502,13 @@ const app = {
       : trees.map(t=>{
         const done = t.days.includes(today), last = t.days[t.days.length-1];
         const sub = [t.address, t.planted_on ? this.t('rt_planted').replace('{d}', this.rtFmtDate(t.planted_on)) : ''].filter(Boolean).join(' · ') || regionName(t.region, this.lang);
-        return `<div class="rt-tree"><div class="rt-tree-ico">🌳</div><div class="rt-tree-b"><b>${this.esc(String(t.species||''))}</b><span>${this.esc(String(sub||''))}</span>
+        const mn = this.rtTreeMedia(t), cover = mn[0];
+        return `<div class="rt-tree"><button class="rt-tree-ico rt-cover" ${cover ? `data-mk="${this.esc(cover.k)}"` : ''} onclick="app.rtGallery('${t.id}')" aria-label="media">${cover ? '' : '🌳'}${mn.length ? `<i class="rt-cover-n">${mn.some(m=>this.rtIsVideo(m.k)) ? '▶ ' : ''}${mn.length}</i>` : ''}</button><div class="rt-tree-b"><b>${this.esc(String(t.species||''))}</b><span>${this.esc(String(sub||''))}</span>
           <div class="rt-pills"><i class="rt-pill ${t.status}">${this.esc(this.t('rt_ts_'+t.status))}</i><i class="rt-pill w">💧 ${t.days.length}${last ? ' · '+this.esc(this.rtFmtDate(last)) : ''}</i></div></div>
           ${t.status==='rejected' ? '' : `<button class="rt-water" ${done?'disabled':''} onclick="app.rtWaterForm('${t.id}')">${this.esc(this.t(done?'rt_watered_today':'rt_water'))}</button>`}
           ${t.status==='pending' && !t.days.length ? `<button class="rt-del" aria-label="del" onclick="app.rtTreeDel('${t.id}')">🗑</button>` : ''}</div>`;
       }).join('');
+    this.rtHydrateThumbs();
     document.querySelectorAll('#rtTabs button').forEach(b=> b.classList.toggle('sel', b.dataset.t===R.tab));
     document.getElementById('rtPublic').checked = !!d.public;
     this.renderBoard();
@@ -2544,7 +2580,13 @@ const app = {
     document.getElementById('rtSheetBody').innerHTML = html;
     sh.hidden = false;
   },
-  rtClose(){ const sh = document.getElementById('rtSheet'); if(sh){ sh.hidden = true; document.getElementById('rtSheetBody').innerHTML = ''; } this.rt.form = null; },
+  rtBack(){
+    const lb = document.querySelector('.rt-lb'); if(lb){ const v = lb.querySelector('video'); if(v) v.pause(); lb.remove(); return true; }
+    const sh = document.getElementById('rtSheet'); if(sh && !sh.hidden){ if(!(this.rt.form && this.rt.form.busy)) this.rtClose(); return true; }
+    return false;
+  },
+  rtClose(){ document.querySelectorAll('.rt-lb').forEach(x=>x.remove()); if(this.rt.form && this.rt.form.media) this.rt.form.media.forEach(m=>{ try{ URL.revokeObjectURL(m.url); }catch(e){} });
+    const sh = document.getElementById('rtSheet'); if(sh){ sh.hidden = true; document.getElementById('rtSheetBody').innerHTML = ''; } this.rt.form = null; },
   rtBadge(k){
     const b = this.rtB(k), T = this.rtL(b), d = this.rt.data || this.rtDemoData(), s = d.stats || {};
     const aw = (d.awards||[]).find(a=>a.badge===k), v = s[b.stat]||0;
@@ -2596,7 +2638,7 @@ const app = {
   // ---------- daraxtlar ----------
   rtTreeForm(){
     const d = this.rt.data || {}, reg = d.region || (this.user && this.user.region) || '';
-    this.rt.form = { lat:null, lng:null, file:null };
+    this.rt.form = { lat:null, lng:null, media:[] };
     const opts = REGIONS.map(r=>`<option value="${r.code}" ${r.code===reg?'selected':''}>${this.esc(r[this.lang]||r.uz)}</option>`).join('');
     this.rtSheet(`<div class="rt-f">
       <div class="rt-sh-head"><div class="rt-lvl-ico" style="background:#EBFBEE; border:0;">🌱</div><h3>${this.esc(this.t('rt_tree_new'))}</h3><p>${this.esc(this.t('rt_tree_new_d'))}</p></div>
@@ -2609,8 +2651,7 @@ const app = {
       <input class="name-input" id="rtAddr" maxlength="200" style="margin-top:8px;" placeholder="${this.esc(this.t('rt_f_addr_ph'))}">
       <div class="rt-f-lbl">${this.esc(this.t('rt_f_date'))}</div>
       <input class="name-input" id="rtDate" type="date" max="${this.rtTodayTz()}" value="${this.rtTodayTz()}">
-      <div class="rt-f-lbl">${this.esc(this.t('rt_f_photo'))}</div>
-      <label class="rt-photo"><input type="file" accept="image/*" capture="environment" hidden onchange="app.rtPick(this.files[0])"><span id="rtPhotoPrev">📷</span><span id="rtPhotoTxt">${this.esc(this.t('rt_f_photo_d'))}</span></label>
+      ${this.rtMediaPicker()}
       <p class="rt-err" id="rtErr"></p>
       <div class="rt-sh-btns"><button class="btn btn-primary" id="rtSave" onclick="app.rtTreeSave()">${this.esc(this.t('rt_f_save'))}</button><button class="btn btn-outline" onclick="app.rtClose()">${this.esc(this.t('rt_close'))}</button></div>
     </div>`);
@@ -2626,20 +2667,157 @@ const app = {
       const sel = document.getElementById('rtRegion'); if(sel && !sel.value) sel.value = guessRegion(F.lat, F.lng) || '';
     }, ()=>{ const t = document.getElementById('rtLocTxt'); if(t && !quiet) t.textContent = this.t('rt_f_loc_denied'); }, { enableHighAccuracy:true, timeout:12000, maximumAge:60000 });
   },
-  rtPick(file){
-    const F = this.rt.form; if(!F || !file) return;
-    if(!file.type.startsWith('image/')){ document.getElementById('rtErr').textContent = this.t('rt_f_photo_bad'); return; }
-    F.file = file;
-    const url = URL.createObjectURL(file);
-    document.getElementById('rtPhotoPrev').innerHTML = `<img src="${url}" alt="">`;
-    document.getElementById('rtPhotoTxt').textContent = this.t('rt_f_photo_ok');
+  // ---------- daraxt dalillari: rasm va video ----------
+  // Demo rejimda fayllar qurilmaning IndexedDB xotirasida, serverda report-media/<uid>/trees/ papkasida saqlanadi.
+  RT_MAX_MEDIA: 4, RT_MAX_VIDEO_MB: 50, RT_MAX_VIDEO_SEC: 60,
+  rtIsVideo(k){ return /\.(mp4|m4v|mov|webm|3gp|3gpp|mkv)$/i.test(String(k||'')); },
+  rtIdb(){
+    if(!this._idb) this._idb = new Promise((res, rej)=>{
+      try{
+        const r = indexedDB.open('eco_media', 1);
+        r.onupgradeneeded = ()=> r.result.createObjectStore('m');
+        r.onsuccess = ()=> res(r.result); r.onerror = ()=> rej(r.error);
+      }catch(e){ rej(e); }
+    });
+    return this._idb;
   },
-  async rtUploadPhoto(uid, file, prefix){
-    const f = await this.compressImage(file);
-    const path = `${uid}/trees/${prefix}${Date.now()}-${Math.random().toString(36).slice(2,7)}.jpg`;
-    const { error } = await sb.storage.from('report-media').upload(path, f, { contentType: f.type || 'image/jpeg', upsert:false });
-    if(error) throw error;
-    return path;
+  async rtIdbDo(mode, fn){
+    const db = await this.rtIdb();
+    return new Promise((res, rej)=>{ const tx = db.transaction('m', mode), st = tx.objectStore('m'); let out; const q = fn(st); if(q) q.onsuccess = ()=>{ out = q.result; }; tx.oncomplete = ()=> res(out); tx.onerror = ()=> rej(tx.error); });
+  },
+  rtIdbPut(id, blob){ return this.rtIdbDo('readwrite', st=> st.put(blob, id)); },
+  rtIdbGet(id){ return this.rtIdbDo('readonly', st=> st.get(id)); },
+  rtIdbDel(ids){ return this.rtIdbDo('readwrite', st=>{ ids.forEach(id=> st.delete(id)); }); },
+  // kalit → ko'rsatish manzili (demo: blob URL, server: 1 soatlik imzolangan havola)
+  async rtUrls(keys){
+    const C = this.rt.urls = this.rt.urls || {}, now = Date.now();
+    const need = keys.filter(k=> k && !(C[k] && C[k].exp > now));
+    if(need.length){
+      if(this.rt.demo){
+        await Promise.all(need.map(async k=>{ try{ const b = await this.rtIdbGet(k); if(b) C[k] = { url: URL.createObjectURL(b), exp: Infinity }; }catch(e){} }));
+      } else {
+        try{
+          const { data } = await sb.storage.from('report-media').createSignedUrls(need, 3600);
+          (data||[]).forEach(x=>{ if(x.signedUrl) C[x.path] = { url: x.signedUrl, exp: now + 3300e3 }; });
+        }catch(e){ console.warn('media urls', e && e.message); }
+      }
+    }
+    const out = {}; keys.forEach(k=>{ if(C[k]) out[k] = C[k].url; }); return out;
+  },
+  rtMediaPicker(){
+    return `<div class="rt-f-lbl">${this.esc(this.t('rt_m_label'))} <span id="rtMCount">0/${this.RT_MAX_MEDIA}</span></div>
+      <div class="rt-mpick">
+        <label class="rt-mbtn"><input type="file" accept="image/*" capture="environment" hidden onchange="app.rtAddMedia(this)"><i>📷</i><span>${this.esc(this.t('rt_m_photo'))}</span></label>
+        <label class="rt-mbtn"><input type="file" accept="video/*" capture="environment" hidden onchange="app.rtAddMedia(this)"><i>🎥</i><span>${this.esc(this.t('rt_m_video'))}</span></label>
+        <label class="rt-mbtn"><input type="file" accept="image/*,video/*" multiple hidden onchange="app.rtAddMedia(this)"><i>🖼️</i><span>${this.esc(this.t('rt_m_gallery'))}</span></label>
+      </div>
+      <div class="rt-mgrid" id="rtMGrid"></div>
+      <p class="rt-m-hint">${this.esc(this.t('rt_m_hint').replace('{s}', this.RT_MAX_VIDEO_SEC).replace('{mb}', this.RT_MAX_VIDEO_MB))}</p>`;
+  },
+  rtVideoMeta(url){
+    return new Promise(res=>{
+      const v = document.createElement('video'); let done = false;
+      const fin = d=>{ if(!done){ done = true; res(d); } };
+      v.preload = 'metadata'; v.muted = true;
+      v.onloadedmetadata = ()=> fin(isFinite(v.duration) ? v.duration : null);
+      v.onerror = ()=> fin(null); setTimeout(()=> fin(null), 5000);
+      v.src = url;
+    });
+  },
+  async rtAddMedia(input){
+    const F = this.rt.form, files = Array.from(input.files || []); input.value = '';
+    if(!F || !files.length) return;
+    const err = document.getElementById('rtErr'); err.textContent = '';
+    F.media = F.media || [];
+    for(const file of files){
+      if(F.media.length >= this.RT_MAX_MEDIA){ err.textContent = this.t('rt_m_err_max').replace('{n}', this.RT_MAX_MEDIA); break; }
+      const isV = (file.type||'').startsWith('video/') || this.rtIsVideo(file.name), isI = (file.type||'').startsWith('image/');
+      if(!isV && !isI){ err.textContent = this.t('rt_m_err_type'); continue; }
+      if(isI && /heic|heif/i.test(file.type)){ err.textContent = this.t('rt_m_err_heic'); continue; }
+      if(isV && file.size > this.RT_MAX_VIDEO_MB*1024*1024){ err.textContent = this.t('rt_m_err_big').replace('{mb}', this.RT_MAX_VIDEO_MB); continue; }
+      const url = URL.createObjectURL(file);
+      let dur = null;
+      if(isV){
+        dur = await this.rtVideoMeta(url);
+        if(dur && dur > this.RT_MAX_VIDEO_SEC + 1){ URL.revokeObjectURL(url); err.textContent = this.t('rt_m_err_long').replace('{s}', this.RT_MAX_VIDEO_SEC); continue; }
+      }
+      F.media.push({ file, url, type: isV ? 'video' : 'image', dur });
+    }
+    this.rtRenderPicked();
+  },
+  rtDelMedia(i){
+    const F = this.rt.form; if(!F || !F.media || F.busy) return;
+    const m = F.media.splice(i, 1)[0]; if(m) URL.revokeObjectURL(m.url);
+    const err = document.getElementById('rtErr'); if(err) err.textContent = '';
+    this.rtRenderPicked();
+  },
+  rtFmtDur(s){ if(!s) return ''; s = Math.round(s); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); },
+  rtRenderPicked(){
+    const F = this.rt.form, g = document.getElementById('rtMGrid'); if(!F || !g) return;
+    const M = F.media || [];
+    document.getElementById('rtMCount').textContent = M.length + '/' + this.RT_MAX_MEDIA;
+    document.querySelectorAll('.rt-mbtn').forEach(b=> b.classList.toggle('off', M.length >= this.RT_MAX_MEDIA));
+    g.innerHTML = M.map((m,i)=> `<div class="rt-mt">${m.type==='video'
+        ? `<video src="${m.url}#t=0.3" muted playsinline preload="metadata"></video><b class="rt-mt-v">▶ ${this.rtFmtDur(m.dur)}</b>`
+        : `<img src="${m.url}" alt="">`}<button class="rt-mt-x" aria-label="x" onclick="app.rtDelMedia(${i})">✕</button></div>`).join('');
+  },
+  // tanlangan fayllarni saqlash: server yo'llari yoki IndexedDB kalitlari
+  async rtStoreMedia(session, prefix, onStep){
+    const F = this.rt.form, M = F.media || [], keys = [];
+    for(let i = 0; i < M.length; i++){
+      onStep && onStep(i + 1, M.length);
+      const m = M[i];
+      const f = m.type === 'image' ? await this.compressImage(m.file) : m.file;
+      if(!session){
+        const id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2,7) + (m.type==='video' ? '.mp4' : '.jpg');
+        await this.rtIdbPut(id, f); keys.push(id);
+      } else {
+        let ext = m.type === 'image' ? 'jpg' : ((f.name||'').split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);
+        if(m.type === 'video' && !this.rtIsVideo('x.'+ext)) ext = 'mp4';
+        const path = `${session.user.id}/trees/${prefix}${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const { error } = await sb.storage.from('report-media').upload(path, f, { contentType: f.type || (m.type==='video' ? 'video/mp4' : 'image/jpeg'), upsert:false });
+        if(error) throw error;
+        keys.push(path);
+      }
+    }
+    return keys;
+  },
+  rtBusyLabel(btn, i, n){ btn.textContent = n > 0 ? this.t('rt_m_uploading').replace('{i}', i).replace('{n}', n) : this.t('submit_sending'); },
+  // daraxt kartasidagi muqova rasmlar (asinxron to'ldiriladi)
+  async rtHydrateThumbs(){
+    const els = Array.from(document.querySelectorAll('#rtTrees [data-mk]')); if(!els.length) return;
+    const U = await this.rtUrls(els.map(e=>e.dataset.mk));
+    els.forEach(e=>{ const u = U[e.dataset.mk]; if(!u) return;
+      e.insertAdjacentHTML('afterbegin', this.rtIsVideo(e.dataset.mk) ? `<video src="${u}#t=0.3" muted playsinline preload="metadata"></video>` : `<img src="${u}" alt="">`);
+      e.classList.add('has'); });
+  },
+  rtTreeMedia(t){
+    const out = (t.media||[]).map(k=>({ k, cap: this.t('rt_m_cap_tree'), day: t.planted_on || (t.created_at||'').slice(0,10) }));
+    (t.wmedia||[]).forEach(w=> (w.keys||[]).forEach(k=> out.push({ k, cap: this.t('rt_m_cap_water'), day: w.day })));
+    return out;
+  },
+  async rtGallery(id){
+    const t = (this.rt.trees||[]).find(x=>String(x.id)===String(id)); if(!t) return;
+    const items = this.rtTreeMedia(t);
+    this.rtSheet(`<div class="rt-sh-head"><div class="rt-lvl-ico" style="background:#EBFBEE; border:0;">🌳</div><h3>${this.esc(String(t.species||''))}</h3>
+      <p>${this.esc(this.t('rt_m_gal_d').replace('{n}', items.length))}</p></div>
+      <div class="rt-gal" id="rtGal">${items.length ? items.map((m,i)=>`<div class="rt-gi" data-i="${i}"><div class="rt-gi-m"></div><span>${this.rtIsVideo(m.k)?'🎥':'📷'} ${this.esc(m.cap)} · ${this.esc(this.rtFmtDate(m.day))}</span></div>`).join('')
+        : `<div class="rt-empty" style="grid-column:1/-1">${this.esc(this.t('rt_m_none'))}</div>`}</div>
+      <div class="rt-sh-btns">${t.status!=='rejected' && !t.days.includes(this.rtTodayTz()) ? `<button class="btn btn-primary" onclick="app.rtWaterForm('${t.id}')">${this.esc(this.t('rt_water'))}</button>` : ''}<button class="btn btn-outline" onclick="app.rtClose()">${this.esc(this.t('rt_close'))}</button></div>`);
+    this.rt.gal = items;
+    const U = await this.rtUrls(items.map(m=>m.k));
+    document.querySelectorAll('#rtGal .rt-gi').forEach(el=>{
+      const m = items[+el.dataset.i], u = U[m.k], box = el.querySelector('.rt-gi-m');
+      if(!u){ box.textContent = '⚠️'; return; }
+      box.innerHTML = this.rtIsVideo(m.k) ? `<video src="${u}#t=0.3" muted playsinline preload="metadata"></video><b class="rt-mt-v">▶</b>` : `<img src="${u}" alt="" loading="lazy">`;
+      el.onclick = ()=> this.rtLightbox(u, this.rtIsVideo(m.k));
+    });
+  },
+  rtLightbox(url, video){
+    const el = document.createElement('div'); el.className = 'rt-lb';
+    el.innerHTML = (video ? `<video src="${url}" controls autoplay playsinline></video>` : `<img src="${url}" alt="">`) + '<button class="rt-lb-x" aria-label="x">✕</button>';
+    el.onclick = e=>{ if(e.target === el || e.target.classList.contains('rt-lb-x')){ const v = el.querySelector('video'); if(v) v.pause(); el.remove(); } };
+    document.body.appendChild(el);
   },
   async rtTreeSave(){
     const F = this.rt.form; if(!F || F.busy) return;
@@ -2649,32 +2827,36 @@ const app = {
     if(species.length < 2){ err.textContent = this.t('rt_f_err_species'); return; }
     if(F.lat==null && !address){ err.textContent = this.t('rt_f_err_place'); return; }
     if(!region){ err.textContent = this.t('rt_f_err_region'); return; }
+    if(!F.media.length){ err.textContent = this.t('rt_m_err_need'); return; }
     F.busy = true; btn.disabled = true; err.textContent = '';
+    const label = btn.innerHTML;
     try{
       const session = await this.rtSession();
       if(!session){
+        const media = await this.rtStoreMedia(null, '', (i,n)=> this.rtBusyLabel(btn, i, n));
         const list = safeGet('eco_trees') || [];
-        list.unshift({ id: 'T' + Date.now(), species, region, address: address || null, lat: F.lat, lng: F.lng, planted_on: planted, status: 'pending', created_at: new Date().toISOString(), waterings: [] });
+        list.unshift({ id: 'T' + Date.now(), species, region, address: address || null, lat: F.lat, lng: F.lng, planted_on: planted, status: 'pending', created_at: new Date().toISOString(), waterings: [], media, wmedia: {} });
         safeSet('eco_trees', list);
       } else {
-        const photo = F.file ? await this.rtUploadPhoto(session.user.id, F.file, '') : null;
-        const { error } = await sb.from('user_trees').insert({ species, region, address: address || null, lat: F.lat, lng: F.lng, planted_on: planted, photo_path: photo });
+        const media = await this.rtStoreMedia(session, '', (i,n)=> this.rtBusyLabel(btn, i, n));
+        const { error } = await sb.from('user_trees').insert({ species, region, address: address || null, lat: F.lat, lng: F.lng, planted_on: planted,
+          photo_path: media.find(k=>!this.rtIsVideo(k)) || null, media_paths: media });
         if(error) throw error;
       }
       this.rtClose(); this.netBanner(this.t('rt_tree_added')); this.rtLoad(true);
     } catch(e){
       console.warn('tree', e && e.message);
-      err.textContent = /10 tadan/.test(String(e && e.message)) ? this.t('rt_f_err_limit') : this.t('rt_f_err_net');
-      F.busy = false; btn.disabled = false;
+      const m = String(e && e.message || '');
+      err.textContent = /10 tadan/.test(m) ? this.t('rt_f_err_limit') : /quota|QuotaExceeded/i.test(m) ? this.t('rt_m_err_space') : /size|too large|413/i.test(m) ? this.t('rt_m_err_big').replace('{mb}', this.RT_MAX_VIDEO_MB) : this.t('rt_f_err_net');
+      F.busy = false; btn.disabled = false; btn.innerHTML = label;
     }
   },
   rtWaterForm(id){
     const t = (this.rt.trees||[]).find(x=>String(x.id)===String(id)); if(!t) return;
-    this.rt.form = { tree: id, file: null };
+    this.rt.form = { tree: id, media: [] };
     this.rtSheet(`<div class="rt-f">
       <div class="rt-sh-head"><div class="rt-lvl-ico" style="background:#D0EBFF; border:0;">💧</div><h3>${this.esc(this.t('rt_w_title'))}</h3><p>${this.esc(String(t.species||''))}${t.address ? ' · '+this.esc(String(t.address)) : ''}</p></div>
-      <div class="rt-f-lbl">${this.esc(this.t('rt_w_photo'))}</div>
-      <label class="rt-photo"><input type="file" accept="image/*" capture="environment" hidden onchange="app.rtPick(this.files[0])"><span id="rtPhotoPrev">📷</span><span id="rtPhotoTxt">${this.esc(this.t('rt_f_photo_d'))}</span></label>
+      ${this.rtMediaPicker()}
       <div class="rt-sh-box" style="margin-top:10px;">${this.esc(this.t('rt_w_note'))}</div>
       <p class="rt-err" id="rtErr"></p>
       <div class="rt-sh-btns"><button class="btn btn-primary" id="rtSave" onclick="app.rtWaterSave()">${this.esc(this.t('rt_w_send'))}</button><button class="btn btn-outline" onclick="app.rtClose()">${this.esc(this.t('rt_close'))}</button></div>
@@ -2684,27 +2866,36 @@ const app = {
     const F = this.rt.form; if(!F || F.busy) return;
     const err = document.getElementById('rtErr'), btn = document.getElementById('rtSave'), today = this.rtTodayTz();
     F.busy = true; btn.disabled = true; err.textContent = '';
+    const label = btn.innerHTML;
     try{
       const session = await this.rtSession();
       if(!session){
+        const media = await this.rtStoreMedia(null, 'w-', (i,n)=> this.rtBusyLabel(btn, i, n));
         const list = safeGet('eco_trees') || [], t = list.find(x=>x.id===F.tree);
-        if(t){ t.waterings = t.waterings || []; if(!t.waterings.includes(today)) t.waterings.push(today); safeSet('eco_trees', list); }
+        if(t){ t.waterings = t.waterings || []; if(!t.waterings.includes(today)) t.waterings.push(today);
+          if(media.length){ t.wmedia = t.wmedia || {}; t.wmedia[today] = (t.wmedia[today]||[]).concat(media).slice(0, this.RT_MAX_MEDIA); }
+          safeSet('eco_trees', list); }
       } else {
-        const photo = F.file ? await this.rtUploadPhoto(session.user.id, F.file, 'w-') : null;
-        const { error } = await sb.from('tree_waterings').insert({ tree_id: F.tree, photo_path: photo });
+        const media = await this.rtStoreMedia(session, 'w-', (i,n)=> this.rtBusyLabel(btn, i, n));
+        const { error } = await sb.from('tree_waterings').insert({ tree_id: F.tree, photo_path: media.find(k=>!this.rtIsVideo(k)) || null, media_paths: media });
         if(error && error.code !== '23505') throw error;
       }
       this.rtClose(); this.netBanner(this.t('rt_w_ok')); this.rtLoad(true);
     } catch(e){
       console.warn('water', e && e.message);
-      err.textContent = this.t('rt_f_err_net'); F.busy = false; btn.disabled = false;
+      err.textContent = /quota|QuotaExceeded/i.test(String(e && e.message)) ? this.t('rt_m_err_space') : this.t('rt_f_err_net');
+      F.busy = false; btn.disabled = false; btn.innerHTML = label;
     }
   },
   async rtTreeDel(id){
     let ok = true; try{ ok = confirm(this.t('rt_del_confirm')); }catch(e){}
     if(!ok) return;
     const session = await this.rtSession();
-    if(!session){ safeSet('eco_trees', (safeGet('eco_trees')||[]).filter(t=>t.id!==id)); }
+    if(!session){
+      const all = safeGet('eco_trees')||[], t = all.find(x=>x.id===id);
+      if(t){ const keys = (t.media||[]).concat(...Object.values(t.wmedia||{})); if(keys.length) this.rtIdbDel(keys).catch(()=>{}); }
+      safeSet('eco_trees', all.filter(x=>x.id!==id));
+    }
     else { const { error } = await sb.from('user_trees').delete().eq('id', id); if(error){ this.netBanner(this.t('rt_f_err_net'), true); return; } }
     this.rtLoad(true);
   },

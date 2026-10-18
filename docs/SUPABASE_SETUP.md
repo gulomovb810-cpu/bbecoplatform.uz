@@ -180,7 +180,7 @@ Bo‘limdagi **“Saytlardan xabarlar”** qismi Supabase’siz ham ishlaydi: `s
 - Nishon **avtomatik berilmaydi**: tizim nomzodlarni topadi, mas’ul portalning «🏅 Ekotizim reytingi» bo‘limida dalillarni ko‘rib, nishonni beradi (yoki ariza sahifasidagi «Fuqaroni taqdirlash» tugmasi). Tashkilot rahbari faqat o‘z tashkilotiga kelgan arizalar egalarini taqdirlay oladi. Nishonni faqat vazirlik bekor qiladi.
 - Ballar: tasdiqlangan ariza +10, bartaraf etilgan +15, yirik muammo +10, daraxt +5, sug‘orish hisoboti +2 (kuniga 1 ta), aksiyada qatnashish +10, nishon balli.
 - Maxfiylik: reytingda fuqaro «Faol fuqaro #XXXX» taxallusi bilan ko‘rinadi; ism faqat o‘zi ilovada yoqsa chiqadi. Telefon va email hech qachon ko‘rsatilmaydi. Reyting faqat tizimga kirganlarga ochiq.
-- Daraxt suratlari `report-media/<user_id>/trees/` ga yuklanadi; ularni egasi va mas’ullar ko‘radi. Fuqaro kuniga 10 tadan ortiq daraxt qo‘sha olmaydi va daraxt holatini o‘zgartira olmaydi.
+- Daraxt va sug‘orish dalillari (4 tagacha rasm yoki video, video 60 soniya va 50 MB gacha) `report-media/<user_id>/trees/` ga yuklanadi va `media_paths` ustunida saqlanadi. Ularni egasi va mas’ullar ko‘radi; fuqaro boshqa birovning faylini biriktira olmaydi. Daraxt qo‘shish uchun kamida 1 ta rasm yoki video talab qilinadi. Fuqaro kuniga 10 tadan ortiq daraxt qo‘sha olmaydi va daraxt holatini o‘zgartira olmaydi.
 - Realtime: `badge_awards` nashrga qo‘shilgan, yangi nishon ilovada darhol tabrik oynasi bilan chiqadi.
 
 ## Muammolar
