@@ -4,12 +4,17 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -24,6 +29,8 @@ import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,8 +131,76 @@ public class MainActivity extends Activity {
             }
         });
 
+        // EcoEducation sertifikatlarini galereyaga saqlash va ulashish (WebView'da yuklab olish ishlamaydi)
+        web.addJavascriptInterface(new NativeBridge(), "BBEcoNative");
+
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl(START_URL);
+    }
+
+    /** Faqat PNG rasmni saqlaydi yoki ulashadi; boshqa hech qanday qurilma ma'lumotiga kirish bermaydi. */
+    private class NativeBridge {
+        private byte[] decode(String b64) {
+            if (b64 == null || b64.length() > 12 * 1024 * 1024) return null;
+            try { return Base64.decode(b64, Base64.DEFAULT); } catch (IllegalArgumentException e) { return null; }
+        }
+
+        private String safeName(String name) {
+            String n = name == null ? "" : name.replaceAll("[^A-Za-z0-9._-]", "_");
+            if (n.isEmpty()) n = "EcoEducation";
+            if (!n.toLowerCase().endsWith(".png")) n += ".png";
+            return n.length() > 80 ? n.substring(n.length() - 80) : n;
+        }
+
+        @JavascriptInterface
+        public boolean saveImage(String b64, String name) {
+            byte[] png = decode(b64);
+            if (png == null) return false;
+            try {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    ContentValues v = new ContentValues();
+                    v.put(MediaStore.Images.Media.DISPLAY_NAME, safeName(name));
+                    v.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                    v.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BBEco");
+                    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v);
+                    if (uri == null) return false;
+                    try (OutputStream out = getContentResolver().openOutputStream(uri)) {
+                        if (out == null) return false;
+                        out.write(png);
+                    }
+                } else {
+                    File dir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "BBEco");
+                    if (!dir.exists() && !dir.mkdirs()) return false;
+                    try (FileOutputStream out = new FileOutputStream(new File(dir, safeName(name)))) { out.write(png); }
+                }
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public boolean shareImage(String b64, String name, String text) {
+            byte[] png = decode(b64);
+            if (png == null) return false;
+            try {
+                File dir = new File(getCacheDir(), "share");
+                if (!dir.exists() && !dir.mkdirs()) return false;
+                File f = new File(dir, safeName(name));
+                try (FileOutputStream out = new FileOutputStream(f)) { out.write(png); }
+                Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".files", f);
+                Intent send = new Intent(Intent.ACTION_SEND).setType("image/png");
+                send.putExtra(Intent.EXTRA_STREAM, uri);
+                if (text != null && text.length() < 2000) send.putExtra(Intent.EXTRA_TEXT, text);
+                send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Intent chooser = Intent.createChooser(send, null);
+                chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(chooser);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
     }
 
     private boolean hasPermission(String p) {

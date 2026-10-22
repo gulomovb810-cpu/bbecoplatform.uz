@@ -1125,6 +1125,78 @@ revoke all on function public.edu_leaderboard(text, int) from public, anon;
 grant execute on function public.edu_leaderboard(text, int) to authenticated;
 
 -- ---------------------------------------------------------------------
+-- 7e. ECOEDUCATION: onlayn eko-sertifikatlar (3 → 2 → 1 daraja va umumiy)
+-- Imtihon ilovada topshiriladi; bu yerda sertifikat ro'yxatga olinadi va
+-- raqami bo'yicha istalgan kishi haqiqiyligini tekshira oladi.
+-- Qoidalar index.html dagi EDU_CERT_LV bilan bir xil.
+-- ---------------------------------------------------------------------
+create table if not exists public.edu_certificates (
+  code       text primary key check (code ~ '^EE-[A-Z]{3}[0-3]?-[A-Z2-9]{8}$'),
+  user_id    uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  track      text not null check (track in ('water','air','waste','forest','animals','soil','climate','energy','aral','final')),
+  level      int  not null check (level between 0 and 3),
+  score      int  not null check (score >= 0),
+  total      int  not null check (total > 0 and score <= total),
+  holder     text not null check (char_length(holder) between 3 and 60),
+  issued_at  timestamptz not null default now(),
+  unique (user_id, track, level),
+  check ((track = 'final') = (level = 0))
+);
+create index if not exists edu_certificates_user on public.edu_certificates(user_id);
+
+-- Bosqichlar tartibi va o'tish bali serverda ham tekshiriladi
+create or replace function public.edu_cert_before_insert() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  need_n int; need_pass int;
+begin
+  new.user_id := auth.uid();
+  new.issued_at := now();
+  new.holder := btrim(regexp_replace(new.holder, '\s+', ' ', 'g'));
+  select n, p into need_n, need_pass from (values (3,10,7),(2,15,12),(1,20,18),(0,30,24)) v(l,n,p) where l = new.level;
+  if new.total <> need_n or new.score < need_pass then
+    raise exception 'edu_cert: score below pass mark';
+  end if;
+  if new.level in (2,1) and not exists (select 1 from public.edu_certificates
+       where user_id = new.user_id and track = new.track and level = new.level + 1) then
+    raise exception 'edu_cert: previous level required';
+  end if;
+  if new.level = 0 and (select count(*) from public.edu_certificates
+       where user_id = new.user_id and level = 1) < 9 then
+    raise exception 'edu_cert: all tracks at level 1 required';
+  end if;
+  return new;
+end $$;
+drop trigger if exists edu_cert_before_insert on public.edu_certificates;
+create trigger edu_cert_before_insert before insert on public.edu_certificates
+  for each row execute function public.edu_cert_before_insert();
+
+alter table public.edu_certificates enable row level security;
+drop policy if exists "edu_cert own read" on public.edu_certificates;
+create policy "edu_cert own read" on public.edu_certificates for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "edu_cert own insert" on public.edu_certificates;
+create policy "edu_cert own insert" on public.edu_certificates for insert to authenticated
+  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "edu_cert staff delete" on public.edu_certificates;
+create policy "edu_cert staff delete" on public.edu_certificates for delete to authenticated
+  using (public.is_staff());
+
+-- Haqiqiylikni tekshirish: raqam bo'yicha, ism qisqartirilgan holda (masalan, "Sarvarbek A.")
+create or replace function public.edu_verify_cert(p_code text)
+returns table(track text, level int, score int, total int, holder text, issued_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select c.track, c.level, c.score, c.total,
+         split_part(c.holder, ' ', 1) || case when split_part(c.holder, ' ', 2) <> ''
+           then ' ' || left(split_part(c.holder, ' ', 2), 1) || '.' else '' end,
+         c.issued_at
+  from public.edu_certificates c
+  where c.code = upper(btrim(p_code)) and char_length(p_code) <= 20;
+$$;
+revoke all on function public.edu_verify_cert(text) from public;
+grant execute on function public.edu_verify_cert(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)
 -- ---------------------------------------------------------------------
 do $$

@@ -191,7 +191,14 @@ Supabase ulangan bo‘lsa, faqat XP yig‘indisi va tugatilgan darslar soni `edu
 
 - **Haftalik va umumiy reyting:** `edu_leaderboard('week'|'all', 50)` RPC. Unda ism emas, «Faol fuqaro #XXXX» taxallusi chiqadi (ism faqat foydalanuvchi «Ekotizim reytingi»da ochiq qilsa ko‘rinadi). Faqat tizimga kirganlar chaqira oladi.
 - **Aldovdan himoya:** bazadagi trigger bitta yozuvda ko‘pi bilan 300 XP qo‘shishga ruxsat beradi (vaqtga qarab), XP kamaymaydi, hafta almashganda haftalik XP nolga tushadi. Foydalanuvchi faqat o‘z qatorini o‘zgartira oladi.
-- Hisob o‘chirilganda (`delete_my_account`) `edu_progress` qatori ham o‘chadi (`on delete cascade`).
+- Hisob o‘chirilganda (`delete_my_account`) `edu_progress` va `edu_certificates` qatorlari ham o‘chadi (`on delete cascade`).
+
+### Eko-sertifikatlar (7e-bo‘lim)
+
+- Har bir yo‘nalish (9 ta) bo‘yicha 3 bosqich: 3-daraja (10 savol, 70%), 2-daraja (15 savol, 80%), 1-daraja (20 savol, 90%). Barcha yo‘nalishlarda 1-daraja olingach, 30 savollik umumiy imtihon (80%) va umumiy sertifikat.
+- Imtihon ilovada topshiriladi; o‘tilgach sertifikat `edu_certificates` jadvaliga yoziladi. Trigger bosqichlar tartibini va o‘tish balini qayta tekshiradi, bitta daraja ikki marta berilmaydi.
+- Haqiqiylikni tekshirish: `edu_verify_cert('EE-XXX0-XXXXXXXX')` RPC hamma uchun ochiq, lekin ismni qisqartirib qaytaradi (masalan, «Sarvarbek A.»). Ilovani `index.html?cert=RAQAM` bilan ochsa, tekshiruv natijasi darhol chiqadi.
+- Tayyor sertifikat dizaynini qo‘shish: `index.html` dagi `EDU_CERT_TPL.bg` ga 1600×1130 PNG rasm (data URL) qo‘yiladi, matnlar uning ustiga yoziladi.
 
 ## Muammolar
 | Belgi | Sabab / yechim |

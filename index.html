@@ -964,6 +964,62 @@ mark{background:#FCE9A8; color:#1A1A1A; border-radius:3px; padding:0 1px;}
 :root[data-theme="dark"] .ed-yard{background:linear-gradient(180deg,#2B8A3E,#237032);}
 :root[data-theme="dark"] .ed-cell{background:rgba(255,255,255,.14);}
 
+/* EcoEducation 3: eko-sertifikatlar */
+.news-tabs.ed-tabs{grid-template-columns:repeat(5,minmax(0,1fr));}
+.news-tabs.ed-tabs button{flex-direction:column; gap:2px; padding:7px 1px; font-size:10.5px;}
+.news-tabs.ed-tabs button i{font-style:normal; font-size:17px; opacity:1; line-height:1.1;}
+.news-tabs.ed-tabs button span{display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ed-ct-head{border-radius:22px; padding:16px; margin-bottom:12px; color:#fff; background:linear-gradient(135deg,#145C36,#2F9E44 55%,#B8860B);}
+.ed-ct-h1{display:flex; gap:12px; align-items:flex-start;} .ed-ct-h1 > i{font-style:normal; font-size:34px;}
+.ed-ct-h1 b{display:block; font:800 18px var(--font-head);} .ed-ct-h1 span{display:block; font-size:12.5px; line-height:1.45; opacity:.92; margin-top:3px;}
+.ed-ct-head .rt-bar{margin-top:12px; background:rgba(255,255,255,.22);} .ed-ct-head .rt-bar i{background:linear-gradient(90deg,#FFE066,#FFD43B);}
+.ed-ct-head em{display:block; font-style:normal; font-size:12px; font-weight:800; margin-top:6px;}
+.ed-ct-legend{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:12px;}
+.ed-ct-legend div{border:1.5px solid color-mix(in srgb, var(--lc) 45%, var(--line)); border-radius:14px; padding:9px 8px; background:var(--card); display:flex; flex-direction:column; gap:3px;}
+.ed-ct-legend b{font:800 12.5px var(--font-head); color:var(--lc);} .ed-ct-legend span{font-size:10.5px; color:var(--ink-soft); line-height:1.3;}
+.ed-ct-final{display:flex; gap:12px; border-radius:20px; padding:14px; margin-bottom:14px; background:linear-gradient(135deg,#FFF3BF,#FFE8CC); color:#3B2F00; border:2px solid #FFD43B;}
+.ed-ct-final > i{font-style:normal; font-size:38px;} .ed-ct-final > div{flex:1; min-width:0;}
+.ed-ct-final b{display:block; font:800 16px var(--font-head);} .ed-ct-final span{display:block; font-size:12.5px; line-height:1.45; margin:3px 0 10px;}
+.ed-ct-final .btn{width:100%;} .ed-ct-final.lock{background:var(--card); color:var(--ink); border:1.5px dashed var(--line);} .ed-ct-final.lock span{color:var(--ink-soft);}
+.ed-ct-final.on{background:linear-gradient(135deg,#FFE066,#FFA94D);}
+.ed-ct-need em{display:block; font-style:normal; font-size:12px; font-weight:700; color:var(--ink-soft); margin-top:6px;}
+.ed-cts{display:flex; flex-direction:column; gap:10px;}
+.ed-ct{border:1px solid var(--line); border-radius:18px; padding:12px; background:linear-gradient(160deg, color-mix(in srgb, var(--mc) 12%, var(--card)), var(--card) 65%);}
+.ed-ct-top{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.ed-ct-top i{font-style:normal; font-size:24px; width:42px; height:42px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, var(--mc) 20%, transparent);}
+.ed-ct-top b{font:800 15px/1.25 var(--font-head);}
+.ed-ct-lv{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:10px;}
+.ed-pip{border:1.5px dashed var(--line); background:transparent; border-radius:14px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--ink-soft); font-family:var(--font-body); cursor:default;}
+.ed-pip i{font-style:normal; font-size:20px;} .ed-pip span{font-size:11px; font-weight:700;} .ed-pip em{font-style:normal; font-size:10.5px; font-weight:800;}
+.ed-pip.on{border:0; cursor:pointer; color:#fff; background:linear-gradient(135deg, var(--lc2), var(--lc)); box-shadow:0 4px 12px color-mix(in srgb, var(--lc) 35%, transparent);}
+.ed-ct .btn{width:100%; padding:11px 12px; font-size:13.5px;}
+.ed-ct-done{text-align:center; font:800 13px var(--font-head); color:#B8860B; padding:6px;}
+.ed-verify{margin-top:16px; border:1px solid var(--line); border-radius:18px; padding:14px; background:var(--card);}
+.ed-verify > b{display:block; font:800 15px var(--font-head);} .ed-verify > span{display:block; font-size:12px; color:var(--ink-soft); margin:3px 0 10px;}
+.ed-verify-row{display:flex; gap:8px;} .ed-verify-row .name-input{flex:1; min-width:0; margin:0; text-transform:uppercase;} .ed-verify-row .btn{width:auto; flex:none; padding:12px 14px;}
+.ed-ver{margin-top:12px; border-radius:14px; padding:12px; font-size:13.5px;}
+.ed-ver.no{background:rgba(250,82,82,.1); color:#C92A2A; font-weight:700;}
+.ed-ver.ok{background:rgba(64,192,87,.12); display:flex; flex-direction:column; gap:6px;} .ed-ver.ok > b{color:#2B8A3E; font:800 15px var(--font-head);}
+.ed-ver.ok div{display:flex; justify-content:space-between; gap:10px;} .ed-ver.ok div span{color:var(--ink-soft);} .ed-ver.ok div b{text-align:right;}
+.ed-ex-intro{text-align:center; padding:18px 14px; border-radius:22px; margin-bottom:12px; background:linear-gradient(160deg, color-mix(in srgb, var(--lc2) 30%, var(--card)), var(--card) 75%); border:1.5px solid color-mix(in srgb, var(--lc) 40%, var(--line));}
+.ed-ex-badge{position:relative; width:92px; height:92px; margin:0 auto 10px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:44px; background:linear-gradient(135deg, var(--lc2), var(--lc)); box-shadow:0 8px 22px color-mix(in srgb, var(--lc) 40%, transparent);}
+.ed-ex-badge i{position:absolute; right:-6px; bottom:-4px; font-style:normal; font-size:32px;}
+.ed-ex-intro h3{font:800 19px var(--font-head); margin:0 0 4px; color:var(--lc);} .ed-ex-intro p{margin:0; font-size:14px; font-weight:600;}
+.ed-ex-rules{border:1px solid var(--line); border-radius:18px; padding:14px; background:var(--card); margin-bottom:12px;}
+.ed-ex-rules b{font:800 15px var(--font-head);} .ed-ex-rules ul{margin:8px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:13.5px; line-height:1.45;}
+.ed-opt.pick{border-color:#7048E8; background:rgba(112,72,232,.12);}
+.ed-qbar[style*="--lc"] i{background:var(--lc);}
+.ed-ex-res .ed-score{color:var(--lc);} .ed-ex-res.no .ed-score{color:#E8590C;}
+.ed-ex-res .ed-cert-img{cursor:pointer; margin-top:6px;}
+.ed-mist{border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:8px; background:var(--card); font-size:13px; line-height:1.45;}
+.ed-mist b{display:block; font-weight:700; margin-bottom:4px;} .ed-mist p{margin:3px 0 0; color:var(--ink-soft);}
+.ed-mist p.no{color:#E03131; font-weight:600;} .ed-mist p.ok{color:#2B8A3E; font-weight:700;}
+.ed-ex-name{width:100%; box-sizing:border-box;}
+.rt-sh-btns .btn{white-space:nowrap;}
+.ed-cert-meta{display:flex; flex-direction:column; gap:4px; font-size:12.5px; color:var(--ink-soft); margin:10px 0 4px; text-align:center;} .ed-cert-meta b{color:var(--ink); letter-spacing:.5px;}
+:root[data-theme="dark"] .ed-ct-final:not(.lock){color:#3B2F00;}
+:root[data-theme="dark"] .ed-mist p.no{color:#FF8787;} :root[data-theme="dark"] .ed-mist p.ok{color:#8CE99A;}
+
 /* ===== Tozalash aksiyalari ===== */
 .ev-tabs{overflow-x:auto; scrollbar-width:none;}
 .ev-tabs::-webkit-scrollbar{display:none;}
@@ -1856,6 +1912,51 @@ Object.assign(EDU_I18N.ru, {
   ft_c_transport:'Транспорт', ft_c_flight:'Перелёты', ft_c_food:'Питание', ft_c_heat:'Отопление', ft_c_power:'Электричество', ft_c_waste:'Отходы', ft_c_shop:'Покупки', ft_c_water:'Горячая вода'
 });
 
+// Sertifikat imtihonlari uchun qo'shimcha (qiyinroq) savollar
+const EDU_EXAM = {"water":[{"c":2,"uz":{"q":"Yerdagi chuchuk suvning eng katta qismi qayerda?","a":["Daryolarda","Ko‘llarda","Muzlik va qor qoplamida","Bulutlarda"],"x":"Chuchuk suvning taxminan uchdan ikki qismi muzliklar va doimiy qorlarda saqlanadi."},"ru":{"q":"Где находится большая часть пресной воды Земли?","a":["В реках","В озёрах","В ледниках и снежном покрове","В облаках"],"x":"Около двух третей пресной воды хранится в ледниках и вечных снегах."},"lv":3},{"c":0,"uz":{"q":"Tomchilatib sug‘orish an’anaviy egat usulidan nimasi bilan afzal?","a":["Suvni to‘g‘ridan-to‘g‘ri ildizga berib, ancha kam sarflaydi","Tuproqni ko‘proq sho‘rlatadi","Faqat qishda ishlaydi","Hech qanday farqi yo‘q"],"x":"Tomchilatib sug‘orish suvni o‘simlik ildiziga beradi va bug‘lanish hamda isrofni keskin kamaytiradi."},"ru":{"q":"Чем капельное орошение лучше традиционного полива по бороздам?","a":["Подаёт воду прямо к корням и расходует её намного меньше","Сильнее засоляет почву","Работает только зимой","Разницы нет"],"x":"Капельное орошение подаёт воду к корням и резко сокращает испарение и потери."},"lv":3},{"c":3,"uz":{"q":"Suv ombori va kanallardagi suv yo‘qotilishining asosiy sababi nima?","a":["Suvning muzlashi","Baliqlarning ko‘payishi","Shamolning yo‘qligi","Bug‘lanish va qoplamasiz kanallardan sizib ketish"],"x":"Ochiq, qoplamasiz kanallarda suvning katta qismi bug‘lanadi va tuproqqa sizib ketadi."},"ru":{"q":"Какова главная причина потерь воды в водохранилищах и каналах?","a":["Замерзание воды","Размножение рыбы","Отсутствие ветра","Испарение и просачивание из необлицованных каналов"],"x":"В открытых необлицованных каналах много воды испаряется и уходит в грунт."},"lv":3},{"c":1,"uz":{"q":"Kulrang suv nima?","a":["Hojatxona oqova suvi","Dush va qo‘l yuvishdan qolgan nisbatan toza suv","Tog‘ buloqlarining suvi","Dengiz suvi"],"x":"Kulrang suv — dush, vanna va qo‘l yuvishdan keyin qoladigan suv. Uni tozalab, sug‘orishda qayta ishlatish mumkin."},"ru":{"q":"Что такое «серая вода»?","a":["Сточные воды из туалета","Относительно чистая вода после душа и мытья рук","Вода горных родников","Морская вода"],"x":"Серая вода — вода после душа, ванны и мытья рук. После очистки её можно использовать для полива."},"lv":3},{"c":2,"uz":{"q":"Suvning ifloslanganini qaysi belgi ko‘rsatishi mumkin?","a":["Suvning tiniq va hidsizligi","Baliqlarning ko‘pligi","Suv yuzida ko‘pik, moy dog‘i va yoqimsiz hid","Suvning sovuqligi"],"x":"Ko‘pik, moy pardasi, g‘ayritabiiy rang va hid — suvga chiqindi tushganini ko‘rsatadi."},"ru":{"q":"Какой признак может указывать на загрязнение воды?","a":["Прозрачная вода без запаха","Много рыбы","Пена, масляные пятна и неприятный запах","Холодная вода"],"x":"Пена, масляная плёнка, необычный цвет и запах говорят о попадании отходов в воду."},"lv":3}],"air":[{"c":1,"uz":{"q":"Inversiya kunlarida shahar havosi nega ayniqsa iflos bo‘ladi?","a":["Quyosh kuchli bo‘lgani uchun","Iliq havo qatlami sovuq havoni pastda ushlab, tutun tarqalmaydi","Shamol juda kuchli bo‘lgani uchun","Yomg‘ir ko‘p yog‘gani uchun"],"x":"Harorat inversiyasida yuqoridagi iliq qatlam pastdagi sovuq havoni «qopqoq» kabi yopib qo‘yadi va iflos moddalar to‘planadi."},"ru":{"q":"Почему в дни инверсии воздух в городе особенно грязный?","a":["Из-за сильного солнца","Тёплый слой удерживает холодный воздух внизу, и дым не рассеивается","Из-за сильного ветра","Из-за частых дождей"],"x":"При температурной инверсии тёплый слой сверху работает как «крышка», и загрязнители накапливаются внизу."},"lv":3},{"c":3,"uz":{"q":"Uy ichidagi havoni yaxshilashning eng oddiy usuli qaysi?","a":["Derazalarni doim yopiq saqlash","Xushbo‘y spreylarni ko‘p ishlatish","Uyda tamaki chekish","Toza havo kunlarida xonani muntazam shamollatish"],"x":"Muntazam shamollatish uydagi CO₂ va zararli bug‘larni chiqaradi. Iflos havo kunlari esa deraza yopiq turgani ma’qul."},"ru":{"q":"Какой самый простой способ улучшить воздух в доме?","a":["Всегда держать окна закрытыми","Чаще пользоваться освежителями","Курить в помещении","Регулярно проветривать в дни с чистым воздухом"],"x":"Проветривание удаляет CO₂ и вредные пары. В дни грязного воздуха окна лучше держать закрытыми."},"lv":3},{"c":0,"uz":{"q":"Ozon qatlamini asosan qaysi moddalar yemirgan?","a":["Xlorftoruglerodlar (freonlar)","Kislorod","Suv bug‘i","Azot"],"x":"Eski muzlatkich va aerozollardagi freonlar ozonni yemirgan. Monreal protokoli ularni taqiqladi va qatlam asta tiklanmoqda."},"ru":{"q":"Какие вещества в основном разрушали озоновый слой?","a":["Хлорфторуглероды (фреоны)","Кислород","Водяной пар","Азот"],"x":"Фреоны из старых холодильников и аэрозолей разрушали озон. Монреальский протокол их запретил, и слой постепенно восстанавливается."},"lv":3},{"c":2,"uz":{"q":"Shahar havosini yaxshilash uchun qaysi chora eng samarali?","a":["Ko‘proq yo‘l qurib, mashinalar sonini oshirish","Xazonni ko‘chada yoqish","Jamoat transportini rivojlantirish va yashil hududlarni ko‘paytirish","Zavod mo‘rilarini balandroq qilish"],"x":"Yaxshi jamoat transporti, velosiped yo‘laklari va daraxtzorlar shahar havosidagi chiqindilarni kamaytiradi."},"ru":{"q":"Какая мера эффективнее всего улучшает воздух в городе?","a":["Строить больше дорог для машин","Сжигать листья на улице","Развивать общественный транспорт и озеленение","Делать трубы заводов выше"],"x":"Хороший общественный транспорт, велодорожки и зелёные зоны снижают выбросы в городе."},"lv":3},{"c":1,"uz":{"q":"Ochiq havoda chiqindi yoqish nega xavfli?","a":["Chunki u juda tez yonadi","Tutunda dioksin va mayda zarrachalar kabi zaharli moddalar bo‘ladi","Chunki chiqindi qimmatlashadi","Xavfli emas"],"x":"Plastik va aralash chiqindi yonganda dioksinlar va PM2.5 hosil bo‘ladi, ular o‘pka va yurakka zarar qiladi."},"ru":{"q":"Почему сжигать мусор под открытым небом опасно?","a":["Он слишком быстро горит","В дыму есть ядовитые вещества: диоксины и мелкие частицы","Мусор дорожает","Это не опасно"],"x":"При горении пластика и смешанного мусора образуются диоксины и PM2.5, вредные для лёгких и сердца."},"lv":3}],"waste":[{"c":0,"uz":{"q":"Doiraviy iqtisodiyot nima?","a":["Buyumlar iloji boricha uzoq ishlatilib, ta’mirlanib, qayta ishlanadigan tizim","Faqat yangi buyum ishlab chiqarish","Chiqindini ko‘mib tashlash","Barcha narsani bir marta ishlatish"],"x":"Doiraviy iqtisodiyotda resurslar aylanishda qoladi: kamroq chiqindi, kamroq yangi xomashyo."},"ru":{"q":"Что такое циркулярная экономика?","a":["Система, где вещи дольше используются, ремонтируются и перерабатываются","Только производство новых вещей","Захоронение отходов","Одноразовое использование всего"],"x":"В циркулярной экономике ресурсы остаются в обороте: меньше отходов и меньше нового сырья."},"lv":3},{"c":2,"uz":{"q":"Axlatxonalarda organik chiqindi chirisa, qaysi kuchli issiqxona gazi ajraladi?","a":["Kislorod","Azot","Metan","Geliy"],"x":"Kislorodsiz chirish metan beradi. Shuning uchun organik chiqindini kompost qilish foydali."},"ru":{"q":"Какой сильный парниковый газ выделяется при гниении органики на свалках?","a":["Кислород","Азот","Метан","Гелий"],"x":"Гниение без кислорода даёт метан. Поэтому органику полезно компостировать."},"lv":3},{"c":3,"uz":{"q":"Mikroplastik nima?","a":["Juda kichik plastik buyumlar do‘koni","Plastikning yangi turi","Qayta ishlangan qog‘oz","5 mm dan kichik plastik zarrachalari"],"x":"Mikroplastik — 5 mm dan kichik plastik bo‘lakchalari. Ular suv, tuproq va hatto oziq-ovqatga tushadi."},"ru":{"q":"Что такое микропластик?","a":["Магазин маленьких пластиковых вещей","Новый вид пластика","Переработанная бумага","Пластиковые частицы меньше 5 мм"],"x":"Микропластик — частицы пластика меньше 5 мм. Они попадают в воду, почву и даже еду."},"lv":3},{"c":1,"uz":{"q":"Eski telefon va kompyuterni nima qilish to‘g‘ri?","a":["Oddiy axlat qutisiga tashlash","Elektron chiqindi qabul qiladigan joyga topshirish yoki ta’mirlab qayta ishlatish","Yoqib yuborish","Ariqqa tashlash"],"x":"Elektron chiqindida qimmatbaho metallar va zaharli moddalar bor, ular maxsus qayta ishlanishi kerak."},"ru":{"q":"Что правильно делать со старым телефоном и компьютером?","a":["Выбросить в обычную урну","Сдать в пункт приёма электроники или отремонтировать","Сжечь","Выбросить в арык"],"x":"В электронных отходах есть ценные металлы и ядовитые вещества, их нужно перерабатывать отдельно."},"lv":3},{"c":2,"uz":{"q":"Qaysi qadoq qayta ishlash uchun eng qiyin?","a":["Toza karton quti","Alyumin banka","Ko‘p qatlamli qadoq (plastik, folga va qog‘oz birga)","Shisha butilka"],"x":"Bir-biriga yopishgan har xil materiallarni ajratish qiyin, shuning uchun bunday qadoqlar ko‘pincha axlatxonaga ketadi."},"ru":{"q":"Какую упаковку переработать труднее всего?","a":["Чистую картонную коробку","Алюминиевую банку","Многослойную (пластик, фольга и бумага вместе)","Стеклянную бутылку"],"x":"Склеенные разные материалы трудно разделить, поэтому такая упаковка чаще попадает на свалку."},"lv":3}],"forest":[{"c":1,"uz":{"q":"O‘rmonlarning kesilishi iqlimga qanday ta’sir qiladi?","a":["Iqlimni sovutadi","Daraxtdagi uglerod CO₂ bo‘lib havoga chiqadi va isish kuchayadi","Hech qanday ta’sir qilmaydi","Yomg‘irni ko‘paytiradi"],"x":"Daraxtlar uglerodni to‘playdi. Kesilib yoki yonganda u CO₂ sifatida atmosferaga qaytadi."},"ru":{"q":"Как вырубка лесов влияет на климат?","a":["Охлаждает климат","Углерод из деревьев уходит в воздух как CO₂, и потепление усиливается","Никак не влияет","Увеличивает дожди"],"x":"Деревья накапливают углерод. При вырубке или пожаре он возвращается в атмосферу в виде CO₂."},"lv":3},{"c":3,"uz":{"q":"O‘zbekistonning tog‘ o‘rmonlarida qaysi daraxt keng tarqalgan?","a":["Palma","Qayin","Baobab","Archa"],"x":"Archa (zarafshon va yarim sharsimon archa) tog‘ yonbag‘irlarida o‘sadi, tuproqni ushlab, suvni saqlaydi."},"ru":{"q":"Какое дерево широко распространено в горных лесах Узбекистана?","a":["Пальма","Берёза","Баобаб","Арча (можжевельник)"],"x":"Арча (можжевельник) растёт на горных склонах, удерживает почву и сохраняет воду."},"lv":3},{"c":0,"uz":{"q":"Nega bir xil turdagi daraxtlardan iborat o‘rmonzor xavfliroq?","a":["Bitta zararkunanda yoki kasallik butun maydonni nobud qilishi mumkin","Bunday o‘rmon tezroq o‘sadi","Unda qushlar ko‘proq yashaydi","Hech qanday xavfi yo‘q"],"x":"Xilma-xil turli o‘rmon kasallik, zararkunanda va qurg‘oqchilikka ancha chidamli."},"ru":{"q":"Почему посадки из одного вида деревьев опаснее?","a":["Один вредитель или болезнь может погубить всю площадь","Такой лес растёт быстрее","В нём больше птиц","Никакой опасности"],"x":"Смешанный лес гораздо устойчивее к болезням, вредителям и засухе."},"lv":3},{"c":2,"uz":{"q":"Shaharda ko‘chat uchun qaysi tur ko‘proq mos?","a":["Ko‘p suv talab qiladigan har qanday chet el turi","Faqat palmalar","Mahalliy iqlim va qurg‘oqchilikka chidamli turlar","Turini tanlash muhim emas"],"x":"Mahalliy, issiqqa va qurg‘oqchilikka chidamli turlar (masalan, chinor, qayrag‘och, tut) yaxshi tutadi va kam suv talab qiladi."},"ru":{"q":"Какие виды лучше сажать в городе?","a":["Любые заморские виды, требующие много воды","Только пальмы","Местные виды, устойчивые к климату и засухе","Вид не важен"],"x":"Местные виды, устойчивые к жаре и засухе (чинара, карагач, шелковица), лучше приживаются и требуют меньше воды."},"lv":3},{"c":1,"uz":{"q":"O‘rmon yong‘inlarining eng ko‘p sababi nima?","a":["Faqat chaqmoq","Inson ehtiyotsizligi: gulxan, sigaret, quruq o‘tni yoqish","Yomg‘ir","Qor"],"x":"Ko‘pchilik yong‘inlar odamlar tufayli boshlanadi. Gulxanni to‘liq o‘chirish va quruq o‘tni yoqmaslik muhim."},"ru":{"q":"Какая самая частая причина лесных пожаров?","a":["Только молнии","Неосторожность людей: костры, сигареты, пал сухой травы","Дождь","Снег"],"x":"Большинство пожаров начинается из-за людей. Важно полностью тушить костёр и не жечь сухую траву."},"lv":3}],"animals":[{"c":2,"uz":{"q":"Hayvonlarning yashash joyi yo‘qolishining asosiy sababi nima?","a":["Hayvonlarning ko‘p uxlashi","Oy fazalari","Yerni haydash, qurilish va o‘rmon kesish","Qushlarning ko‘chishi"],"x":"Yashash joyining buzilishi — turlarning yo‘qolishining dunyodagi eng katta sababi."},"ru":{"q":"Какова главная причина исчезновения мест обитания животных?","a":["Животные много спят","Фазы Луны","Распашка земель, застройка и вырубка лесов","Перелёты птиц"],"x":"Разрушение мест обитания — главная в мире причина исчезновения видов."},"lv":3},{"c":0,"uz":{"q":"Ekologik yo‘lak (koridor) nima uchun kerak?","a":["Hayvonlar ajralib qolgan hududlar o‘rtasida xavfsiz o‘tishi uchun","Mashinalar tezroq yurishi uchun","Turistlar uchun","Daraxt kesish uchun"],"x":"Yo‘laklar populyatsiyalarni bog‘laydi, hayvonlarga ozuqa va juft topishga yordam beradi."},"ru":{"q":"Зачем нужны экологические коридоры?","a":["Чтобы животные безопасно перемещались между разделёнными участками","Чтобы машины ездили быстрее","Для туристов","Для вырубки леса"],"x":"Коридоры связывают популяции и помогают животным находить корм и пару."},"lv":3},{"c":3,"uz":{"q":"Begona (invaziv) tur nima?","a":["Faqat tog‘da yashovchi tur","Qizil kitobdagi tur","Uy hayvoni","Boshqa hududdan kelib, mahalliy turlarni siqib chiqaradigan tur"],"x":"Invaziv turlar mahalliy hayvon va o‘simliklarga raqobat qilib, ekotizimni buzishi mumkin."},"ru":{"q":"Что такое инвазивный вид?","a":["Вид, живущий только в горах","Вид из Красной книги","Домашнее животное","Пришелец из другого региона, вытесняющий местные виды"],"x":"Инвазивные виды конкурируют с местными животными и растениями и могут нарушить экосистему."},"lv":3},{"c":1,"uz":{"q":"Yovvoyi hayvonni boqish nega ko‘pincha zararli?","a":["Hayvonlar semirib ketadi, xolos","Ular odamdan qo‘rqmay qoladi va tabiiy ozuqa topishni unutadi","Chunki ovqat qimmat","Zararli emas"],"x":"Odam bergan ovqat hayvonga mos kelmaydi va uni odamga bog‘lab qo‘yadi, bu ikkala tomon uchun xavfli."},"ru":{"q":"Почему подкармливать диких животных часто вредно?","a":["Животные только толстеют","Они перестают бояться людей и разучиваются добывать корм","Еда дорогая","Это не вредно"],"x":"Человеческая еда не подходит животным и привязывает их к людям, что опасно для обеих сторон."},"lv":3},{"c":2,"uz":{"q":"Qo‘riqxona va milliy bog‘ning asosiy farqi nimada?","a":["Farqi yo‘q","Milliy bog‘da ov qilish mumkin","Qo‘riqxonada tabiat qat’iy muhofaza qilinadi, milliy bog‘da esa tartibli turizmga ruxsat bor","Qo‘riqxona faqat shaharda bo‘ladi"],"x":"Qo‘riqxonada inson faoliyati deyarli taqiqlangan. Milliy bog‘da tabiatni asrash bilan birga dam olish ham mumkin."},"ru":{"q":"Чем заповедник отличается от национального парка?","a":["Ничем","В национальном парке можно охотиться","В заповеднике строгая охрана, а в нацпарке разрешён упорядоченный туризм","Заповедник бывает только в городе"],"x":"В заповеднике деятельность человека почти запрещена. В национальном парке охрана природы сочетается с отдыхом."},"lv":3}],"soil":[{"c":0,"uz":{"q":"Almashlab ekish tuproqqa nima beradi?","a":["Unumdorlikni saqlaydi va zararkunandalarni kamaytiradi","Tuproqni tezroq sho‘rlatadi","Hech narsa bermaydi","Faqat suvni ko‘paytiradi"],"x":"Ekinlarni almashtirish tuproqdagi oziq moddalarni muvozanatlaydi, kasallik va zararkunandalar to‘planishiga yo‘l qo‘ymaydi."},"ru":{"q":"Что даёт почве севооборот?","a":["Сохраняет плодородие и снижает число вредителей","Быстрее засоляет почву","Ничего","Только добавляет воду"],"x":"Чередование культур балансирует питательные вещества и не даёт накапливаться болезням и вредителям."},"lv":3},{"c":3,"uz":{"q":"1 sm unumdor tuproq qatlami tabiatda qancha vaqtda hosil bo‘ladi?","a":["Bir kunda","Bir oyda","Bir yilda","Yuzlab yillarda"],"x":"Unumdor qatlam juda sekin hosil bo‘ladi, shuning uchun eroziya yo‘qotgan tuproqni tez tiklab bo‘lmaydi."},"ru":{"q":"За сколько времени в природе образуется 1 см плодородного слоя?","a":["За день","За месяц","За год","За несколько сотен лет"],"x":"Плодородный слой образуется очень медленно, поэтому потерянную при эрозии почву быстро не восстановить."},"lv":3},{"c":1,"uz":{"q":"Dala atrofidagi ihota daraxtzorlari nima vazifani bajaradi?","a":["Hosilni kamaytiradi","Shamol eroziyasidan himoya qiladi va namlikni saqlaydi","Tuproqni sho‘rlatadi","Faqat chiroy uchun"],"x":"Ihota daraxtzorlari shamolni to‘sadi, qorni ushlab qoladi va tuproq namligini saqlaydi."},"ru":{"q":"Какую роль выполняют лесополосы на полях?","a":["Снижают урожай","Защищают от ветровой эрозии и сохраняют влагу","Засоляют почву","Только для красоты"],"x":"Лесополосы задерживают ветер и снег и сохраняют влагу в почве."},"lv":3},{"c":2,"uz":{"q":"Tuproqning ifloslanishiga eng ko‘p nima sabab bo‘ladi?","a":["Yomg‘ir chuvalchanglari","Xazon","Sanoat chiqindisi, ortiqcha kimyoviy vositalar va noqonuniy axlatxonalar","Kompost"],"x":"Og‘ir metallar va kimyoviy moddalar tuproqda yillab qoladi va oziq-ovqat orqali odamga o‘tadi."},"ru":{"q":"Что чаще всего загрязняет почву?","a":["Дождевые черви","Опавшие листья","Промышленные отходы, избыток химии и незаконные свалки","Компост"],"x":"Тяжёлые металлы и химикаты годами остаются в почве и через еду попадают к человеку."},"lv":3},{"c":0,"uz":{"q":"Organik dehqonchilik qanday usul?","a":["Sintetik pestitsid va o‘g‘itlarsiz, tabiiy usullar bilan yetishtirish","Faqat issiqxonada yetishtirish","Ko‘proq kimyoviy o‘g‘it ishlatish","Sug‘ormasdan yetishtirish"],"x":"Organik dehqonchilik kompost, almashlab ekish va biologik himoyaga tayanadi."},"ru":{"q":"Что такое органическое земледелие?","a":["Выращивание без синтетических пестицидов и удобрений, природными методами","Выращивание только в теплицах","Использование большего количества химии","Выращивание без полива"],"x":"Органическое земледелие опирается на компост, севооборот и биологическую защиту."},"lv":3}],"climate":[{"c":2,"uz":{"q":"Parij kelishuvining asosiy maqsadi nima?","a":["Barcha zavodlarni yopish","Faqat Yevropada havoni tozalash","Global isishni 2 °C dan ancha past, iloji bo‘lsa 1,5 °C da cheklash","Neft qazishni ko‘paytirish"],"x":"2015 yilgi Parij kelishuvida davlatlar isishni sanoatdan oldingi davrga nisbatan 2 °C dan ancha past ushlashga kelishgan. O‘zbekiston ham ishtirokchi."},"ru":{"q":"Какова главная цель Парижского соглашения?","a":["Закрыть все заводы","Очистить воздух только в Европе","Удержать потепление намного ниже 2 °C, по возможности 1,5 °C","Увеличить добычу нефти"],"x":"В Парижском соглашении 2015 года страны договорились удерживать потепление намного ниже 2 °C. Узбекистан тоже участник."},"lv":3},{"c":0,"uz":{"q":"Iqlim o‘zgarishi O‘zbekistonda qaysi xavfni kuchaytiradi?","a":["Issiq to‘lqinlar, qurg‘oqchilik va suv tanqisligi","Dengiz suvi bosishi","Muz davri","Tropik bo‘ronlar"],"x":"Markaziy Osiyoda harorat dunyo o‘rtachasidan tezroq oshmoqda: jazirama kunlar ko‘payib, suv kamaymoqda."},"ru":{"q":"Какие риски изменение климата усиливает в Узбекистане?","a":["Волны жары, засухи и нехватку воды","Затопление морем","Ледниковый период","Тропические ураганы"],"x":"В Центральной Азии температура растёт быстрее среднемировой: больше жарких дней и меньше воды."},"lv":3},{"c":3,"uz":{"q":"Uglerod izi nima?","a":["Mashina g‘ildiragining izi","Ko‘mir konining nomi","Daraxtning yoshi","Inson yoki mahsulot sababli chiqqan issiqxona gazlarining umumiy miqdori"],"x":"Uglerod izi CO₂ ekvivalentida o‘lchanadi va transport, oziq-ovqat, energiya kabi tanlovlarimizga bog‘liq."},"ru":{"q":"Что такое углеродный след?","a":["След от колеса машины","Название угольной шахты","Возраст дерева","Общий объём парниковых газов от человека или продукта"],"x":"Углеродный след измеряют в CO₂-эквиваленте, он зависит от транспорта, питания, энергии."},"lv":3},{"c":1,"uz":{"q":"Qaysi biri iqlim o‘zgarishini yumshatishga (sabablarini kamaytirishga) misol?","a":["Konditsionerni ko‘paytirish","Ko‘mir o‘rniga quyosh va shamol energiyasidan foydalanish","Soyabon olish","Uyni balandroq qurish"],"x":"Yumshatish — chiqindilarni kamaytirish. Moslashish esa o‘zgargan iqlimga tayyorlanish (soya, suv tejash)."},"ru":{"q":"Что из этого пример смягчения изменения климата (снижения его причин)?","a":["Ставить больше кондиционеров","Заменять уголь солнечной и ветровой энергией","Купить зонт","Строить дома выше"],"x":"Смягчение — это снижение выбросов. Адаптация — подготовка к изменившемуся климату (тень, экономия воды)."},"lv":3},{"c":2,"uz":{"q":"Okeanlar isishi va CO₂ yutishi qanday oqibatga olib keladi?","a":["Okean chuchuklashadi","Baliqlar ko‘payadi","Suv nordonlashadi va marjon riflari nobud bo‘ladi","Hech qanday oqibat yo‘q"],"x":"Okean ko‘p CO₂ yutib nordonlashadi. Bu marjonlar va chig‘anoqli jonzotlar uchun xavfli."},"ru":{"q":"К чему приводят нагрев океанов и поглощение ими CO₂?","a":["Океан становится пресным","Рыбы становится больше","Вода закисляется, и коралловые рифы гибнут","Ни к чему"],"x":"Поглощая много CO₂, океан закисляется. Это опасно для кораллов и существ с раковинами."},"lv":3}],"energy":[{"c":1,"uz":{"q":"Energiya samaradorligi sinfi «A+++» nimani bildiradi?","a":["Eng qimmat texnika","Eng kam energiya sarflaydigan texnika","Eng katta texnika","Eng eski model"],"x":"Energiya yorlig‘idagi yuqori sinf qurilma bir xil ishni kamroq elektr bilan bajarishini ko‘rsatadi."},"ru":{"q":"Что означает класс энергоэффективности «A+++»?","a":["Самая дорогая техника","Техника с наименьшим расходом энергии","Самая большая техника","Самая старая модель"],"x":"Высокий класс на энергоэтикетке показывает, что прибор делает ту же работу с меньшим расходом."},"lv":3},{"c":3,"uz":{"q":"Konditsionerni qaysi haroratga qo‘ygan ma’qul?","a":["16 °C","18 °C","20 °C","24–26 °C"],"x":"Har bir qo‘shimcha daraja sovutish elektr sarfini sezilarli oshiradi. 24–26 °C ham qulay, ham tejamkor."},"ru":{"q":"На какую температуру лучше ставить кондиционер?","a":["16 °C","18 °C","20 °C","24–26 °C"],"x":"Каждый лишний градус охлаждения заметно увеличивает расход. 24–26 °C — и комфортно, и экономно."},"lv":3},{"c":0,"uz":{"q":"Qaysi energiya manbai qayta tiklanmaydi?","a":["Tabiiy gaz","Quyosh","Shamol","Daryo oqimi"],"x":"Gaz, neft va ko‘mir millionlab yillarda hosil bo‘lgan va tugaydi. Yonganda CO₂ chiqaradi."},"ru":{"q":"Какой источник энергии не возобновляется?","a":["Природный газ","Солнце","Ветер","Течение реки"],"x":"Газ, нефть и уголь образовались за миллионы лет и закончатся. При сжигании они выделяют CO₂."},"lv":3},{"c":2,"uz":{"q":"Binoni issiqlik izolyatsiyasi bilan qoplash nima beradi?","a":["Uyni qorong‘i qiladi","Elektrni ko‘paytiradi","Qishda isitish, yozda sovutish uchun energiyani ancha kamaytiradi","Hech narsa"],"x":"Devor, tom va derazani yaxshi izolyatsiya qilish energiya sarfini sezilarli kamaytiradi."},"ru":{"q":"Что даёт утепление здания?","a":["Делает дом тёмным","Увеличивает расход электричества","Сильно снижает затраты на отопление зимой и охлаждение летом","Ничего"],"x":"Хорошее утепление стен, крыши и окон заметно снижает расход энергии."},"lv":3},{"c":1,"uz":{"q":"Elektromobil havoni qachon eng ko‘p asraydi?","a":["Elektr ko‘mirdan olinganda","Elektr quyosh, shamol yoki GESdan olinganda","Hech qachon","Faqat qishda"],"x":"Elektromobil shahar havosiga tutun chiqarmaydi, lekin uning umumiy foydasi elektr qanday ishlab chiqarilganiga bog‘liq."},"ru":{"q":"Когда электромобиль больше всего помогает воздуху?","a":["Когда электричество из угля","Когда электричество от солнца, ветра или ГЭС","Никогда","Только зимой"],"x":"Электромобиль не дымит в городе, но его общая польза зависит от того, как получено электричество."},"lv":3}],"aral":[{"c":3,"uz":{"q":"BMT qarori bilan Orolbo‘yi qanday hudud deb e’lon qilingan?","a":["Turistik zona","Sanoat zonasi","Harbiy zona","Ekologik innovatsiyalar va texnologiyalar hududi"],"x":"BMT Bosh Assambleyasi 2021 yilda Orolbo‘yini ekologik innovatsiyalar va texnologiyalar hududi deb e’lon qilgan."},"ru":{"q":"Каким регионом Приаралье объявлено резолюцией ООН?","a":["Туристической зоной","Промышленной зоной","Военной зоной","Зоной экологических инноваций и технологий"],"x":"В 2021 году Генеральная Ассамблея ООН объявила Приаралье зоной экологических инноваций и технологий."},"lv":3},{"c":0,"uz":{"q":"Orol qurishi bilan Mo‘ynoq shahri qanday o‘zgardi?","a":["Dengiz shahardan o‘nlab kilometr uzoqlashdi va baliqchilik to‘xtadi","Shahar dengiz ostida qoldi","Hech narsa o‘zgarmadi","Shahar yirik portga aylandi"],"x":"Bir vaqtlar port shahar bo‘lgan Mo‘ynoq yaqinida bugun qumda qolgan kemalar «qabristoni» bor."},"ru":{"q":"Как изменился город Муйнак после высыхания Арала?","a":["Море отступило на десятки километров, рыболовство прекратилось","Город ушёл под воду","Ничего не изменилось","Город стал крупным портом"],"x":"Возле Муйнака, бывшего портового города, сегодня «кладбище кораблей» посреди песков."},"lv":3},{"c":2,"uz":{"q":"Orolbo‘yida iqlim qanday o‘zgardi?","a":["Yumshoqroq va namroq bo‘ldi","Hech o‘zgarmadi","Yozi issiqroq, qishi sovuqroq va quruqroq bo‘ldi","Tropik iqlimga aylandi"],"x":"Dengiz iqlimni yumshatib turgan. U qurigach, hudud iqlimi keskin kontinental va quruq bo‘lib qoldi."},"ru":{"q":"Как изменился климат в Приаралье?","a":["Стал мягче и влажнее","Не изменился","Лето стало жарче, зима холоднее и суше","Стал тропическим"],"x":"Море смягчало климат. После его высыхания климат стал резко континентальным и засушливым."},"lv":3},{"c":1,"uz":{"q":"Orol muammosini yumshatishga har bir oila qanday hissa qo‘shishi mumkin?","a":["Hech qanday hissa qo‘sha olmaydi","Suvni tejash, daraxt ekish va tabiatni muhofaza qilish tadbirlarida qatnashish","Ko‘proq suv sarflash","Faqat xorijga ko‘chish"],"x":"Daryolar suvini tejash Orolga yetib boradigan suvni ko‘paytiradi. Har bir tejalgan litr muhim."},"ru":{"q":"Чем каждая семья может помочь решению проблемы Арала?","a":["Ничем","Экономить воду, сажать деревья и участвовать в природоохранных акциях","Тратить больше воды","Только уехать за границу"],"x":"Экономия речной воды увеличивает сток, доходящий до Арала. Важен каждый сбережённый литр."},"lv":3},{"c":3,"uz":{"q":"Orol fojiasining asosiy saboqlaridan biri qaysi?","a":["Daryolar suvi cheksiz","Tabiat o‘zi hamma narsani tuzatadi","Paxta tabiatdan muhimroq","Suv resurslarini butun havza miqyosida, kelajakni o‘ylab boshqarish kerak"],"x":"Daryo suvini nazoratsiz olish butun dengizni yo‘qotdi. Suvni oqilona va hamkorlikda boshqarish zarur."},"ru":{"q":"Какой главный урок трагедии Арала?","a":["Вода в реках бесконечна","Природа сама всё исправит","Хлопок важнее природы","Водные ресурсы нужно управлять на уровне всего бассейна, думая о будущем"],"x":"Бесконтрольный забор речной воды погубил море. Нужно разумное и совместное управление водой."},"lv":3}]};
+// ===== Eko-sertifikatlar: 9 yo'nalish × 3 daraja (3 → 2 → 1) va umumiy imtihon =====
+// Qoidalar supabase/schema.sql 7e-bo'limidagi edu_certificates triggeri bilan bir xil: o'zgartirsangiz, ikkalasini yangilang.
+const EDU_CERT_LV = {
+  3: { n:10, pass:7,  sec:0,  cool:0,  xp:50,  e:'🥉', c:'#B4682F', c2:'#E8A86B', rom:'III', uz:{ t:'3-daraja', d:'Asosiy bilim' }, ru:{ t:'3-я степень', d:'Базовые знания' } },
+  2: { n:15, pass:12, sec:45, cool:10, xp:75,  e:'🥈', c:'#5C6F7E', c2:'#AEBCC7', rom:'II',  uz:{ t:'2-daraja', d:'Chuqur bilim' },  ru:{ t:'2-я степень', d:'Углублённые знания' } },
+  1: { n:20, pass:18, sec:30, cool:30, xp:100, e:'🥇', c:'#B8860B', c2:'#FFD43B', rom:'I',   uz:{ t:'1-daraja', d:'Ekspert' },       ru:{ t:'1-я степень', d:'Эксперт' } },
+  0: { n:30, pass:24, total:1800, totalBig:2700, cool:60, xp:300, e:'🏆', c:'#145C36', c2:'#D4A017', rom:'', uz:{ t:'Umumiy sertifikat', d:'Ekologik bilimlar bo‘yicha umumiy imtihon' }, ru:{ t:'Общий сертификат', d:'Итоговый экзамен по экологическим знаниям' } }
+};
+const EDU_CERT_ABBR = { water:'WAT', air:'AIR', waste:'WST', forest:'FOR', animals:'ANM', soil:'SOL', climate:'CLM', energy:'ENR', aral:'ARL', final:'GEN' };
+// Keyinchalik tayyor sertifikat dizayni (PNG, 1600×1130) shu yerga ulanadi: bg = 'data:image/png;base64,...'
+const EDU_CERT_TPL = { bg:null };
+EDU_ACH.push(
+  { k:'cert3', e:'📜', ok:S=> Object.keys(S.certs||{}).length >= 1, uz:{t:'Birinchi sertifikat', d:'Istalgan yo‘nalishda 3-daraja sertifikatini oling'}, ru:{t:'Первый сертификат', d:'Получите сертификат 3-й степени по любому направлению'} },
+  { k:'cert1', e:'🥇', ok:S=> Object.keys(S.certs||{}).some(k=> k.endsWith(':1')), uz:{t:'Ekspert', d:'Istalgan yo‘nalishda 1-daraja sertifikatini oling'}, ru:{t:'Эксперт', d:'Получите сертификат 1-й степени по любому направлению'} },
+  { k:'certall', e:'🏆', ok:S=> !!(S.certs||{})['final:0'], uz:{t:'Eko-akademik', d:'Umumiy eko-sertifikatni qo‘lga kiriting'}, ru:{t:'Эко-академик', d:'Получите общий экосертификат'} }
+);
+Object.assign(EDU_I18N.uz, {
+  tab_cert:'🎓 Sertifikat',
+  ct_h:'Eko-sertifikatlar', ct_d:'Har bir yo‘nalishda 3 bosqich: 3-daraja → 2-daraja → 1-daraja. Barcha 9 yo‘nalishda 1-darajani olgach, 30 savollik umumiy imtihon ochiladi.', ct_prog:'{n} / 27 sertifikat',
+  ct_rule:'{n} savol · o‘tish bali {p}%', ct_sec:'{s} soniya/savol', ct_nosec:'vaqt cheklanmagan',
+  ct_need_les:'Darslarni tugating ({n}/3)', ct_exam:'{l} imtihoni', ct_wait:'Qayta topshirish: {t}', ct_all3:'Barcha darajalar olindi',
+  ct_final:'Umumiy imtihon', ct_final_d:'30 ta savol, barcha yo‘nalishlardan. O‘tish bali 80%, vaqt {m} daqiqa.', ct_final_lock:'Barcha yo‘nalishda 1-daraja kerak: {n}/9', ct_final_go:'Imtihonni boshlash', ct_final_got:'Umumiy sertifikat olindi',
+  ct_rules_t:'Imtihon qoidalari', ct_r1:'{n} ta savol, o‘tish uchun kamida {p} ta to‘g‘ri javob ({pc}%).', ct_r_time:'Har bir savolga {s} soniya.', ct_r_total:'Umumiy vaqt: {m} daqiqa.', ct_r_free:'Vaqt cheklanmagan.', ct_r2:'To‘g‘ri javoblar imtihon oxirida ko‘rsatiladi.', ct_r3:'Imtihondan chiqib ketsangiz, urinish sarflangan hisoblanadi.', ct_r_cool:'O‘ta olmasangiz, {m} daqiqadan keyin qayta topshirish mumkin.', ct_r_now:'O‘ta olmasangiz, darhol qayta topshirish mumkin.',
+  ct_name:'Sertifikatdagi ism va familiya', ct_name_ph:'Masalan: Anvar Karimov', ct_name_err:'Ism va familiyani kiriting (kamida 3 harf).', ct_start:'Imtihonni boshlash',
+  ct_pass_t:'Tabriklaymiz! Imtihondan o‘tdingiz', ct_fail_t:'Bu safar o‘ta olmadingiz', ct_score:'{r} / {n} to‘g‘ri ({pc}%)', ct_need:'O‘tish uchun kamida {p} ta to‘g‘ri javob kerak edi.', ct_issued:'{l} sertifikati berildi', ct_next:'Keyingi bosqich: {l}', ct_mistakes:'Xatolaringiz', ct_mist_d:'Bu savollar «Xatolar ustida ishlash» bo‘limiga qo‘shildi.', ct_your:'Siz', ct_right:'To‘g‘ri javob', ct_noans:'javob berilmadi', ct_view:'Sertifikatni ko‘rish', ct_back:'Sertifikatlarga qaytish',
+  ct_verify_t:'Sertifikatni tekshirish', ct_verify_d:'Sertifikat raqamini kiriting (masalan, EE-WAT3-7K2QX9AB).', ct_verify_go:'Tekshirish', ct_v_ok:'✅ Sertifikat haqiqiy', ct_v_no:'❌ Bunday raqamli sertifikat topilmadi', ct_v_err:'Tekshirib bo‘lmadi. Internetni tekshiring.', ct_v_demo:'Demo rejim: faqat shu qurilmadagi sertifikatlar tekshirildi.', ct_v_holder:'Egasi', ct_v_track:'Yo‘nalish', ct_v_level:'Daraja', ct_v_date:'Berilgan sana', ct_v_score:'Natija',
+  ct_on:'✅ Onlayn ro‘yxatga olingan', ct_pend:'⏳ Internet va hisobga kirilganda onlayn ro‘yxatga olinadi', ct_local:'📱 Demo rejim: qurilmada saqlangan', ct_no:'Sertifikat raqami', ct_dl:'Yuklab olish', ct_share_txt:'Men bbecoplatform.uz ilovasida «{t}» yo‘nalishi bo‘yicha {l} eko-sertifikatini oldim! 🌍 Raqam: {c}',
+  cv_org:'bbecoplatform.uz · EcoEducation', cv_big:'EKO-SERTIFIKAT', cv_final_big:'UMUMIY EKO-SERTIFIKAT', cv_given:'Ushbu sertifikat', cv_body:'«{t}» yo‘nalishi bo‘yicha {l} imtihonini muvaffaqiyatli topshirgani uchun beriladi', cv_final_body:'Ekologik ta’limning barcha 9 yo‘nalishi bo‘yicha umumiy imtihonni muvaffaqiyatli topshirgani uchun beriladi', cv_score:'Natija: {r}/{n} ({pc}%)', cv_final_rib:'BARCHA 9 YO‘NALISH · 30 SAVOL', cv_date:'Sana', cv_check:'Haqiqiyligini tekshirish: ilovada EcoEducation → Sertifikat → Tekshirish'
+});
+Object.assign(EDU_I18N.ru, {
+  tab_cert:'🎓 Дипломы',
+  ct_h:'Экосертификаты', ct_d:'В каждом направлении 3 ступени: 3-я → 2-я → 1-я. После 1-й степени во всех 9 направлениях откроется итоговый экзамен из 30 вопросов.', ct_prog:'{n} / 27 сертификатов',
+  ct_rule:'{n} вопросов · проходной балл {p}%', ct_sec:'{s} сек/вопрос', ct_nosec:'без ограничения времени',
+  ct_need_les:'Пройдите уроки ({n}/3)', ct_exam:'Экзамен: {l}', ct_wait:'Пересдача: {t}', ct_all3:'Все степени получены',
+  ct_final:'Итоговый экзамен', ct_final_d:'30 вопросов по всем направлениям. Проходной балл 80%, время {m} минут.', ct_final_lock:'Нужна 1-я степень во всех направлениях: {n}/9', ct_final_go:'Начать экзамен', ct_final_got:'Общий сертификат получен',
+  ct_rules_t:'Правила экзамена', ct_r1:'{n} вопросов, для сдачи нужно не меньше {p} верных ответов ({pc}%).', ct_r_time:'На каждый вопрос {s} секунд.', ct_r_total:'Общее время: {m} минут.', ct_r_free:'Время не ограничено.', ct_r2:'Правильные ответы покажем в конце экзамена.', ct_r3:'Если выйти из экзамена, попытка будет засчитана.', ct_r_cool:'Если не сдадите, пересдача через {m} минут.', ct_r_now:'Если не сдадите, можно сразу пересдать.',
+  ct_name:'Имя и фамилия в сертификате', ct_name_ph:'Например: Анвар Каримов', ct_name_err:'Введите имя и фамилию (не меньше 3 букв).', ct_start:'Начать экзамен',
+  ct_pass_t:'Поздравляем! Экзамен сдан', ct_fail_t:'В этот раз не получилось', ct_score:'Верно: {r} из {n} ({pc}%)', ct_need:'Для сдачи нужно было не меньше {p} верных ответов.', ct_issued:'Выдан сертификат: {l}', ct_next:'Следующая ступень: {l}', ct_mistakes:'Ваши ошибки', ct_mist_d:'Эти вопросы добавлены в «Работу над ошибками».', ct_your:'Вы', ct_right:'Верный ответ', ct_noans:'нет ответа', ct_view:'Посмотреть сертификат', ct_back:'К сертификатам',
+  ct_verify_t:'Проверка сертификата', ct_verify_d:'Введите номер сертификата (например, EE-WAT3-7K2QX9AB).', ct_verify_go:'Проверить', ct_v_ok:'✅ Сертификат подлинный', ct_v_no:'❌ Сертификат с таким номером не найден', ct_v_err:'Не удалось проверить. Проверьте интернет.', ct_v_demo:'Демо-режим: проверены только сертификаты на этом устройстве.', ct_v_holder:'Владелец', ct_v_track:'Направление', ct_v_level:'Степень', ct_v_date:'Дата выдачи', ct_v_score:'Результат',
+  ct_on:'✅ Зарегистрирован онлайн', ct_pend:'⏳ Будет зарегистрирован онлайн при входе в аккаунт и наличии интернета', ct_local:'📱 Демо-режим: хранится на устройстве', ct_no:'Номер сертификата', ct_dl:'Скачать', ct_share_txt:'Я получил экосертификат ({l}) по направлению «{t}» в приложении bbecoplatform.uz! 🌍 Номер: {c}',
+  cv_org:'bbecoplatform.uz · EcoEducation', cv_big:'ЭКОСЕРТИФИКАТ', cv_final_big:'ОБЩИЙ ЭКОСЕРТИФИКАТ', cv_given:'Настоящий сертификат выдан', cv_body:'за успешную сдачу экзамена ({l}) по направлению «{t}»', cv_final_body:'за успешную сдачу итогового экзамена по всем 9 направлениям экологического образования', cv_score:'Результат: {r}/{n} ({pc}%)', cv_final_rib:'ВСЕ 9 НАПРАВЛЕНИЙ · 30 ВОПРОСОВ', cv_date:'Дата', cv_check:'Проверка подлинности: в приложении EcoEducation → Сертификат → Проверить'
+});
+
 const LANG = {
   uz: {
     pill_cancelled:'Bekor qilindi', pill_edited:'Tahrirlangan',
@@ -2129,6 +2230,7 @@ const app = {
         if(e.key==='Backspace' && !box.value && all[idx-1]) all[idx-1].focus();
       });
     });
+    this.edLinkCheck();
     if(this.user){ this.goto('home'); this.renderHome(); }
     else if(this.account){
       document.getElementById('toLoginBtn').style.display='block';
@@ -2334,6 +2436,7 @@ const app = {
     this.startRealtime();
     this.rtLoad(true);
     this.edSync();
+    this.edCertSync();
   },
   fromRow(r){
     const hist = (r.report_status_history||[]).slice().sort((a,b)=> a.created_at<b.created_at?-1:1);
@@ -3362,9 +3465,9 @@ const app = {
       <div class="ed-opts sm">${this.edL(dq).a.map((o,i)=>`<button class="ed-opt${ans!=null ? (i===dq.c?' ok':(i===ans?' bad':'')) : ''}" ${ans!=null?'disabled':''} onclick="app.edDailyAnswer(${i})">${this.esc(o)}</button>`).join('')}</div>
       ${ans!=null ? `<p class="ed-expl">${ans===dq.c ? '✅' : '💡'} ${this.esc(this.edL(dq).x)}</p>` : ''}`;
     this.edRenderTasks();
-    document.getElementById('edTabs').innerHTML = ['learn','games','compete','ach'].map(t=>`<button data-t="${t}" class="${t===this.edTab?'sel':''}" onclick="app.edSetTab('${t}')">${this.esc(this.et('tab_'+t))}</button>`).join('');
+    document.getElementById('edTabs').innerHTML = ['learn','games','cert','compete','ach'].map(t=>{ const [ic, ...w] = this.et('tab_'+t).split(' '); return `<button data-t="${t}" class="${t===this.edTab?'sel':''}" onclick="app.edSetTab('${t}')"><i>${ic}</i><span>${this.esc(w.join(' '))}</span></button>`; }).join('');
     const box = document.getElementById('edBody');
-    box.innerHTML = this.edTab === 'learn' ? this.edTabLearn() : this.edTab === 'games' ? this.edTabGames() : this.edTab === 'compete' ? this.edTabCompete() : this.edTabAch();
+    box.innerHTML = this.edTab === 'learn' ? this.edTabLearn() : this.edTab === 'games' ? this.edTabGames() : this.edTab === 'cert' ? this.edTabCert() : this.edTab === 'compete' ? this.edTabCompete() : this.edTabAch();
     if(this.edTab === 'compete') this.edLoadBoard();
   },
   edSetTab(t){ this.edTab = t; this.renderEdu(); },
@@ -3441,7 +3544,7 @@ const app = {
   },
   edTabAch(){
     const S = this.edState(), have = new Set(S.ach), all = this.edDoneCount() >= this.edAllLessons().length;
-    return `<div class="ed-cert${all?' on':''}"><i>🎓</i><div><b>${this.esc(this.et('cert_t'))}</b><span>${this.esc(all ? this.et('cert_ready') : this.et('cert_need').replace('{n}', this.edAllLessons().length - this.edDoneCount()))}</span></div>${all ? `<button class="btn btn-primary" onclick="app.edCert()">${this.esc(this.et('cert_get'))}</button>` : ''}</div>
+    return `<div class="ed-cert on" onclick="app.edSetTab('cert')" style="cursor:pointer"><i>🎓</i><div><b>${this.esc(this.et('ct_h'))}</b><span>${this.esc(this.et('ct_prog').replace('{n}', Object.keys(this.edCerts()).filter(k=> k !== 'final:0').length))}</span></div><em style="font-style:normal; font-size:22px">›</em></div>
       <div class="ed-achs">${EDU_ACH.map(a=>`<div class="ed-ach${have.has(a.k)?' on':''}"><i>${a.e}</i><b>${this.esc(this.edL(a).t)}</b><span>${this.esc(this.edL(a).d)}</span></div>`).join('')}</div>
       <div class="ed-set"><label><input type="checkbox" ${S.sound?'checked':''} onchange="app.edState().sound=this.checked; app.edSave()"> 🔊 ${this.esc(this.et('sound'))}</label>
       <button class="btn btn-outline" onclick="app.edAgePicker(false)">${this.edAge().e} ${this.esc(this.et('age_change'))}</button></div>`;
@@ -3789,7 +3892,8 @@ const app = {
   // ================= ECOEDUCATION 2: takrorlash, haftalik vazifalar, yangi o'yinlar =================
   // har bir test savoliga doimiy kalit: <dars id>#<tartib raqami>
   edQIndex(){
-    if(!this._edQ){ this._edQ = {}; EDU_DATA.modules.forEach(m=> m.lessons.forEach(l=> l.quiz.forEach((q,i)=>{ q.key = l.id + '#' + i; this._edQ[q.key] = q; }))); }
+    if(!this._edQ){ this._edQ = {}; EDU_DATA.modules.forEach(m=> m.lessons.forEach(l=> l.quiz.forEach((q,i)=>{ q.key = l.id + '#' + i; this._edQ[q.key] = q; })));
+      Object.keys(EDU_EXAM).forEach(t=> EDU_EXAM[t].forEach((q,i)=>{ q.key = 'x:' + t + '#' + i; this._edQ[q.key] = q; })); }
     return this._edQ;
   },
   edAddDays(day, n){ return new Date(new Date(day+'T12:00:00Z').getTime() + n*864e5).toISOString().slice(0,10); },
@@ -3939,6 +4043,274 @@ const app = {
       ${xp ? `<div class="ed-xpgain" style="display:table; margin:10px auto">+${xp} XP</div>` : ''}
       <p class="rt-board-note">${this.esc(this.et('ft_note'))}</p>
       <div class="ed-nav col"><button class="btn btn-primary" onclick="app.edStartGame('foot')">🔁 ${this.esc(this.et('ft_again'))}</button><button class="btn btn-outline" onclick="app.edTab='games'; app.edExit()">${this.esc(this.et('to_games'))}</button></div>`);
+  },
+
+  // ================= EKO-SERTIFIKATLAR: 3 → 2 → 1 daraja va umumiy imtihon =================
+  edCerts(){ const S = this.edState(); S.certs = S.certs || {}; return S.certs; },
+  edTrackMod(id){ return EDU_DATA.modules.find(m=> m.id === id); },
+  edTrackTitle(id){ return id === 'final' ? this.et('ct_final') : this.edL(this.edTrackMod(id)).t; },
+  edTrackLessons(id){ const S = this.edState(); return this.edTrackMod(id).lessons.filter(l=> S.done[l.id]).length; },
+  // keyingi topshiriladigan daraja: 3, 2, 1 yoki 0 (hammasi olingan)
+  edTrackNext(id){ const C = this.edCerts(); return !C[id+':3'] ? 3 : !C[id+':2'] ? 2 : !C[id+':1'] ? 1 : 0; },
+  edCoolLeft(key){ const t = (this.edState().cool||{})[key]; return t && t > Date.now() ? t - Date.now() : 0; },
+  edClock(ms){ const d = new Date(Date.now() + ms); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); },
+  edTrackQs(id){
+    this.edQIndex();
+    const les = []; this.edTrackMod(id).lessons.forEach(l=> l.quiz.forEach(q=> les.push(q)));
+    return { les, ex: EDU_EXAM[id] || [] };
+  },
+  // savollar: 3-daraja oson va o'rta, 2-daraja o'rta va qiyin, 1-daraja hammasi; umumiy imtihon har yo'nalishdan 3 tadan + 3 qo'shimcha
+  edExamPick(track, L){
+    const sh = a=> this.edShuffle(a);
+    if(track === 'final'){
+      const out = [];
+      EDU_DATA.modules.forEach(m=>{ const { les, ex } = this.edTrackQs(m.id);
+        out.push(sh(ex)[0], sh(les.filter(q=> q.lv === 3))[0], sh(les.filter(q=> q.lv === 2))[0]); });
+      const extra = sh(EDU_DATA.modules.flatMap(m=> this.edTrackQs(m.id).ex).filter(q=> !out.includes(q))).slice(0, 30 - out.length);
+      return sh(out.concat(extra).filter(Boolean));
+    }
+    const { les, ex } = this.edTrackQs(track);
+    if(L === 3) return sh(les.filter(q=> q.lv <= 2)).slice(0, EDU_CERT_LV[3].n);
+    if(L === 2) return sh(les.filter(q=> q.lv >= 2).concat(ex, sh(les.filter(q=> q.lv === 1)).slice(0, 1))).slice(0, EDU_CERT_LV[2].n);
+    return sh(les.concat(ex)).slice(0, EDU_CERT_LV[1].n);
+  },
+  edTabCert(){
+    const C = this.edCerts(), got = Object.keys(C).filter(k=> k !== 'final:0').length, F = EDU_CERT_LV[0];
+    const ones = EDU_DATA.modules.filter(m=> C[m.id+':1']).length, big = this.edAge().big;
+    const head = `<div class="ed-ct-head"><div class="ed-ct-h1"><i>🎓</i><div><b>${this.esc(this.et('ct_h'))}</b><span>${this.esc(this.et('ct_d'))}</span></div></div>
+      <div class="rt-bar"><i style="width:${Math.max(3, Math.round(got/27*100))}%"></i></div><em>${this.esc(this.et('ct_prog').replace('{n}', got))}</em></div>
+      <div class="ed-ct-legend">${[3,2,1].map(L=>{ const R = EDU_CERT_LV[L];
+        return `<div style="--lc:${R.c}"><b>${R.e} ${this.esc(this.edL(R).t)}</b><span>${this.esc(this.et('ct_rule').replace('{n}', R.n).replace('{p}', Math.round(R.pass/R.n*100)))}</span><span>${this.esc(R.sec && !big ? this.et('ct_sec').replace('{s}', R.sec) : this.et('ct_nosec'))}</span></div>`; }).join('')}</div>`;
+    const tracks = EDU_DATA.modules.map(m=>{
+      const nx = this.edTrackNext(m.id), les = this.edTrackLessons(m.id), wait = nx ? this.edCoolLeft(m.id+':'+nx) : 0;
+      let act;
+      if(les < m.lessons.length) act = `<button class="btn btn-outline" onclick="app.edModule('${m.id}')">📘 ${this.esc(this.et('ct_need_les').replace('{n}', les))}</button>`;
+      else if(!nx) act = `<div class="ed-ct-done">🏅 ${this.esc(this.et('ct_all3'))}</div>`;
+      else if(wait) act = `<button class="btn btn-outline" disabled>⏳ ${this.esc(this.et('ct_wait').replace('{t}', this.edClock(wait)))}</button>`;
+      else act = `<button class="btn btn-primary" style="background:linear-gradient(135deg,${EDU_CERT_LV[nx].c2},${EDU_CERT_LV[nx].c})" onclick="app.edExamIntro('${m.id}',${nx})">📝 ${this.esc(this.et('ct_exam').replace('{l}', this.edL(EDU_CERT_LV[nx]).t))}</button>`;
+      return `<div class="ed-ct" style="--mc:${m.color}"><div class="ed-ct-top"><i>${m.icon}</i><b>${this.esc(this.edL(m).t)}</b></div>
+        <div class="ed-ct-lv">${[3,2,1].map(L=>{ const R = EDU_CERT_LV[L], c = C[m.id+':'+L];
+          return `<button class="ed-pip${c?' on':''}" style="--lc:${R.c}; --lc2:${R.c2}" ${c ? `onclick="app.edCertShow('${m.id}:${L}')"` : 'disabled'}><i>${c ? R.e : '🔒'}</i><span>${this.esc(this.edL(R).t)}</span>${c ? `<em>${c.score}/${c.total}</em>` : ''}</button>`; }).join('')}</div>${act}</div>`;
+    }).join('');
+    const fc = C['final:0'], fwait = this.edCoolLeft('final:0'), fmin = Math.round((big ? F.totalBig : F.total) / 60);
+    const fin = `<div class="ed-ct-final${fc?' on':''}${ones < 9 ? ' lock' : ''}"><i>🏆</i><div><b>${this.esc(this.et('ct_final'))}</b><span>${this.esc(this.et('ct_final_d').replace('{m}', fmin))}</span>
+      ${fc ? `<button class="btn btn-primary" onclick="app.edCertShow('final:0')">🏆 ${this.esc(this.et('ct_view'))}</button>`
+        : ones < 9 ? `<div class="ed-ct-need"><div class="rt-bar"><i style="width:${Math.max(3, Math.round(ones/9*100))}%"></i></div><em>🔒 ${this.esc(this.et('ct_final_lock').replace('{n}', ones))}</em></div>`
+        : fwait ? `<button class="btn btn-outline" disabled>⏳ ${this.esc(this.et('ct_wait').replace('{t}', this.edClock(fwait)))}</button>`
+        : `<button class="btn btn-primary" onclick="app.edExamIntro('final',0)">🚀 ${this.esc(this.et('ct_final_go'))}</button>`}</div></div>`;
+    const verify = `<div class="ed-verify"><b>🔎 ${this.esc(this.et('ct_verify_t'))}</b><span>${this.esc(this.et('ct_verify_d'))}</span>
+      <div class="ed-verify-row"><input class="name-input" id="edVerCode" maxlength="20" autocapitalize="characters" placeholder="EE-XXX0-XXXXXXXX"><button class="btn btn-primary" onclick="app.edVerify()">${this.esc(this.et('ct_verify_go'))}</button></div><div id="edVerRes"></div></div>`;
+    return head + fin + `<div class="ed-cts">${tracks}</div>` + verify;
+  },
+  edExamIntro(track, L){
+    const R = EDU_CERT_LV[L], big = this.edAge().big, S = this.edState(), pc = Math.round(R.pass / R.n * 100);
+    const name = S.certName || (this.user && !this.user.guest && this.user.name) || '';
+    const rules = [ this.et('ct_r1').replace('{n}', R.n).replace('{p}', R.pass).replace('{pc}', pc),
+      L === 0 ? this.et('ct_r_total').replace('{m}', Math.round((big ? R.totalBig : R.total)/60)) : R.sec && !big ? this.et('ct_r_time').replace('{s}', R.sec) : this.et('ct_r_free'),
+      this.et('ct_r2'), R.cool ? this.et('ct_r3') : '', R.cool ? this.et('ct_r_cool').replace('{m}', R.cool) : this.et('ct_r_now') ].filter(Boolean);
+    const m = track === 'final' ? null : this.edTrackMod(track);
+    this.edStop(); this.rtClose();
+    this.edPlay(this.edTrackTitle(track), `<div class="ed-ex-intro" style="--lc:${R.c}; --lc2:${R.c2}"><div class="ed-ex-badge">${m ? m.icon : '🌍'}<i>${R.e}</i></div>
+        <h3>${this.esc(L ? this.edL(R).t + ' · ' + this.edL(R).d : this.edL(R).t)}</h3><p>${this.esc(m ? this.edL(m).t : this.edL(R).d)}</p></div>
+      <div class="ed-ex-rules"><b>📋 ${this.esc(this.et('ct_rules_t'))}</b><ul>${rules.map(r=>`<li>${this.esc(r)}</li>`).join('')}</ul></div>
+      <div class="rt-f-lbl">${this.esc(this.et('ct_name'))}</div><input class="name-input ed-ex-name" id="edCertName" maxlength="60" value="${this.esc(name)}" placeholder="${this.esc(this.et('ct_name_ph'))}">
+      <p class="rt-err" id="edExErr"></p>
+      <div class="ed-nav col"><button class="btn btn-primary" onclick="app.edExamStart('${track}',${L})">🚀 ${this.esc(this.et('ct_start'))}</button><button class="btn btn-outline" onclick="app.edTab='cert'; app.edExit()">${this.esc(this.et('ct_back'))}</button></div>`);
+  },
+  edExamStart(track, L){
+    const nm = (document.getElementById('edCertName').value || '').trim().replace(/\s+/g, ' ').slice(0, 60);
+    if(nm.replace(/[^\p{L}]/gu, '').length < 3){ document.getElementById('edExErr').textContent = this.et('ct_name_err'); return; }
+    const S = this.edState(), R = EDU_CERT_LV[L], key = track + ':' + L;
+    if(L && (this.edTrackLessons(track) < 3 || this.edTrackNext(track) !== L)) return;
+    if(this.edCoolLeft(key)) return;
+    S.certName = nm;
+    // urinish boshlanganda kutish vaqti yoziladi: chiqib ketish ham urinish hisoblanadi, o'tilsa o'chiriladi
+    if(R.cool){ S.cool = S.cool || {}; S.cool[key] = Date.now() + R.cool*60e3; }
+    this.edSave(); this.edStop();
+    const E = this.ep = { kind:'exam', track, L, qs: this.edExamPick(track, L).map(q=>({ q, p: this.edShuffle([0,1,2,3]) })), qi:0, ans:[] };
+    if(L === 0){ E.end = Date.now() + (this.edAge().big ? R.totalBig : R.total)*1000; E.timer = setInterval(()=>{ if(this.ep !== E) return clearInterval(E.timer); this.edExamClock(); }, 1000); }
+    this.edExamRender();
+  },
+  edExamClock(){
+    const E = this.ep; if(!E || E.kind !== 'exam') return;
+    const left = Math.max(0, Math.round((E.end - Date.now())/1000)), el = document.getElementById('epTime');
+    if(el){ el.textContent = '⏱ ' + Math.floor(left/60) + ':' + String(left%60).padStart(2,'0'); el.classList.toggle('low', left <= 60); }
+    if(left <= 0){ clearInterval(E.timer); this.edExamFinish(); }
+  },
+  edExamRender(){
+    const E = this.ep, it = E.qs[E.qi], Q = this.edL(it.q), R = EDU_CERT_LV[E.L], big = this.edAge().big;
+    E.answered = false;
+    this.edPlay(R.e + ' ' + this.edTrackTitle(E.track), `<div class="ed-ghead"><span id="epTime"></span><span>${this.esc(this.et('question'))} ${E.qi+1}/${E.qs.length}</span><span>${this.esc(this.edL(R).t)}</span></div>
+      <div class="rt-bar ed-qbar" style="--lc:${R.c}"><i style="width:${Math.round(E.qi/E.qs.length*100)}%"></i></div>
+      <h3 class="ed-q">${this.esc(Q.q)}</h3>
+      <div class="ed-opts">${it.p.map((o,j)=>`<button class="ed-opt" onclick="app.edExamAnswer(${j})"><i>${'ABCD'[j]}</i>${this.esc(Q.a[o])}</button>`).join('')}</div>`);
+    if(E.L === 0) this.edExamClock();
+    else if(R.sec && !big) this.edTimerStart(R.sec, ()=> this.edExamAnswer(-1));
+    else document.getElementById('epTime').textContent = '⏱ ∞';
+  },
+  edExamAnswer(j){
+    const E = this.ep; if(!E || E.kind !== 'exam' || E.answered) return; E.answered = true;
+    if(E.L !== 0) clearInterval(E.timer);
+    const it = E.qs[E.qi]; E.ans[E.qi] = j < 0 ? -1 : it.p[j];
+    document.querySelectorAll('#epBody .ed-opt').forEach((b,k)=>{ b.disabled = true; if(k === j) b.classList.add('pick'); });
+    E.to = setTimeout(()=>{ if(this.ep !== E) return; if(E.qi < E.qs.length - 1){ E.qi++; this.edExamRender(); window.scrollTo(0,0); } else this.edExamFinish(); }, 350);
+  },
+  edCertCode(track, L){
+    const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', b = new Uint8Array(8);
+    try{ crypto.getRandomValues(b); }catch(e){ for(let i = 0; i < 8; i++) b[i] = Math.floor(Math.random()*256); }
+    return 'EE-' + EDU_CERT_ABBR[track] + (L || '') + '-' + Array.from(b, x=> A[x % A.length]).join('');
+  },
+  edExamFinish(){
+    const E = this.ep; if(!E || E.kind !== 'exam' || E.done) return; E.done = true;
+    clearInterval(E.timer); clearTimeout(E.to);
+    const S = this.edState(), R = EDU_CERT_LV[E.L], key = E.track + ':' + E.L, n = E.qs.length;
+    const r = E.qs.filter((it,i)=> E.ans[i] === it.q.c).length, pass = r >= R.pass, pc = Math.round(r/n*100);
+    const wrong = E.qs.map((it,i)=>({ q: it.q, a: E.ans[i] })).filter(x=> x.a !== x.q.c);
+    wrong.forEach(x=> this.edMark(x.q, false));
+    let cert = null;
+    if(pass){
+      cert = { code: this.edCertCode(E.track, E.L), track: E.track, level: E.L, score: r, total: n, name: S.certName, date: new Date().toISOString(), synced: false };
+      this.edCerts()[key] = cert; if(S.cool) delete S.cool[key];
+      this.edGain(R.xp, 'cert'); this.edCertSync();
+    } else { this.edCheckAch(); this.edSave(); }
+    this.edStop(); this.edBeep(pass);
+    const nx = pass && E.track !== 'final' ? this.edTrackNext(E.track) : 0;
+    const colors = ['#FFD43B','#69DB7C','#4DABF7','#FF8787','#B197FC','#FFA94D'];
+    const conf = pass ? `<div class="rt-conf">${Array.from({length:36},(_,k)=>`<i style="left:${(k*37)%100}%; background:${colors[k%6]}; animation-delay:${(k%9)*.08}s"></i>`).join('')}</div>` : '';
+    const mist = wrong.length ? `<div class="rt-sec-h" style="margin-top:16px"><b>🔍 ${this.esc(this.et('ct_mistakes'))} (${wrong.length})</b></div><p class="ed-sec-d">${this.esc(this.et('ct_mist_d'))}</p>
+      ${wrong.map(x=>{ const Q = this.edL(x.q); return `<div class="ed-mist"><b>${this.esc(Q.q)}</b><p class="no">✗ ${this.esc(this.et('ct_your'))}: ${this.esc(x.a >= 0 ? Q.a[x.a] : this.et('ct_noans'))}</p><p class="ok">✓ ${this.esc(this.et('ct_right'))}: ${this.esc(Q.a[x.q.c])}</p><p>${this.esc(Q.x)}</p></div>`; }).join('')}` : '';
+    this.edPlay(R.e + ' ' + this.edTrackTitle(E.track), `${conf}<div class="ed-done ed-ex-res${pass?' ok':' no'}" style="--lc:${R.c}; --lc2:${R.c2}"><div class="ed-big-e">${pass ? R.e : '📚'}</div>
+      <h3>${this.esc(this.et(pass ? 'ct_pass_t' : 'ct_fail_t'))}</h3>
+      <div class="ed-score">${pc}%</div><p>${this.esc(this.et('ct_score').replace('{r}', r).replace('{n}', n).replace('{pc}', pc))}</p>
+      ${pass ? `<div class="ed-xpgain">+${R.xp} XP</div><p class="ed-best">📜 ${this.esc(E.L ? this.et('ct_issued').replace('{l}', this.edL(R).t) : this.et('ct_final_got'))}</p><img class="ed-cert-img" id="edCertPrev" alt="" onclick="app.edCertShow('${key}')">`
+        : `<p class="ed-best">${this.esc(this.et('ct_need').replace('{p}', R.pass))}</p>${R.cool ? `<p class="ed-best">⏳ ${this.esc(this.et('ct_wait').replace('{t}', this.edClock(R.cool*60e3)))}</p>` : ''}`}
+      <div class="ed-nav col">${pass ? `<button class="btn btn-primary" onclick="app.edCertShow('${key}')">📜 ${this.esc(this.et('ct_view'))}</button>` : ''}
+        ${nx && !this.edCoolLeft(E.track+':'+nx) ? `<button class="btn ${pass?'btn-outline':'btn-primary'}" onclick="app.edExamIntro('${E.track}',${nx})">📝 ${this.esc(this.et('ct_next').replace('{l}', this.edL(EDU_CERT_LV[nx]).t))}</button>` : ''}
+        ${!pass && !R.cool ? `<button class="btn btn-primary" onclick="app.edExamIntro('${E.track}',${E.L})">🔁 ${this.esc(this.et('retry'))}</button>` : ''}
+        <button class="btn btn-outline" onclick="app.edTab='cert'; app.edExit()">${this.esc(this.et('ct_back'))}</button></div></div>${mist}`);
+    if(cert) this.edCertImage(cert).then(u=>{ const im = document.getElementById('edCertPrev'); if(im) im.src = u; });
+  },
+  edWrap(g, text, x, y, maxW, lh){
+    const words = String(text).split(' '); let line = '', yy = y;
+    words.forEach(w=>{ const t = line ? line + ' ' + w : w; if(g.measureText(t).width > maxW && line){ g.fillText(line, x, yy); line = w; yy += lh; } else line = t; });
+    if(line) g.fillText(line, x, yy);
+    return yy;
+  },
+  async edCertImage(c){
+    const R = EDU_CERT_LV[c.level], fin = c.track === 'final', m = fin ? null : this.edTrackMod(c.track);
+    const cv = document.createElement('canvas'); cv.width = 1600; cv.height = 1130; const g = cv.getContext('2d');
+    let bg = null;
+    if(EDU_CERT_TPL.bg) bg = await new Promise(res=>{ const im = new Image(); im.onload = ()=> res(im); im.onerror = ()=> res(null); im.src = EDU_CERT_TPL.bg; });
+    if(bg) g.drawImage(bg, 0, 0, 1600, 1130);
+    else {
+      const grd = g.createLinearGradient(0, 0, 1600, 1130); grd.addColorStop(0, '#FCFDF8'); grd.addColorStop(1, '#EAF5EC'); g.fillStyle = grd; g.fillRect(0, 0, 1600, 1130);
+      g.globalAlpha = .07; g.font = '420px serif'; g.textAlign = 'center'; g.fillText(m ? m.icon : '🌍', 800, 760); g.globalAlpha = 1;
+      g.strokeStyle = R.c; g.lineWidth = 22; g.strokeRect(36, 36, 1528, 1058);
+      g.strokeStyle = R.c2; g.lineWidth = 4; g.strokeRect(70, 70, 1460, 990);
+      [[70,70],[1530,70],[70,1060],[1530,1060]].forEach(([x,y])=>{ g.fillStyle = R.c; g.beginPath(); g.arc(x, y, 16, 0, Math.PI*2); g.fill(); });
+    }
+    g.textAlign = 'center';
+    g.fillStyle = '#2D4A3A'; g.font = '600 26px Inter, sans-serif'; g.fillText(this.et('cv_org'), 800, 128);
+    g.font = '72px serif'; g.fillText(m ? m.icon : '🌍', 800, 215);
+    g.fillStyle = R.c; g.font = `800 ${fin ? 62 : 74}px Manrope, sans-serif`; g.fillText(this.et(fin ? 'cv_final_big' : 'cv_big'), 800, 305);
+    {
+      const lab = fin ? this.et('cv_final_rib') : (this.edL(R).t + ' · ' + this.edL(R).d).toUpperCase(); g.font = '800 28px Manrope, sans-serif';
+      const w = g.measureText(lab).width + 64; g.fillStyle = R.c; g.beginPath(); g.roundRect ? g.roundRect(800 - w/2, 330, w, 52, 26) : g.rect(800 - w/2, 330, w, 52); g.fill();
+      g.fillStyle = '#fff'; g.fillText(lab, 800, 366);
+    }
+    g.fillStyle = '#5B6B60'; g.font = '500 32px Inter, sans-serif'; g.fillText(this.et('cv_given'), 800, 440);
+    g.fillStyle = '#14281D'; g.font = '800 70px Manrope, sans-serif'; g.fillText(c.name || this.et('cert_anon'), 800, 528, 1200);
+    g.fillStyle = R.c2; g.fillRect(480, 552, 640, 4);
+    g.fillStyle = '#2D4A3A'; g.font = '500 32px Inter, sans-serif';
+    const body = fin ? this.et('cv_final_body') : this.et('cv_body').replace('{t}', this.edL(m).t).replace('{l}', this.edL(R).t);
+    const yEnd = this.edWrap(g, body, 800, 620, 1080, 46);
+    g.fillStyle = R.c; g.font = '700 30px Inter, sans-serif';
+    g.fillText(this.et('cv_score').replace('{r}', c.score).replace('{n}', c.total).replace('{pc}', Math.round(c.score/c.total*100)), 800, yEnd + 66);
+    // muhr
+    const sx = 1310, sy = 905; const sg = g.createRadialGradient(sx - 30, sy - 30, 10, sx, sy, 100); sg.addColorStop(0, R.c2); sg.addColorStop(1, R.c);
+    g.fillStyle = sg; g.beginPath(); g.arc(sx, sy, 92, 0, Math.PI*2); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 4; g.beginPath(); g.arc(sx, sy, 76, 0, Math.PI*2); g.stroke();
+    g.fillStyle = '#fff'; g.font = `800 ${fin ? 64 : 56}px Manrope, sans-serif`; g.fillText(fin ? '★' : R.rom, sx, sy + (fin ? 22 : 12));
+    g.font = '700 12px Inter, sans-serif'; g.fillText('ECOEDUCATION', sx, sy + 46);
+    g.textAlign = 'left'; g.fillStyle = '#2D4A3A'; g.font = '500 26px Inter, sans-serif';
+    g.fillText(this.et('cv_date') + ': ' + this.rtFmtDate(c.date), 150, 900);
+    g.font = '700 28px Inter, sans-serif'; g.fillText('№ ' + c.code, 150, 948);
+    g.textAlign = 'center'; g.fillStyle = '#5B6B60'; g.font = '500 21px Inter, sans-serif'; g.fillText(this.et('cv_check'), 800, 1030);
+    return cv.toDataURL('image/png');
+  },
+  async edCertShow(key){
+    const c = this.edCerts()[key]; if(!c) return;
+    const R = EDU_CERT_LV[c.level], url = await this.edCertImage(c);
+    this._edCertUrl = url; this._edCertCur = c;
+    const st = !SUPABASE_READY ? 'ct_local' : c.synced ? 'ct_on' : 'ct_pend';
+    this.rtSheet(`<div class="rt-sh-head"><h3>${R.e} ${this.esc(this.edTrackTitle(c.track))}</h3><p>${this.esc(c.level ? this.edL(R).t + ' · ' + this.edL(R).d : this.edL(R).t)}</p></div>
+      <img class="ed-cert-img" src="${url}" alt="">
+      <div class="ed-cert-meta"><span>${this.esc(this.et('ct_no'))}: <b>${this.esc(c.code)}</b></span><span>${this.esc(this.et(st))}</span></div>
+      <div class="rt-sh-btns"><button class="btn btn-primary" onclick="app.edCertSave()">⬇️ ${this.esc(this.et('ct_dl'))}</button><button class="btn btn-outline" onclick="app.edCertShare2()">${this.esc(this.t('rt_share'))}</button></div>`, 'rt-cele');
+  },
+  edCertFile(){ return 'EcoEducation-' + (this._edCertCur ? this._edCertCur.code : 'sertifikat') + '.png'; },
+  edCertSave(){
+    const url = this._edCertUrl; if(!url) return;
+    if(window.BBEcoNative && BBEcoNative.saveImage){
+      let ok = false; try{ ok = BBEcoNative.saveImage(url.split(',')[1], this.edCertFile()); }catch(e){}
+      this.edToast(ok ? '✅ ' + this.et('cert_save') : '⚠️ ' + this.t('rt_err'), ok); return;
+    }
+    const a = document.createElement('a'); a.href = url; a.download = this.edCertFile(); document.body.appendChild(a); a.click(); a.remove();
+  },
+  async edCertShare2(){
+    const c = this._edCertCur, url = this._edCertUrl; if(!c || !url) return;
+    const R = EDU_CERT_LV[c.level], text = this.et('ct_share_txt').replace('{t}', this.edTrackTitle(c.track)).replace('{l}', this.edL(R).t).replace('{c}', c.code);
+    if(window.BBEcoNative && BBEcoNative.shareImage){ try{ if(BBEcoNative.shareImage(url.split(',')[1], this.edCertFile(), text)) return; }catch(e){} }
+    try{
+      const blob = await (await fetch(url)).blob(), file = new File([blob], this.edCertFile(), { type:'image/png' });
+      if(navigator.canShare && navigator.canShare({ files:[file] })) return await navigator.share({ files:[file], title:'EcoEducation', text });
+    }catch(e){}
+    if(navigator.share) navigator.share({ title:'EcoEducation', text }).catch(()=>{});
+    else { try{ await navigator.clipboard.writeText(text); this.edToast(this.t('rt_copied'), true); }catch(e){} }
+  },
+  // serverda ro'yxatga olish: avval 3-daraja, keyin 2 va 1, oxirida umumiy; server nusxasi asosiy hisoblanadi
+  async edCertSync(){
+    if(!SUPABASE_READY) return;
+    const session = await this.rtSession(); if(!session) return;
+    const C = this.edCerts(), rank = k=> k.startsWith('final') ? 9 : 3 - Number(k.split(':')[1]);
+    try{
+      for(const k of Object.keys(C).filter(k=> !C[k].synced).sort((a,b)=> rank(a) - rank(b))){
+        const c = C[k];
+        const { error } = await sb.from('edu_certificates').insert({ code:c.code, track:c.track, level:c.level, score:c.score, total:c.total, holder:c.name });
+        if(error && error.code !== '23505'){ console.warn('cert sync', error.message); break; }
+        c.synced = true;
+      }
+      const { data } = await sb.from('edu_certificates').select('code,track,level,score,total,holder,issued_at').eq('user_id', session.user.id);
+      (data||[]).forEach(r=>{ C[r.track+':'+r.level] = { code:r.code, track:r.track, level:r.level, score:r.score, total:r.total, name:r.holder, date:r.issued_at, synced:true }; });
+      safeSet('eco_edu', this.ed); this.edCheckAch();
+      if(document.getElementById('screen-edu')?.classList.contains('active') && this.edTab === 'cert') this.renderEdu();
+    }catch(e){ console.warn('cert sync', e && e.message); }
+  },
+  async edVerify(code){
+    code = String(code || document.getElementById('edVerCode')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+    const out = document.getElementById('edVerRes'), show = html=>{ if(out) out.innerHTML = html; else this.rtSheet(`<div class="rt-sh-head"><h3>🔎 ${this.esc(this.et('ct_verify_t'))}</h3><p>${this.esc(code)}</p></div>${html}<div class="rt-sh-btns"><button class="btn btn-outline" onclick="app.rtClose()">${this.esc(this.t('rt_close'))}</button></div>`); };
+    if(!/^EE-[A-Z]{3}[0-3]?-[A-Z2-9]{8}$/.test(code)){ show(`<div class="ed-ver no">${this.esc(this.et('ct_v_no'))}</div>`); return; }
+    let row = null, demo = false;
+    if(SUPABASE_READY){
+      const { data, error } = await sb.rpc('edu_verify_cert', { p_code: code });
+      if(error){ show(`<div class="ed-ver no">${this.esc(this.et('ct_v_err'))}</div>`); return; }
+      row = (data||[])[0] || null;
+    } else {
+      demo = true; const c = Object.values(this.edCerts()).find(x=> x.code === code);
+      if(c){ const p = String(c.name||'').split(' '); row = { track:c.track, level:c.level, score:c.score, total:c.total, holder: p[0] + (p[1] ? ' ' + p[1][0] + '.' : ''), issued_at:c.date }; }
+    }
+    if(!row){ show(`<div class="ed-ver no">${this.esc(this.et('ct_v_no'))}</div>${demo ? `<p class="rt-board-note">${this.esc(this.et('ct_v_demo'))}</p>` : ''}`); return; }
+    const R = EDU_CERT_LV[row.level];
+    show(`<div class="ed-ver ok"><b>${this.esc(this.et('ct_v_ok'))}</b>
+      <div><span>${this.esc(this.et('ct_v_holder'))}</span><b>${this.esc(row.holder)}</b></div>
+      <div><span>${this.esc(this.et('ct_v_track'))}</span><b>${this.esc(EDU_CERT_ABBR[row.track] ? this.edTrackTitle(row.track) : row.track)}</b></div>
+      <div><span>${this.esc(this.et('ct_v_level'))}</span><b>${R ? R.e + ' ' + this.esc(this.edL(R).t) : row.level}</b></div>
+      <div><span>${this.esc(this.et('ct_v_score'))}</span><b>${row.score}/${row.total}</b></div>
+      <div><span>${this.esc(this.et('ct_v_date'))}</span><b>${this.esc(this.rtFmtDate(row.issued_at))}</b></div></div>${demo ? `<p class="rt-board-note">${this.esc(this.et('ct_v_demo'))}</p>` : ''}`);
+  },
+  // ?cert=EE-... havolasi bilan ochilsa, sertifikat darhol tekshiriladi
+  edLinkCheck(){
+    try{ const code = new URLSearchParams(location.search).get('cert'); if(code) setTimeout(()=> this.edVerify(code), 600); }catch(e){}
   },
 
   setLanguage(lang){ this.lang=lang; safeSet('eco_lang', lang); this.applyLang(); },
