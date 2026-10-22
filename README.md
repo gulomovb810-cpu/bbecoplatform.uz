@@ -5,6 +5,7 @@ bbecoplatform.uz — ekologik muammolar haqida bir daqiqada xabar berish ilovasi
 | Fayl | Vazifasi |
 |---|---|
 | `index.html` | Mobil ilova (fuqarolar uchun) |
+| `aqua-regen/` | AQUA-REGEN SYSTEM — interaktiv 3D maydon: 6 bosqichli transformatsiya, kun/tun rejimi, suv va energiya oqimlari, jonli monitoring (simulyatsiya), investitsiya taqsimoti |
 | `admin/` | Admin panel: arizalarni ko‘rish, holatini o‘zgartirish, xarita, tashkilotlar, foydalanuvchilar, statistika, sozlamalar |
 | `config.js` | Supabase kalitlari (ilova + panel uchun umumiy) |
 | `supabase/schema.sql` | Ma’lumotlar bazasi: jadvallar, xavfsizlik (RLS), triggerlar, Storage, Realtime |
