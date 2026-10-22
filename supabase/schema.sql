@@ -1051,6 +1051,80 @@ create policy "report-media read trees" on storage.objects for select to authent
               or exists (select 1 from public.tree_waterings w where w.photo_path = name or name = any(w.media_paths))));
 
 -- ---------------------------------------------------------------------
+-- 7d. ECOEDUCATION: bilim XP va haftalik bellashuv reytingi
+-- Darslar va o'yinlar ilovada (oflayn) ishlaydi; serverga faqat XP yig'indisi yoziladi.
+-- Ism faqat fuqaro rating_public ni yoqsa ko'rinadi (aks holda "Faol fuqaro #XXXX").
+-- ---------------------------------------------------------------------
+create table if not exists public.edu_progress (
+  user_id     uuid primary key default auth.uid() references public.profiles(id) on delete cascade,
+  xp          int  not null default 0 check (xp between 0 and 1000000),
+  lessons     int  not null default 0 check (lessons between 0 and 200),
+  week        date not null default (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date,
+  week_xp     int  not null default 0 check (week_xp >= 0),
+  updated_at  timestamptz not null default now()
+);
+
+-- XP faqat oshadi va bir martada cheklangan miqdorda (soxta ballarga qarshi)
+create or replace function public.edu_progress_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  wk date := (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date;
+  allowed int; delta int;
+begin
+  if tg_op = 'INSERT' then
+    new.user_id := auth.uid();
+    new.xp := least(greatest(new.xp, 0), 3000);          -- qurilmadagi oldingi natija: ko'pi bilan 3000
+    new.week := wk; new.week_xp := least(new.xp, 300);
+  else
+    new.user_id := old.user_id;
+    allowed := least(300, 20 + 5 * floor(extract(epoch from now() - old.updated_at))::int);
+    delta := least(greatest(new.xp - old.xp, 0), greatest(allowed, 0));
+    new.xp := old.xp + delta;
+    new.week_xp := case when old.week = wk then old.week_xp + delta else delta end;
+    new.week := wk;
+  end if;
+  new.lessons := least(greatest(new.lessons, 0), 200);
+  new.updated_at := now();
+  return new;
+end $$;
+drop trigger if exists edu_progress_before_write on public.edu_progress;
+create trigger edu_progress_before_write before insert or update on public.edu_progress
+  for each row execute function public.edu_progress_before_write();
+
+alter table public.edu_progress enable row level security;
+drop policy if exists "edu_progress own read" on public.edu_progress;
+create policy "edu_progress own read" on public.edu_progress for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "edu_progress own insert" on public.edu_progress;
+create policy "edu_progress own insert" on public.edu_progress for insert to authenticated
+  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "edu_progress own update" on public.edu_progress;
+create policy "edu_progress own update" on public.edu_progress for update to authenticated
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- Bellashuv reytingi: hafta yoki umumiy XP bo'yicha (taxallus bilan)
+create or replace function public.edu_leaderboard(p_scope text default 'week', p_limit int default 30)
+returns table(pos bigint, alias text, points int, lessons int, is_me boolean)
+language sql stable security definer set search_path = public as $$
+  with base as (
+    select e.user_id, p.rating_public, p.full_name, e.lessons,
+           case when p_scope = 'all' then e.xp
+                when e.week = (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date then e.week_xp
+                else 0 end as pts
+    from public.edu_progress e join public.profiles p on p.id = e.user_id
+    where p.role = 'user' and not p.blocked and auth.uid() is not null
+  ), ranked as (
+    select b.*, rank() over (order by b.pts desc) as rk from base b where b.pts > 0
+  )
+  select rk, public.rating_alias(user_id, rating_public, full_name), pts, lessons, user_id = auth.uid()
+  from ranked
+  where rk <= least(greatest(p_limit, 1), 100) or user_id = auth.uid()
+  order by rk, user_id;
+$$;
+revoke all on function public.edu_leaderboard(text, int) from public, anon;
+grant execute on function public.edu_leaderboard(text, int) to authenticated;
+
+-- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)
 -- ---------------------------------------------------------------------
 do $$

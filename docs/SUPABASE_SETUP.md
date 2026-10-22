@@ -183,6 +183,16 @@ Bo‘limdagi **“Saytlardan xabarlar”** qismi Supabase’siz ham ishlaydi: `s
 - Daraxt va sug‘orish dalillari (4 tagacha rasm yoki video, video 60 soniya va 50 MB gacha) `report-media/<user_id>/trees/` ga yuklanadi va `media_paths` ustunida saqlanadi. Ularni egasi va mas’ullar ko‘radi; fuqaro boshqa birovning faylini biriktira olmaydi. Daraxt qo‘shish uchun kamida 1 ta rasm yoki video talab qilinadi. Fuqaro kuniga 10 tadan ortiq daraxt qo‘sha olmaydi va daraxt holatini o‘zgartira olmaydi.
 - Realtime: `badge_awards` nashrga qo‘shilgan, yangi nishon ilovada darhol tabrik oynasi bilan chiqadi.
 
+## 13. EcoEducation (darslar, o‘yinlar va bellashuvlar)
+
+EcoEducation to‘liq oflayn ishlaydi: 9 mavzu, 27 dars, 5 ta o‘yin, do‘st bilan duel, yutuqlar va sertifikat ilovaning o‘zida. Natijalar qurilmada (`eco_edu`) saqlanadi.
+
+Supabase ulangan bo‘lsa, faqat XP yig‘indisi va tugatilgan darslar soni `edu_progress` jadvaliga yuboriladi (schema.sql, 7d-bo‘lim). Javoblar, ism va telefon serverga yuborilmaydi.
+
+- **Haftalik va umumiy reyting:** `edu_leaderboard('week'|'all', 50)` RPC. Unda ism emas, «Faol fuqaro #XXXX» taxallusi chiqadi (ism faqat foydalanuvchi «Ekotizim reytingi»da ochiq qilsa ko‘rinadi). Faqat tizimga kirganlar chaqira oladi.
+- **Aldovdan himoya:** bazadagi trigger bitta yozuvda ko‘pi bilan 300 XP qo‘shishga ruxsat beradi (vaqtga qarab), XP kamaymaydi, hafta almashganda haftalik XP nolga tushadi. Foydalanuvchi faqat o‘z qatorini o‘zgartira oladi.
+- Hisob o‘chirilganda (`delete_my_account`) `edu_progress` qatori ham o‘chadi (`on delete cascade`).
+
 ## Muammolar
 | Belgi | Sabab / yechim |
 |---|---|
