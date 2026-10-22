@@ -185,7 +185,7 @@ Bo‘limdagi **“Saytlardan xabarlar”** qismi Supabase’siz ham ishlaydi: `s
 
 ## 13. EcoEducation (darslar, o‘yinlar va bellashuvlar)
 
-EcoEducation to‘liq oflayn ishlaydi: 9 mavzu, 27 dars, 5 ta o‘yin, do‘st bilan duel, yutuqlar va sertifikat ilovaning o‘zida. Natijalar qurilmada (`eco_edu`) saqlanadi.
+EcoEducation to‘liq oflayn ishlaydi: 9 mavzu, 27 dars, yoshga mos 7 ta o‘yin (jumladan «Hovlini tozala» va «Ekologik izim» kalkulyatori), haftalik real eko-vazifalar, xatolarni takrorlash, do‘st bilan duel, yutuqlar va sertifikat ilovaning o‘zida. Natijalar qurilmada (`eco_edu`) saqlanadi.
 
 Supabase ulangan bo‘lsa, faqat XP yig‘indisi va tugatilgan darslar soni `edu_progress` jadvaliga yuboriladi (schema.sql, 7d-bo‘lim). Javoblar, ism va telefon serverga yuborilmaydi.
 
