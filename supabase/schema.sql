@@ -9,7 +9,15 @@
 --   organizations          — mas'ul tashkilotlar
 --   reports                — fuqarolar arizalari (ECO REPORT)
 --   report_status_history  — holat o'zgarishlari / faoliyat jurnali
+--   report_comments        — idora xodimlarining ichki izohlari (fuqaro ko'rmaydi)
+--   response_templates     — fuqaroga javob shablonlari
 --   app_settings           — ilova sozlamalari (admin paneldan boshqariladi)
+-- Rollar (profiles.role):
+--   user       — fuqaro (mobil ilova)
+--   admin      — vazirlik markaziy apparati: hamma arizalar, tashkilotlar, xodimlar
+--   moderator  — vazirlik operatori: hamma arizalarni ko'radi va taqsimlaydi
+--   org_head   — idora rahbari: o'z idorasi arizalari, ijrochi tayinlash, yo'naltirish
+--   org_staff  — idora ijrochisi (inspektor): o'ziga biriktirilgan arizalar
 -- Storage:
 --   report-media (private) — arizaga biriktirilgan foto/video
 -- =====================================================================
@@ -25,7 +33,7 @@ create table if not exists public.profiles (
   phone           text,
   email           text,
   is_anonymous    boolean not null default false,
-  role            text not null default 'user' check (role in ('user','moderator','admin')),
+  role            text not null default 'user',
   blocked         boolean not null default false,
   admin_note      text,
   created_at      timestamptz not null default now(),
@@ -37,7 +45,7 @@ create table if not exists public.organizations (
   name        text not null,
   short_name  text,
   region      text,                      -- viloyat kodi (null = respublika miqyosida)
-  categories  text[] not null default '{}', -- Chiqindi, Havo, Suv, Daraxt, Tuproq, Boshqa
+  categories  text[] not null default '{}', -- Chiqindi, Havo, Suv, Daraxt, Tuproq, Hayvon, Boshqa
   head        text,
   phone       text,
   email       text,
@@ -53,7 +61,7 @@ create table if not exists public.reports (
   case_no           text not null unique,
   user_id           uuid default auth.uid(),
   description       text not null check (char_length(description) between 3 and 5000),
-  category          text not null check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Boshqa')),
+  category          text not null check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa')),
   region            text,
   address           text,
   lat               double precision,
@@ -79,7 +87,7 @@ create table if not exists public.reports (
 create table if not exists public.report_status_history (
   id         bigint generated always as identity primary key,
   report_id  uuid not null,
-  event      text not null check (event in ('created','status','org','note','edited','cancelled','priority')),
+  event      text not null,
   status     smallint,
   note       text,
   actor      uuid,
@@ -94,7 +102,51 @@ create table if not exists public.app_settings (
   updated_at timestamptz not null default now()
 );
 
+-- Idoralar portali uchun qo'shimcha ustunlar (eski bazalarda ham qo'shiladi)
+alter table public.profiles add column if not exists org_id   uuid;
+alter table public.profiles add column if not exists position text;
+alter table public.reports  add column if not exists assignee_id   uuid;
+alter table public.reports  add column if not exists deadline_at   timestamptz;
+alter table public.reports  add column if not exists accepted_at   timestamptz;
+alter table public.reports  add column if not exists proof_path    text;
+alter table public.reports  add column if not exists reject_reason text;
+alter table public.reports  add column if not exists extend_count  smallint not null default 0;
+
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check
+  check (role in ('user','moderator','admin','org_head','org_staff'));
+alter table public.profiles drop constraint if exists profiles_org_id_fkey;
+alter table public.profiles add constraint profiles_org_id_fkey
+  foreign key (org_id) references public.organizations(id) on delete set null;
+alter table public.reports drop constraint if exists reports_assignee_id_fkey;
+alter table public.reports add constraint reports_assignee_id_fkey
+  foreign key (assignee_id) references public.profiles(id) on delete set null;
+alter table public.report_status_history drop constraint if exists report_status_history_event_check;
+alter table public.report_status_history add constraint report_status_history_event_check
+  check (event in ('created','status','org','note','edited','cancelled','priority',
+                   'assigned','deadline','forwarded','rejected','proof'));
+
+create table if not exists public.report_comments (
+  id         bigint generated always as identity primary key,
+  report_id  uuid not null references public.reports(id) on delete cascade,
+  author     uuid default auth.uid() references public.profiles(id) on delete set null,
+  body       text not null check (char_length(body) between 1 and 4000),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.response_templates (
+  id         uuid primary key default gen_random_uuid(),
+  org_id     uuid references public.organizations(id) on delete cascade,  -- null = hamma idoralar uchun
+  title      text not null check (char_length(title) between 1 and 200),
+  body       text not null check (char_length(body) between 1 and 4000),
+  created_at timestamptz not null default now()
+);
+
 create index if not exists reports_user_idx     on public.reports(user_id);
+create index if not exists reports_assignee_idx on public.reports(assignee_id);
+create index if not exists reports_deadline_idx on public.reports(deadline_at);
+create index if not exists profiles_org_idx     on public.profiles(org_id);
+create index if not exists comments_report_idx  on public.report_comments(report_id, created_at);
 create index if not exists reports_created_idx  on public.reports(created_at desc);
 create index if not exists reports_status_idx   on public.reports(status);
 create index if not exists reports_region_idx   on public.reports(region);
@@ -116,6 +168,30 @@ create or replace function public.is_admin() returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.profiles
                  where id = auth.uid() and role = 'admin' and not blocked);
+$$;
+
+-- Idora xodimi (rahbar yoki ijrochi) va uning idorasi
+create or replace function public.my_org() returns uuid
+language sql stable security definer set search_path = public as $$
+  select org_id from public.profiles
+  where id = auth.uid() and role in ('org_head','org_staff') and not blocked;
+$$;
+
+create or replace function public.is_agent() returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.my_org() is not null;
+$$;
+
+create or replace function public.is_org_head() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles
+                 where id = auth.uid() and role = 'org_head' and org_id is not null and not blocked);
+$$;
+
+-- Arizani ko'rish huquqi: vazirlik xodimi yoki ariza yo'naltirilgan idora xodimi
+create or replace function public.can_see_org(p_org uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_staff() or (p_org is not null and p_org = public.my_org());
 $$;
 
 create or replace function public.setting(p_key text) returns jsonb
@@ -176,7 +252,7 @@ begin
   if not public.is_admin() then
     new.role := old.role; new.blocked := old.blocked; new.phone := old.phone; new.email := old.email;
     new.is_anonymous := old.is_anonymous; new.admin_note := old.admin_note; new.created_at := old.created_at;
-    new.last_sign_in_at := old.last_sign_in_at;
+    new.last_sign_in_at := old.last_sign_in_at; new.org_id := old.org_id; new.position := old.position;
   elsif new.id = auth.uid() and (new.role <> 'admin' or new.blocked) then
     raise exception 'O‘zingizni admin rolidan chiqara yoki bloklay olmaysiz';
   end if;
@@ -226,6 +302,13 @@ begin
     end if;
   end if;
 
+  -- Ko'rib chiqish muddati: kategoriya bo'yicha (sozlamalar), standart 15 kun
+  -- ("Jismoniy va yuridik shaxslarning murojaatlari to'g'risida"gi Qonun)
+  if new.deadline_at is null then
+    new.deadline_at := now() + make_interval(days => coalesce(
+      nullif(public.setting('sla_days') ->> new.category, '')::int, 15));
+  end if;
+
   -- Avtomatik yo'naltirish: viloyat + kategoriya bo'yicha mos tashkilot
   if new.org_id is null and coalesce(public.setting('auto_assign') #>> '{}', 'false') = 'true' then
     select o.id into v_org from public.organizations o
@@ -236,13 +319,43 @@ begin
   return new;
 end $$;
 
+-- Barcha rollar uchun umumiy qoidalar (vaqt belgilari, yo'naltirish, rad etish)
+create or replace function public.reports_finish_update(p_new public.reports, p_old public.reports) returns public.reports
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_new.cancelled and not p_old.cancelled then p_new.cancelled_at := now(); end if;
+  if not p_new.cancelled then p_new.cancelled_at := null; end if;
+  -- Boshqa idoraga yo'naltirildi: yangi idora uchun ariza qaytadan "yangi" bo'ladi
+  if p_new.org_id is distinct from p_old.org_id then
+    p_new.assignee_id := null;
+    if p_old.org_id is not null and p_new.status between 1 and 2 then p_new.status := 0; end if;
+  end if;
+  if p_new.deadline_at is distinct from p_old.deadline_at and p_new.deadline_at > p_old.deadline_at then
+    p_new.extend_count := p_old.extend_count + 1;
+  else
+    p_new.extend_count := p_old.extend_count;
+  end if;
+  -- Rad etildi: sabab yozilgan bo'lsa ariza yopiladi
+  if coalesce(p_new.reject_reason, '') <> '' and coalesce(p_old.reject_reason, '') = '' then
+    p_new.status := 4;
+  end if;
+  if p_new.status is distinct from p_old.status then
+    p_new.status_changed_at := now();
+    if p_new.status >= 1 and p_new.accepted_at is null then p_new.accepted_at := now(); end if;
+    if p_new.status >= 3 and p_old.status < 3 then p_new.resolved_at := now(); end if;
+    if p_new.status < 3 then p_new.resolved_at := null; end if;
+  end if;
+  p_new.updated_at := now();
+  return p_new;
+end $$;
+
 create or replace function public.reports_before_update() returns trigger
 language plpgsql security definer set search_path = public as $$
 declare v_days int;
 begin
   if public.eco_bypass() then return new; end if;
 
-  if auth.uid() is not null and not public.is_staff() then
+  if auth.uid() is not null and not public.is_staff() and not public.is_agent() then
     if old.user_id is distinct from auth.uid() then raise exception 'Ruxsat yo‘q'; end if;
     if old.cancelled then raise exception 'Ariza bekor qilingan, o‘zgartirib bo‘lmaydi'; end if;
     -- Fuqaro faqat tavsif, kategoriya va "bekor qilish"ni o'zgartira oladi
@@ -261,17 +374,48 @@ begin
       end if;
       new.edited_at := now();
     end if;
+    return public.reports_finish_update(new, old);
   end if;
 
-  if new.cancelled and not old.cancelled then new.cancelled_at := now(); end if;
-  if not new.cancelled then new.cancelled_at := null; end if;
-  if new.status is distinct from old.status then
-    new.status_changed_at := now();
-    if new.status >= 3 and old.status < 3 then new.resolved_at := now(); end if;
-    if new.status < 3 then new.resolved_at := null; end if;
+  if auth.uid() is not null and not public.is_staff() then
+    -- Idora xodimi: faqat o'z idorasiga yo'naltirilgan arizalar
+    if not public.is_agent() or old.org_id is distinct from public.my_org() then
+      raise exception 'Ruxsat yo‘q';
+    end if;
+    -- Fuqaro yozgan ma'lumotlar o'zgarmaydi
+    new.id := old.id; new.case_no := old.case_no; new.user_id := old.user_id;
+    new.description := old.description; new.category := old.category; new.region := old.region;
+    new.address := old.address; new.lat := old.lat; new.lng := old.lng; new.location_text := old.location_text;
+    new.media_path := old.media_path; new.media_type := old.media_type; new.created_at := old.created_at;
+    new.cancelled := old.cancelled; new.cancelled_at := old.cancelled_at; new.edited_at := old.edited_at;
+    if old.cancelled then raise exception 'Ariza fuqaro tomonidan bekor qilingan'; end if;
+
+    if not public.is_org_head() then
+      -- Ijrochi faqat o'ziga biriktirilgan arizada ishlaydi va uni boshqaga o'tkaza olmaydi
+      if old.assignee_id is distinct from auth.uid() then raise exception 'Bu ariza sizga biriktirilmagan'; end if;
+      new.assignee_id := old.assignee_id; new.org_id := old.org_id;
+      new.deadline_at := old.deadline_at; new.priority := old.priority;
+    end if;
+
+    if new.assignee_id is distinct from old.assignee_id and new.assignee_id is not null
+       and not exists (select 1 from public.profiles p where p.id = new.assignee_id
+                       and p.org_id = old.org_id and p.role in ('org_head','org_staff') and not p.blocked) then
+      raise exception 'Ijrochi shu idora xodimi bo‘lishi kerak';
+    end if;
+
+    if new.deadline_at is distinct from old.deadline_at then
+      if new.deadline_at is null or new.deadline_at > old.created_at + interval '30 days' then
+        raise exception 'Muddat murojaat kelgan kundan boshlab 30 kundan oshmasligi kerak';
+      end if;
+    end if;
+
+    if ((new.status >= 3 and old.status < 3) or (coalesce(new.reject_reason, '') <> '' and coalesce(old.reject_reason, '') = ''))
+       and coalesce(btrim(new.admin_note), '') = '' then
+      raise exception 'Arizani yopishdan oldin fuqaroga javob yozing';
+    end if;
   end if;
-  new.updated_at := now();
-  return new;
+
+  return public.reports_finish_update(new, old);
 end $$;
 
 create or replace function public.reports_after_change() returns trigger
@@ -292,7 +436,22 @@ begin
   end if;
   if new.org_id is distinct from old.org_id then
     insert into public.report_status_history (report_id, event, note, actor)
-    values (new.id, 'org', coalesce((select name from public.organizations where id = new.org_id), '—'), auth.uid());
+    values (new.id, case when old.org_id is null then 'org' else 'forwarded' end,
+            coalesce((select name from public.organizations where id = new.org_id), '—'), auth.uid());
+  end if;
+  if new.assignee_id is distinct from old.assignee_id and new.assignee_id is not null then
+    insert into public.report_status_history (report_id, event, note, actor)
+    values (new.id, 'assigned', coalesce((select full_name from public.profiles where id = new.assignee_id), '—'), auth.uid());
+  end if;
+  if new.deadline_at is distinct from old.deadline_at and new.deadline_at is not null then
+    insert into public.report_status_history (report_id, event, note, actor)
+    values (new.id, 'deadline', to_char(new.deadline_at at time zone 'Asia/Tashkent', 'DD.MM.YYYY'), auth.uid());
+  end if;
+  if coalesce(new.reject_reason, '') <> '' and new.reject_reason is distinct from old.reject_reason then
+    insert into public.report_status_history (report_id, event, note, actor) values (new.id, 'rejected', new.reject_reason, auth.uid());
+  end if;
+  if new.proof_path is distinct from old.proof_path and new.proof_path is not null then
+    insert into public.report_status_history (report_id, event, actor) values (new.id, 'proof', auth.uid());
   end if;
   if new.admin_note is distinct from old.admin_note and coalesce(new.admin_note, '') <> '' then
     insert into public.report_status_history (report_id, event, note, actor) values (new.id, 'note', new.admin_note, auth.uid());
@@ -341,6 +500,30 @@ begin
   delete from auth.users where id = p_user;
 end $$;
 
+-- Arizani boshqa idoraga yo'naltirish (vazirlik xodimi yoki idora rahbari)
+create or replace function public.forward_report(p_report uuid, p_org uuid, p_reason text) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_old uuid;
+begin
+  select org_id into v_old from public.reports where id = p_report;
+  if not found then raise exception 'Ariza topilmadi'; end if;
+  if not (public.is_staff() or (public.is_org_head() and v_old = public.my_org())) then
+    raise exception 'Ruxsat yo‘q';
+  end if;
+  if not exists (select 1 from public.organizations where id = p_org and active) then
+    raise exception 'Tashkilot topilmadi yoki faol emas';
+  end if;
+  if p_org is not distinct from v_old then raise exception 'Ariza allaqachon shu tashkilotda'; end if;
+  if coalesce(btrim(p_reason), '') <> '' then
+    insert into public.report_comments (report_id, author, body)
+    values (p_report, auth.uid(), 'Yo‘naltirish sababi: ' || left(btrim(p_reason), 3900));
+  end if;
+  update public.reports set org_id = p_org where id = p_report;
+end $$;
+
+revoke all on function public.forward_report(uuid, uuid, text) from public, anon;
+grant execute on function public.forward_report(uuid, uuid, text) to authenticated;
+
 revoke all on function public.delete_my_account() from public, anon;
 revoke all on function public.admin_delete_user(uuid) from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
@@ -358,7 +541,9 @@ alter table public.app_settings          enable row level security;
 -- profiles
 drop policy if exists profiles_select on public.profiles;
 create policy profiles_select on public.profiles for select to authenticated
-  using (id = auth.uid() or public.is_staff());
+  using (id = auth.uid() or public.is_staff()
+         or (public.is_agent() and (org_id = public.my_org()
+             or id in (select r.user_id from public.reports r where r.org_id = public.my_org()))));
 drop policy if exists profiles_update on public.profiles;
 create policy profiles_update on public.profiles for update to authenticated
   using (id = auth.uid() or public.is_admin()) with check (id = auth.uid() or public.is_admin());
@@ -373,20 +558,42 @@ create policy orgs_write on public.organizations for all to authenticated
 -- reports
 drop policy if exists reports_select on public.reports;
 create policy reports_select on public.reports for select to authenticated
-  using (user_id = auth.uid() or public.is_staff());
+  using (user_id = auth.uid() or public.can_see_org(org_id));
 drop policy if exists reports_insert on public.reports;
 create policy reports_insert on public.reports for insert to authenticated
   with check (user_id = auth.uid() or public.is_staff());
 drop policy if exists reports_update on public.reports;
+-- Boshqa idoraga yo'naltirish forward_report() RPC orqali (yo'naltirgandan keyin ariza ko'rinmaydi)
 create policy reports_update on public.reports for update to authenticated
-  using (user_id = auth.uid() or public.is_staff()) with check (user_id = auth.uid() or public.is_staff());
+  using (user_id = auth.uid() or public.can_see_org(org_id))
+  with check (user_id = auth.uid() or public.can_see_org(org_id));
 drop policy if exists reports_delete on public.reports;
 create policy reports_delete on public.reports for delete to authenticated using (public.is_admin());
 
 -- history (faqat o'qish; yozuvlar triggerlar orqali qo'shiladi)
 drop policy if exists history_select on public.report_status_history;
 create policy history_select on public.report_status_history for select to authenticated
-  using (public.is_staff() or exists (select 1 from public.reports r where r.id = report_id and r.user_id = auth.uid()));
+  using (public.is_staff() or exists (select 1 from public.reports r where r.id = report_id
+                                      and (r.user_id = auth.uid() or public.can_see_org(r.org_id))));
+
+-- ichki izohlar: faqat vazirlik va ariza yo'naltirilgan idora xodimlari
+alter table public.report_comments    enable row level security;
+alter table public.response_templates enable row level security;
+drop policy if exists comments_select on public.report_comments;
+create policy comments_select on public.report_comments for select to authenticated
+  using (exists (select 1 from public.reports r where r.id = report_id and public.can_see_org(r.org_id)));
+drop policy if exists comments_insert on public.report_comments;
+create policy comments_insert on public.report_comments for insert to authenticated
+  with check (author = auth.uid() and exists (select 1 from public.reports r where r.id = report_id and public.can_see_org(r.org_id)));
+
+-- javob shablonlari: umumiylarini vazirlik, idoraga xoslarini idora rahbari boshqaradi
+drop policy if exists templates_select on public.response_templates;
+create policy templates_select on public.response_templates for select to authenticated
+  using (public.is_staff() or (public.is_agent() and (org_id is null or org_id = public.my_org())));
+drop policy if exists templates_write on public.response_templates;
+create policy templates_write on public.response_templates for all to authenticated
+  using (public.is_admin() or (public.is_org_head() and org_id = public.my_org()))
+  with check (public.is_admin() or (public.is_org_head() and org_id = public.my_org()));
 
 -- app_settings
 drop policy if exists settings_select on public.app_settings;
@@ -410,9 +617,584 @@ create policy "report-media insert own" on storage.objects for insert to authent
 drop policy if exists "report-media read own or staff" on storage.objects;
 create policy "report-media read own or staff" on storage.objects for select to authenticated
   using (bucket_id = 'report-media' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_staff()));
+-- Idora xodimi o'z idorasidagi ariza rasmini ko'radi; bajarilgan ish surati: proof/<report_id>/<fayl>
+drop policy if exists "report-media read agents" on storage.objects;
+create policy "report-media read agents" on storage.objects for select to authenticated
+  using (bucket_id = 'report-media' and exists (select 1 from public.reports r
+         where (r.media_path = name or r.proof_path = name)
+           and (public.can_see_org(r.org_id) or r.user_id = auth.uid())));
+drop policy if exists "report-media proof insert" on storage.objects;
+create policy "report-media proof insert" on storage.objects for insert to authenticated
+  with check (bucket_id = 'report-media' and (storage.foldername(name))[1] = 'proof'
+              and exists (select 1 from public.reports r
+                          where r.id::text = (storage.foldername(name))[2] and public.can_see_org(r.org_id)));
 drop policy if exists "report-media delete staff" on storage.objects;
 create policy "report-media delete staff" on storage.objects for delete to authenticated
   using (bucket_id = 'report-media' and public.is_staff());
+
+-- ---------------------------------------------------------------------
+-- 7b. TOZALASH AKSIYALARI: rasmiy e'lonlar va "Qatnashaman"
+-- Vazirlik/tashkilotlar portalda e'lon qiladi, fuqarolar ilovada ko'radi
+-- va qatnashishini belgilaydi. Ishtirokchilar ro'yxatini fuqarolar
+-- ko'rmaydi: faqat soni (event_counts) ochiq.
+-- ---------------------------------------------------------------------
+create table if not exists public.eco_events (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null check (char_length(title) between 5 and 160),
+  description text check (char_length(description) <= 3000),
+  type        text not null default 'clean' check (type in ('clean','tree','volunteer','action')),
+  region      text,
+  place       text check (char_length(place) <= 300),
+  lat         double precision check (lat between -90 and 90),
+  lng         double precision check (lng between -180 and 180),
+  starts_at   timestamptz not null,
+  ends_at     timestamptz,
+  organizer   text check (char_length(organizer) <= 160),
+  contact     text check (char_length(contact) <= 160),
+  link        text check (link ~ '^https://' and char_length(link) <= 500),
+  max_people  int check (max_people > 0),
+  org_id      uuid references public.organizations(id) on delete set null,
+  status      text not null default 'published' check (status in ('draft','published','cancelled')),
+  created_by  uuid default auth.uid() references auth.users(id) on delete set null,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  check (ends_at is null or ends_at >= starts_at)
+);
+create index if not exists eco_events_starts_idx on public.eco_events (starts_at);
+
+create table if not exists public.event_participants (
+  event_id   uuid not null references public.eco_events(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (event_id, user_id)
+);
+
+create or replace function public.eco_events_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  new.updated_at := now();
+  if tg_op = 'INSERT' then new.created_by := auth.uid(); new.created_at := now();
+  else new.created_by := old.created_by; new.created_at := old.created_at; end if;
+  -- tashkilot rahbari faqat o'z tashkiloti nomidan e'lon qiladi
+  if not public.is_staff() and public.is_org_head() then
+    new.org_id := public.my_org();
+  end if;
+  return new;
+end $$;
+drop trigger if exists eco_events_before_write on public.eco_events;
+create trigger eco_events_before_write before insert or update on public.eco_events
+  for each row execute function public.eco_events_before_write();
+
+-- Qatnashish: faqat e'lon qilingan, hali tugamagan, joyi bor tadbirga;
+-- bloklangan foydalanuvchi qatnasha olmaydi.
+create or replace function public.can_join_event(p_event uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.eco_events e
+    where e.id = p_event and e.status = 'published'
+      and coalesce(e.ends_at, e.starts_at + interval '1 day') > now()
+      and (e.max_people is null
+           or (select count(*) from public.event_participants p where p.event_id = e.id) < e.max_people))
+  and not exists (select 1 from public.profiles where id = auth.uid() and blocked);
+$$;
+
+create or replace function public.event_counts(p_ids uuid[]) returns table(event_id uuid, going bigint)
+language sql stable security definer set search_path = public as $$
+  select p.event_id, count(*) from public.event_participants p
+  join public.eco_events e on e.id = p.event_id and e.status <> 'draft'
+  where p.event_id = any(p_ids) group by p.event_id;
+$$;
+revoke all on function public.event_counts(uuid[]) from public;
+grant execute on function public.event_counts(uuid[]) to anon, authenticated;
+revoke all on function public.can_join_event(uuid) from public;
+grant execute on function public.can_join_event(uuid) to authenticated;
+
+alter table public.eco_events enable row level security;
+alter table public.event_participants enable row level security;
+
+drop policy if exists "eco_events read" on public.eco_events;
+create policy "eco_events read" on public.eco_events for select to anon, authenticated
+  using (status in ('published','cancelled') or public.is_staff()
+         or (public.is_org_head() and org_id = public.my_org()));
+drop policy if exists "eco_events insert" on public.eco_events;
+create policy "eco_events insert" on public.eco_events for insert to authenticated
+  with check (public.is_staff() or public.is_org_head());
+drop policy if exists "eco_events update" on public.eco_events;
+create policy "eco_events update" on public.eco_events for update to authenticated
+  using (public.is_staff() or (public.is_org_head() and org_id = public.my_org()))
+  with check (public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+drop policy if exists "eco_events delete" on public.eco_events;
+create policy "eco_events delete" on public.eco_events for delete to authenticated
+  using (public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+
+drop policy if exists "event_participants own read" on public.event_participants;
+create policy "event_participants own read" on public.event_participants for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "event_participants join" on public.event_participants;
+create policy "event_participants join" on public.event_participants for insert to authenticated
+  with check (user_id = auth.uid() and public.can_join_event(event_id));
+drop policy if exists "event_participants leave" on public.event_participants;
+create policy "event_participants leave" on public.event_participants for delete to authenticated
+  using (user_id = auth.uid());
+
+-- ---------------------------------------------------------------------
+-- 7c. EKOTIZIM REYTINGI: eko-ballar, raqamli nishonlar, "Daraxtlarim"
+-- Ballar tasdiqlangan amallardan bazada hisoblanadi (fuqaro o'zi yoza olmaydi).
+-- Nishonlarni faqat mas'ullar beradi: vazirlik xodimi yoki idora rahbari;
+-- "Tabiat Himoyachisi" (oliy maqom) — faqat vazirlik xodimi.
+-- Reytingda fuqaro ismi faqat o'zi rozilik bersa ko'rsatiladi (rating_public),
+-- aks holda taxallus: "Faol fuqaro #A1B2". Telefon/email hech qachon chiqmaydi.
+-- ---------------------------------------------------------------------
+alter table public.profiles add column if not exists rating_public boolean not null default false;
+
+-- "Hayvonot dunyosi" toifasi (brakonerlik, hayvonlarga shafqatsizlik)
+alter table public.reports drop constraint if exists reports_category_check;
+alter table public.reports add constraint reports_category_check
+  check (category in ('Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'));
+update public.app_settings set value = value || '{"Hayvon":3}'::jsonb
+  where key = 'sla_days' and not (value ? 'Hayvon');
+
+create table if not exists public.badge_awards (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null references public.profiles(id) on delete cascade,
+  badge         text not null check (badge in ('eco_detective','green_hands','animal_friend','nature_guardian')),
+  note          text check (char_length(note) <= 500),
+  report_ids    uuid[] not null default '{}',
+  awarded_by    uuid default auth.uid() references public.profiles(id) on delete set null,
+  org_id        uuid references public.organizations(id) on delete set null,
+  created_at    timestamptz not null default now(),
+  revoked_at    timestamptz,
+  revoked_by    uuid references public.profiles(id) on delete set null,
+  revoke_reason text check (char_length(revoke_reason) <= 300)
+);
+create unique index if not exists badge_awards_active_uq on public.badge_awards (user_id, badge) where revoked_at is null;
+
+create table if not exists public.user_trees (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  species     text not null check (char_length(species) between 2 and 80),
+  region      text,
+  address     text check (char_length(address) <= 200),
+  lat         double precision check (lat between -90 and 90),
+  lng         double precision check (lng between -180 and 180),
+  photo_path  text,
+  planted_on  date,
+  status      text not null default 'pending' check (status in ('pending','verified','rejected')),
+  checked_by  uuid references public.profiles(id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+create index if not exists user_trees_user_idx on public.user_trees (user_id);
+
+create table if not exists public.tree_waterings (
+  id          bigint generated always as identity primary key,
+  tree_id     uuid not null references public.user_trees(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  photo_path  text,
+  day         date not null default (now() at time zone 'Asia/Tashkent')::date,
+  created_at  timestamptz not null default now(),
+  unique (tree_id, day)          -- kuniga bitta hisobot (ball ko'paytirib bo'lmaydi)
+);
+
+-- Daraxt va sug'orish dalillari: 4 tagacha rasm yoki video (<user_id>/trees/... yo'llari)
+alter table public.user_trees     add column if not exists media_paths text[] not null default '{}';
+alter table public.tree_waterings add column if not exists media_paths text[] not null default '{}';
+alter table public.user_trees     drop constraint if exists user_trees_media_max;
+alter table public.user_trees     add constraint user_trees_media_max check (cardinality(media_paths) <= 4);
+alter table public.tree_waterings drop constraint if exists tree_waterings_media_max;
+alter table public.tree_waterings add constraint tree_waterings_media_max check (cardinality(media_paths) <= 4);
+
+-- Fuqaro faqat o'z papkasidagi faylni dalil qilib biriktira oladi
+create or replace function public.own_tree_media(p_photo text, p_media text[]) returns boolean
+language sql stable as $$
+  select (p_photo is null or p_photo like auth.uid()::text || '/trees/%')
+     and not exists (select 1 from unnest(coalesce(p_media, '{}')) m where m not like auth.uid()::text || '/trees/%');
+$$;
+
+-- Fuqaro daraxtni faqat o'z nomidan, kuniga 10 tagacha qo'sha oladi; holatini o'zgartira olmaydi
+create or replace function public.user_trees_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    if not (public.is_staff() or public.is_org_head()) then
+      new.user_id := auth.uid(); new.status := 'pending'; new.checked_by := null; new.created_at := now();
+      if (select count(*) from public.user_trees where user_id = auth.uid() and created_at > now() - interval '1 day') >= 10 then
+        raise exception 'Bir kunda 10 tadan ortiq daraxt qo‘shib bo‘lmaydi';
+      end if;
+    end if;
+  else
+    if public.is_staff() or public.is_org_head() then
+      new.user_id := old.user_id; new.checked_by := auth.uid();
+    else
+      new.user_id := old.user_id; new.status := old.status; new.checked_by := old.checked_by; new.created_at := old.created_at;
+    end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists user_trees_before_write on public.user_trees;
+create trigger user_trees_before_write before insert or update on public.user_trees
+  for each row execute function public.user_trees_before_write();
+
+-- Nishon qoidalari (ilova va portaldagi BADGE_RULES bilan bir xil)
+create or replace function public.eco_stats(p_user uuid)
+returns table(dumps_confirmed int, trees_watered int, animal_resolved int, major_resolved int,
+              confirmed int, resolved int, trees int, waterings int, events int)
+language sql stable security definer set search_path = public as $$
+  with r as (
+    select * from public.reports
+    where user_id = p_user and not cancelled and coalesce(reject_reason, '') = ''
+  )
+  select
+    (select count(*) from r where category = 'Chiqindi' and status >= 2)::int,
+    (select count(*) from public.user_trees t where t.user_id = p_user and t.status <> 'rejected'
+       and exists (select 1 from public.tree_waterings w where w.tree_id = t.id))::int,
+    (select count(*) from r where category = 'Hayvon' and status >= 3)::int,
+    (select count(*) from r where priority >= 1 and status >= 3)::int,
+    (select count(*) from r where status >= 2)::int,
+    (select count(*) from r where status >= 3)::int,
+    (select count(*) from public.user_trees t where t.user_id = p_user and t.status <> 'rejected')::int,
+    (select count(*) from public.tree_waterings w join public.user_trees t on t.id = w.tree_id
+       where w.user_id = p_user and t.status <> 'rejected')::int,
+    (select count(*) from public.event_participants p join public.eco_events e on e.id = p.event_id
+       where p.user_id = p_user and e.status = 'published'
+         and coalesce(e.ends_at, e.starts_at + interval '1 day') < now())::int;
+$$;
+
+-- Eko-ball: tasdiqlangan ariza 10, hal qilingan +15, muhim muammo hal qilingan +10,
+-- daraxt 5, sug'orish hisoboti 2, o'tgan aksiyada qatnashish 10, nishonlar 50/50/50/150
+create or replace function public.eco_points(p_user uuid) returns int
+language sql stable security definer set search_path = public as $$
+  select coalesce((select s.confirmed * 10 + s.resolved * 15 + s.major_resolved * 10
+                        + s.trees * 5 + s.waterings * 2 + s.events * 10
+                   from public.eco_stats(p_user) s), 0)
+       + coalesce((select sum(case badge when 'nature_guardian' then 150 else 50 end)::int
+                   from public.badge_awards where user_id = p_user and revoked_at is null), 0);
+$$;
+
+-- Fuqaroning asosiy hududi: eng ko'p ariza yuborgan viloyati
+create or replace function public.home_region(p_user uuid) returns text
+language sql stable security definer set search_path = public as $$
+  select region from public.reports where user_id = p_user and region is not null and not cancelled
+  group by region order by count(*) desc, max(created_at) desc limit 1;
+$$;
+
+create or replace function public.rating_alias(p_user uuid, p_public boolean, p_name text) returns text
+language sql immutable as $$
+  select case when p_public and coalesce(trim(p_name),'') <> ''
+              then split_part(trim(p_name),' ',1) || coalesce(' ' || nullif(left(split_part(trim(p_name),' ',2),1),'') || '.', '')
+              else 'Faol fuqaro #' || upper(left(md5(p_user::text), 4)) end;
+$$;
+
+-- Reyting jadvali: faqat taxallus/ism, hudud, ball va nishonlar
+create or replace function public.eco_leaderboard(p_region text default null, p_limit int default 50)
+returns table(pos bigint, alias text, region text, points int, badges text[], is_me boolean)
+language sql stable security definer set search_path = public as $$
+  with base as (
+    select p.id, p.rating_public, p.full_name, public.home_region(p.id) as region, public.eco_points(p.id) as pts
+    from public.profiles p
+    where p.role = 'user' and not p.blocked
+      and (exists (select 1 from public.reports r where r.user_id = p.id)
+           or exists (select 1 from public.user_trees t where t.user_id = p.id)
+           or exists (select 1 from public.badge_awards b where b.user_id = p.id))
+  ), ranked as (
+    select b.*, rank() over (order by b.pts desc) as rk from base b
+    where b.pts > 0 and (p_region is null or b.region = p_region)
+  )
+  select rk, public.rating_alias(id, rating_public, full_name), region, pts,
+         coalesce((select array_agg(a.badge order by a.created_at) from public.badge_awards a
+                   where a.user_id = ranked.id and a.revoked_at is null), '{}'),
+         id = auth.uid()
+  from ranked
+  where rk <= least(greatest(p_limit, 1), 100) or id = auth.uid()
+  order by rk, id;
+$$;
+
+-- Fuqaroning o'z reytingi: ballar, o'rinlar, nishon progressi va berilgan nishonlar
+create or replace function public.my_eco_rating() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_uid uuid := auth.uid(); v_reg text; v_pts int; s record; res jsonb;
+begin
+  if v_uid is null then return null; end if;
+  v_reg := public.home_region(v_uid); v_pts := public.eco_points(v_uid);
+  select * into s from public.eco_stats(v_uid);
+  select jsonb_build_object(
+    'points', v_pts, 'region', v_reg,
+    'rank', (select count(*) + 1 from public.profiles p where p.role = 'user' and not p.blocked and p.id <> v_uid and public.eco_points(p.id) > v_pts),
+    'rank_region', case when v_reg is null then null else
+       (select count(*) + 1 from public.profiles p where p.role = 'user' and not p.blocked and p.id <> v_uid
+          and public.home_region(p.id) = v_reg and public.eco_points(p.id) > v_pts) end,
+    'stats', to_jsonb(s),
+    'public', (select rating_public from public.profiles where id = v_uid),
+    'awards', coalesce((select jsonb_agg(jsonb_build_object('id', a.id, 'badge', a.badge, 'note', a.note, 'at', a.created_at,
+                       'org', coalesce(o.short_name, o.name)) order by a.created_at)
+                        from public.badge_awards a left join public.organizations o on o.id = a.org_id
+                        where a.user_id = v_uid and a.revoked_at is null), '[]'::jsonb)
+  ) into res;
+  return res;
+end $$;
+
+-- Mas'ullar uchun nomzodlar: mezonga yetgan, lekin hali nishon olmagan fuqarolar.
+-- Idora rahbari faqat o'z idorasiga kelgan arizalar egalarini ko'radi.
+create or replace function public.badge_candidates()
+returns table(user_id uuid, full_name text, region text, badge text, progress int, need int, report_ids uuid[], case_nos text[])
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not (public.is_staff() or public.is_org_head()) then raise exception 'Ruxsat yo‘q'; end if;
+  return query
+  with u as (
+    select p.id, p.full_name, public.home_region(p.id) as reg, s.*
+    from public.profiles p cross join lateral public.eco_stats(p.id) s
+    where p.role = 'user' and not p.blocked
+      and (public.is_staff() or exists (select 1 from public.reports r where r.user_id = p.id and r.org_id = public.my_org()))
+  ), c as (
+    select u.id, u.full_name, u.reg, 'eco_detective'::text b, u.dumps_confirmed v, 3 n from u where u.dumps_confirmed >= 3
+    union all select u.id, u.full_name, u.reg, 'green_hands', u.trees_watered, 5 from u where u.trees_watered >= 5
+    union all select u.id, u.full_name, u.reg, 'animal_friend', u.animal_resolved, 1 from u where u.animal_resolved >= 1
+    union all select u.id, u.full_name, u.reg, 'nature_guardian', u.major_resolved, 5 from u where u.major_resolved >= 5 and public.is_staff()
+  )
+  select c.id, c.full_name, c.reg, c.b, c.v, c.n,
+    coalesce(array_agg(r.id order by r.created_at) filter (where r.id is not null), '{}'),
+    coalesce(array_agg(r.case_no order by r.created_at) filter (where r.id is not null), '{}')
+  from c
+  left join public.reports r on r.user_id = c.id and not r.cancelled and coalesce(r.reject_reason, '') = ''
+    and ((c.b = 'eco_detective' and r.category = 'Chiqindi' and r.status >= 2)
+      or (c.b = 'animal_friend' and r.category = 'Hayvon' and r.status >= 3)
+      or (c.b = 'nature_guardian' and r.priority >= 1 and r.status >= 3))
+    and (public.is_staff() or r.org_id = public.my_org())   -- idora rahbari: dalil o'z idorasidagi arizalardan
+  where not exists (select 1 from public.badge_awards a where a.user_id = c.id and a.badge = c.b and a.revoked_at is null)
+  group by c.id, c.full_name, c.reg, c.b, c.v, c.n
+  having c.b = 'green_hands' or public.is_staff() or count(r.id) >= c.n;
+end $$;
+
+create or replace function public.award_badge(p_user uuid, p_badge text, p_note text, p_reports uuid[] default '{}')
+returns uuid language plpgsql security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  if not (public.is_staff() or public.is_org_head()) then raise exception 'Ruxsat yo‘q'; end if;
+  if p_badge = 'nature_guardian' and not public.is_staff() then
+    raise exception '“Tabiat Himoyachisi” nishonini faqat vazirlik beradi';
+  end if;
+  if not exists (select 1 from public.profiles where id = p_user and role = 'user') then raise exception 'Fuqaro topilmadi'; end if;
+  if not public.is_staff() and not exists (select 1 from public.reports r where r.user_id = p_user and r.org_id = public.my_org())
+     and not exists (select 1 from public.user_trees t join public.organizations o on o.id = public.my_org()
+                     where t.user_id = p_user and t.region = o.region) then
+    raise exception 'Bu fuqaro sizning idorangizga murojaat qilmagan';
+  end if;
+  insert into public.badge_awards (user_id, badge, note, report_ids, awarded_by, org_id)
+  values (p_user, p_badge, nullif(trim(p_note), ''), coalesce(p_reports, '{}'), auth.uid(),
+          coalesce(public.my_org(), (select id from public.organizations where region is null order by created_at limit 1)))
+  returning id into v_id;
+  return v_id;
+exception when unique_violation then raise exception 'Fuqaroda bu nishon allaqachon bor';
+end $$;
+
+create or replace function public.revoke_badge(p_award uuid, p_reason text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_staff() then raise exception 'Nishonni faqat vazirlik bekor qila oladi'; end if;
+  update public.badge_awards set revoked_at = now(), revoked_by = auth.uid(), revoke_reason = nullif(trim(p_reason), '')
+  where id = p_award and revoked_at is null;
+end $$;
+
+revoke all on function public.eco_stats(uuid) from public, anon, authenticated;
+revoke all on function public.eco_points(uuid) from public, anon, authenticated;
+revoke all on function public.home_region(uuid) from public, anon, authenticated;
+revoke all on function public.eco_leaderboard(text, int) from public, anon;
+grant execute on function public.eco_leaderboard(text, int) to authenticated;
+revoke all on function public.my_eco_rating() from public, anon;
+grant execute on function public.my_eco_rating() to authenticated;
+revoke all on function public.badge_candidates() from public, anon;
+grant execute on function public.badge_candidates() to authenticated;
+revoke all on function public.award_badge(uuid, text, text, uuid[]) from public, anon;
+grant execute on function public.award_badge(uuid, text, text, uuid[]) to authenticated;
+revoke all on function public.revoke_badge(uuid, text) from public, anon;
+grant execute on function public.revoke_badge(uuid, text) to authenticated;
+
+alter table public.badge_awards enable row level security;
+alter table public.user_trees enable row level security;
+alter table public.tree_waterings enable row level security;
+
+-- Nishonlar: fuqaro o'zinikini, mas'ullar hammasini ko'radi; yozish faqat award_badge/revoke_badge orqali
+drop policy if exists "badge_awards read" on public.badge_awards;
+create policy "badge_awards read" on public.badge_awards for select to authenticated
+  using (user_id = auth.uid() or public.is_staff() or (public.is_org_head() and org_id = public.my_org()));
+
+drop policy if exists "user_trees read" on public.user_trees;
+create policy "user_trees read" on public.user_trees for select to authenticated
+  using (user_id = auth.uid() or public.is_staff()
+         or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())));
+drop policy if exists "user_trees insert" on public.user_trees;
+create policy "user_trees insert" on public.user_trees for insert to authenticated
+  with check (user_id = auth.uid() and public.own_tree_media(photo_path, media_paths)
+              and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "user_trees update" on public.user_trees;
+create policy "user_trees update" on public.user_trees for update to authenticated
+  using (public.is_staff() or (public.is_org_head() and region = (select region from public.organizations where id = public.my_org())))
+  with check (true);
+drop policy if exists "user_trees delete" on public.user_trees;
+create policy "user_trees delete" on public.user_trees for delete to authenticated
+  using ((user_id = auth.uid() and status = 'pending') or public.is_staff());
+
+drop policy if exists "tree_waterings read" on public.tree_waterings;
+create policy "tree_waterings read" on public.tree_waterings for select to authenticated
+  using (user_id = auth.uid() or exists (select 1 from public.user_trees t where t.id = tree_id));
+drop policy if exists "tree_waterings insert" on public.tree_waterings;
+create policy "tree_waterings insert" on public.tree_waterings for insert to authenticated
+  with check (user_id = auth.uid() and public.own_tree_media(photo_path, media_paths)
+              and exists (select 1 from public.user_trees t
+              where t.id = tree_id and t.user_id = auth.uid() and t.status <> 'rejected'));
+
+-- Daraxt suratlari: <user_id>/trees/<fayl> — egasi yuklaydi, mas'ullar ko'radi
+drop policy if exists "report-media read trees" on storage.objects;
+create policy "report-media read trees" on storage.objects for select to authenticated
+  using (bucket_id = 'report-media' and (storage.foldername(name))[2] = 'trees' and public.is_org_head()
+         and (exists (select 1 from public.user_trees t where t.photo_path = name or name = any(t.media_paths))
+              or exists (select 1 from public.tree_waterings w where w.photo_path = name or name = any(w.media_paths))));
+
+-- ---------------------------------------------------------------------
+-- 7d. ECOEDUCATION: bilim XP va haftalik bellashuv reytingi
+-- Darslar va o'yinlar ilovada (oflayn) ishlaydi; serverga faqat XP yig'indisi yoziladi.
+-- Ism faqat fuqaro rating_public ni yoqsa ko'rinadi (aks holda "Faol fuqaro #XXXX").
+-- ---------------------------------------------------------------------
+create table if not exists public.edu_progress (
+  user_id     uuid primary key default auth.uid() references public.profiles(id) on delete cascade,
+  xp          int  not null default 0 check (xp between 0 and 1000000),
+  lessons     int  not null default 0 check (lessons between 0 and 200),
+  week        date not null default (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date,
+  week_xp     int  not null default 0 check (week_xp >= 0),
+  updated_at  timestamptz not null default now()
+);
+
+-- XP faqat oshadi va bir martada cheklangan miqdorda (soxta ballarga qarshi)
+create or replace function public.edu_progress_before_write() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  wk date := (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date;
+  allowed int; delta int;
+begin
+  if tg_op = 'INSERT' then
+    new.user_id := auth.uid();
+    new.xp := least(greatest(new.xp, 0), 3000);          -- qurilmadagi oldingi natija: ko'pi bilan 3000
+    new.week := wk; new.week_xp := least(new.xp, 300);
+  else
+    new.user_id := old.user_id;
+    allowed := least(300, 20 + 5 * floor(extract(epoch from now() - old.updated_at))::int);
+    delta := least(greatest(new.xp - old.xp, 0), greatest(allowed, 0));
+    new.xp := old.xp + delta;
+    new.week_xp := case when old.week = wk then old.week_xp + delta else delta end;
+    new.week := wk;
+  end if;
+  new.lessons := least(greatest(new.lessons, 0), 200);
+  new.updated_at := now();
+  return new;
+end $$;
+drop trigger if exists edu_progress_before_write on public.edu_progress;
+create trigger edu_progress_before_write before insert or update on public.edu_progress
+  for each row execute function public.edu_progress_before_write();
+
+alter table public.edu_progress enable row level security;
+drop policy if exists "edu_progress own read" on public.edu_progress;
+create policy "edu_progress own read" on public.edu_progress for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "edu_progress own insert" on public.edu_progress;
+create policy "edu_progress own insert" on public.edu_progress for insert to authenticated
+  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "edu_progress own update" on public.edu_progress;
+create policy "edu_progress own update" on public.edu_progress for update to authenticated
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- Bellashuv reytingi: hafta yoki umumiy XP bo'yicha (taxallus bilan)
+create or replace function public.edu_leaderboard(p_scope text default 'week', p_limit int default 30)
+returns table(pos bigint, alias text, points int, lessons int, is_me boolean)
+language sql stable security definer set search_path = public as $$
+  with base as (
+    select e.user_id, p.rating_public, p.full_name, e.lessons,
+           case when p_scope = 'all' then e.xp
+                when e.week = (date_trunc('week', now() at time zone 'Asia/Tashkent'))::date then e.week_xp
+                else 0 end as pts
+    from public.edu_progress e join public.profiles p on p.id = e.user_id
+    where p.role = 'user' and not p.blocked and auth.uid() is not null
+  ), ranked as (
+    select b.*, rank() over (order by b.pts desc) as rk from base b where b.pts > 0
+  )
+  select rk, public.rating_alias(user_id, rating_public, full_name), pts, lessons, user_id = auth.uid()
+  from ranked
+  where rk <= least(greatest(p_limit, 1), 100) or user_id = auth.uid()
+  order by rk, user_id;
+$$;
+revoke all on function public.edu_leaderboard(text, int) from public, anon;
+grant execute on function public.edu_leaderboard(text, int) to authenticated;
+
+-- ---------------------------------------------------------------------
+-- 7e. ECOEDUCATION: onlayn eko-sertifikatlar (3 → 2 → 1 daraja va umumiy)
+-- Imtihon ilovada topshiriladi; bu yerda sertifikat ro'yxatga olinadi va
+-- raqami bo'yicha istalgan kishi haqiqiyligini tekshira oladi.
+-- Qoidalar index.html dagi EDU_CERT_LV bilan bir xil.
+-- ---------------------------------------------------------------------
+create table if not exists public.edu_certificates (
+  code       text primary key check (code ~ '^EE-[A-Z]{3}[0-3]?-[A-Z2-9]{8}$'),
+  user_id    uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  track      text not null check (track in ('water','air','waste','forest','animals','soil','climate','energy','aral','final')),
+  level      int  not null check (level between 0 and 3),
+  score      int  not null check (score >= 0),
+  total      int  not null check (total > 0 and score <= total),
+  holder     text not null check (char_length(holder) between 3 and 60),
+  issued_at  timestamptz not null default now(),
+  unique (user_id, track, level),
+  check ((track = 'final') = (level = 0))
+);
+create index if not exists edu_certificates_user on public.edu_certificates(user_id);
+
+-- Bosqichlar tartibi va o'tish bali serverda ham tekshiriladi
+create or replace function public.edu_cert_before_insert() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  need_n int; need_pass int;
+begin
+  new.user_id := auth.uid();
+  new.issued_at := now();
+  new.holder := btrim(regexp_replace(new.holder, '\s+', ' ', 'g'));
+  select n, p into need_n, need_pass from (values (3,10,7),(2,15,12),(1,20,18),(0,30,24)) v(l,n,p) where l = new.level;
+  if new.total <> need_n or new.score < need_pass then
+    raise exception 'edu_cert: score below pass mark';
+  end if;
+  if new.level in (2,1) and not exists (select 1 from public.edu_certificates
+       where user_id = new.user_id and track = new.track and level = new.level + 1) then
+    raise exception 'edu_cert: previous level required';
+  end if;
+  if new.level = 0 and (select count(*) from public.edu_certificates
+       where user_id = new.user_id and level = 1) < 9 then
+    raise exception 'edu_cert: all tracks at level 1 required';
+  end if;
+  return new;
+end $$;
+drop trigger if exists edu_cert_before_insert on public.edu_certificates;
+create trigger edu_cert_before_insert before insert on public.edu_certificates
+  for each row execute function public.edu_cert_before_insert();
+
+alter table public.edu_certificates enable row level security;
+drop policy if exists "edu_cert own read" on public.edu_certificates;
+create policy "edu_cert own read" on public.edu_certificates for select to authenticated
+  using (user_id = auth.uid() or public.is_staff());
+drop policy if exists "edu_cert own insert" on public.edu_certificates;
+create policy "edu_cert own insert" on public.edu_certificates for insert to authenticated
+  with check (user_id = auth.uid() and not exists (select 1 from public.profiles where id = auth.uid() and blocked));
+drop policy if exists "edu_cert staff delete" on public.edu_certificates;
+create policy "edu_cert staff delete" on public.edu_certificates for delete to authenticated
+  using (public.is_staff());
+
+-- Haqiqiylikni tekshirish: raqam bo'yicha, ism qisqartirilgan holda (masalan, "Sarvarbek A.")
+create or replace function public.edu_verify_cert(p_code text)
+returns table(track text, level int, score int, total int, holder text, issued_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select c.track, c.level, c.score, c.total,
+         split_part(c.holder, ' ', 1) || case when split_part(c.holder, ' ', 2) <> ''
+           then ' ' || left(split_part(c.holder, ' ', 2), 1) || '.' else '' end,
+         c.issued_at
+  from public.edu_certificates c
+  where c.code = upper(btrim(p_code)) and char_length(p_code) <= 20;
+$$;
+revoke all on function public.edu_verify_cert(text) from public;
+grant execute on function public.edu_verify_cert(text) to anon, authenticated;
 
 -- ---------------------------------------------------------------------
 -- 8. REALTIME (ilova va admin panel o'zgarishlarni jonli ko'radi)
@@ -420,13 +1202,41 @@ create policy "report-media delete staff" on storage.objects for delete to authe
 do $$
 declare t text;
 begin
-  foreach t in array array['reports','profiles','report_status_history'] loop
+  foreach t in array array['reports','profiles','report_status_history','report_comments','eco_events','badge_awards'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I', t);
     exception when duplicate_object then null;
     end;
   end loop;
 end $$;
+
+-- ---------------------------------------------------------------------
+-- 8b. AI YORDAMCHI: kunlik so'rovlar limiti
+-- Savol matnlari bazada SAQLANMAYDI — faqat foydalanuvchi bo'yicha kunlik hisoblagich.
+-- ai_consume() faqat ai-chat Edge Function (service_role) tomonidan chaqiriladi.
+-- ---------------------------------------------------------------------
+create table if not exists public.ai_usage (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  day     date not null default (now() at time zone 'Asia/Tashkent')::date,
+  count   int  not null default 0,
+  primary key (user_id, day)
+);
+alter table public.ai_usage enable row level security;
+-- Siyosat yo'q: anon/authenticated foydalanuvchilar jadvalni o'qiy ham, yoza ham olmaydi.
+
+create or replace function public.ai_consume(p_user uuid, p_limit int) returns boolean
+language plpgsql security definer set search_path = public as $$
+declare v int;
+begin
+  insert into public.ai_usage(user_id, day, count)
+  values (p_user, (now() at time zone 'Asia/Tashkent')::date, 1)
+  on conflict (user_id, day) do update set count = public.ai_usage.count + 1
+  returning count into v;
+  delete from public.ai_usage where day < (now() at time zone 'Asia/Tashkent')::date - 7;
+  return v <= p_limit;
+end $$;
+revoke all on function public.ai_consume(uuid, int) from public, anon, authenticated;
+grant execute on function public.ai_consume(uuid, int) to service_role;
 
 -- ---------------------------------------------------------------------
 -- 9. BOSHLANG'ICH MA'LUMOTLAR
@@ -436,14 +1246,15 @@ insert into public.app_settings (key, value) values
   ('edit_days',         '5'::jsonb),
   ('daily_limit',       '10'::jsonb),
   ('auto_assign',       'false'::jsonb),
+  ('sla_days',          '{"Chiqindi":5,"Havo":3,"Suv":5,"Daraxt":7,"Tuproq":10,"Hayvon":3,"Boshqa":15}'::jsonb),
   ('announcement',      '{"enabled": false, "uz": "", "ru": ""}'::jsonb)
 on conflict (key) do nothing;
 
 insert into public.organizations (name, short_name, region, categories, phone, email)
 select * from (values
   ('O‘zbekiston Respublikasi Ekologiya, atrof-muhitni muhofaza qilish va iqlim o‘zgarishi vazirligi', 'Ekologiya vazirligi', null::text,
-     array['Chiqindi','Havo','Suv','Daraxt','Tuproq','Boshqa'], '+998 71 207-07-70', null::text),
-  ('Toshkent shahar Ekologiya boshqarmasi', 'Toshkent sh. ekologiya', 'tashkent_city', array['Havo','Suv','Daraxt','Tuproq','Boshqa'], null, null),
+     array['Chiqindi','Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'], '+998 71 207-07-70', null::text),
+  ('Toshkent shahar Ekologiya boshqarmasi', 'Toshkent sh. ekologiya', 'tashkent_city', array['Havo','Suv','Daraxt','Tuproq','Hayvon','Boshqa'], null, null),
   ('“Toshkent shahar obodonlashtirish” boshqarmasi', 'Obodonlashtirish', 'tashkent_city', array['Chiqindi','Daraxt'], null, null),
   ('Chiqindilar bilan ishlash agentligi', 'Chiqindi agentligi', null, array['Chiqindi'], null, null)
 ) as v(name, short_name, region, categories, phone, email)
@@ -454,4 +1265,11 @@ where not exists (select 1 from public.organizations);
 --   1) Authentication → Users → "Add user" → email + parol (Auto confirm)
 --   2) Quyidagini o'z emailingiz bilan ishga tushiring:
 --      update public.profiles set role = 'admin' where email = 'admin@bbecoplatform.uz';
+--
+-- IDORA XODIMLARINI QO'SHISH:
+--   1) Authentication → Users → "Add user" (xodimning ish emaili + parol)
+--   2) Portalda "Xodimlar" bo'limida unga idora va rol (rahbar / ijrochi) tanlang,
+--      yoki SQL bilan:
+--      update public.profiles set role = 'org_head', org_id = '<idora id>', full_name = 'F.I.Sh.'
+--      where email = 'rahbar@idora.uz';
 -- =====================================================================
