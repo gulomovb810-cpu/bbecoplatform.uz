@@ -9,9 +9,13 @@ Muallif: Asilbekova Z. (TKTI). Dastlabki 9 slaydli taqdimot asosida qayta ishlan
 | `BioPlast_Tech_biznes_reja.docx` | To‘liq biznes-reja (21 bet): muammo, ishlash prinsipi, texnologiya, uskunalar va rasmlar manbalari, moliya, xavflar, manbalar |
 | `BioPlast_Tech_taqdimot.pptx` | Yangilangan taqdimot (16 slayd) |
 | `BioPlast_Tech_moliyaviy_model.xlsx` | Formulali moliyaviy model: Kirish (farazlar), CAPEX, Xodimlar, Tannarx, Prognoz (2027–2034, NPV/IRR), Sezgirlik, Eski vs Yangi |
-| `zavod-3d/index.html` | Zavodning interaktiv 3D modeli (Three.js): barcha uskunalar, quvurlardagi oqimlar, 11 bosqichli jarayon, har uskunaning ishlash tamoyili |
+| `zavod-3d/index.html` | Zavodning interaktiv 3D modeli (Three.js): 1,8 ga hudud (bosh reja), binolar, transport, sex ichidagi barcha uskunalar, quvurlardagi oqimlar, 11 bosqichli jarayon, har obyektning ishlash tamoyili |
 | `rasmlar/` | Texnologik sxema va grafiklar (PNG) |
 | `scripts/` | Fayllarni qayta yaratish skriptlari |
+
+## Joylashuv
+- Tavsiya: **Toshkent viloyati, Chirchiq** — kimyo-industrial texnopark; zaxira variant: Farg‘ona viloyati, «Qo‘qon» EIZ
+- Yer maydoni: **1,8 ga** (150 × 120 m), minimal 1,2 ga (1–2-faza); bosh reja: `rasmlar/site_plan.jpg`
 
 ## Asosiy natijalar (model bo‘yicha)
 - Jami CAPEX: **$1 703 972** (1-faza $726 072, 2-faza $977 900); moliyalashtirish ehtiyoji $2,10 mln

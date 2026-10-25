@@ -46,7 +46,7 @@ function IMGP(file, wpx, hpx, caption) {
   const data = fs.readFileSync(path.join(IMG, file));
   const w = 640, h = Math.round((hpx / wpx) * w);
   return [
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 60 }, children: [new ImageRun({ type: "png", data, transformation: { width: w, height: h }, altText: { title: caption, description: caption, name: file } })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 60 }, children: [new ImageRun({ type: file.endsWith(".jpg") ? "jpg" : "png", data, transformation: { width: w, height: h }, altText: { title: caption, description: caption, name: file } })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: caption, italics: true, size: 18, color: GREY, font: FONT })] }),
   ];
 }
@@ -126,7 +126,7 @@ c.push(...T(["Dastlabki taqdimotda", "Muammo", "Tuzatilgan holat"], [
 
 // 1. Rezyume
 c.push(H1("1. Loyiha rezyumesi"));
-c.push(P("**BioPlast Tech** — Toshkent viloyatida joylashadigan kichik biotexnologik korxona. U ikki narsani birlashtiradi: (1) mahalliy yog‘-moy chiqindilaridan bakteriyalar yordamida **PHA biopolimeri** ishlab chiqarish va (2) PHA, PBAT va PLA aralashmasidan **kompost bo‘ladigan paket, chiqindi qopi va qishloq xo‘jaligi mulcha plyonkasi** tayyorlash."));
+c.push(P("**BioPlast Tech** — Toshkent viloyati, Chirchiq shahridagi kimyo-industrial texnoparkda joylashadigan kichik biotexnologik korxona (hudud 1,8 ga). U ikki narsani birlashtiradi: (1) mahalliy yog‘-moy chiqindilaridan bakteriyalar yordamida **PHA biopolimeri** ishlab chiqarish va (2) PHA, PBAT va PLA aralashmasidan **kompost bo‘ladigan paket, chiqindi qopi va qishloq xo‘jaligi mulcha plyonkasi** tayyorlash."));
 c.push(P("Nega ikki yo‘nalish? Kichik masshtabda faqat PHA sotish foyda keltirmaydi: tonnasining tannarxi bozor narxiga yaqin. Tayyor mahsulot (paket, plyonka) esa birinchi yildan daromad beradi, o‘zimiz ishlab chiqargan PHA esa mahsulotga raqobatchilarda yo‘q xususiyat beradi: tuproqda va uy kompostida parchalanish."));
 c.push(...KEYBOX([
   ["Jami investitsiya (CAPEX, 2 faza)", usd(D.capex), `1-faza ${usd(D.capex1)} · 2-faza ${usd(D.capex2)}`],
@@ -139,6 +139,8 @@ c.push(...KEYBOX([
   ["Zararsizlik nuqtasi", `${Math.round(D.be)} t/yil`, "paket/plyonka hajmi (quvvatning 34%)"],
   ["Ish o‘rinlari", `${D.staff1} → ${D.staff2}`, "1-yil → 2-yildan boshlab"],
   ["Ishlab chiqarish quvvati", "1 080 t/yil", "paket/plyonka; PHA ~58 t/yil"],
+  ["Joylashuv", "Chirchiq", "Toshkent viloyati, kimyo-industrial texnopark"],
+  ["Yer maydoni", "1,8 ga", "150 × 120 m; minimal 1,2 ga (1–2-faza)"],
 ]));
 c.push(NOTE("Barcha raqamlar QQSsiz, AQSh dollarida, inflyatsiyasiz (real) ifodada. Manbalar va farazlar «Kirish» varag‘ida ko‘rsatilgan."));
 
@@ -292,18 +294,71 @@ c.push(B("Shtammning mikroskop surati: PHA donachalarini **Nil qizili (Nile Red)
 c.push(B("Laboratoriyada olingan birinchi PHA kukuni va undan quyilgan plyonka namunasining surati."));
 c.push(NOTE("Litsenziya bo‘yicha eslatma: ishlab chiqaruvchi saytidagi rasmlar mualliflik huquqi bilan himoyalangan. Talabalik taqdimotida manba ko‘rsatilgan holda ishlatish odatda muammo tug‘dirmaydi, lekin rasmiy (tijorat) hujjatlarda yetkazib beruvchidan ruxsat olish yoki CC litsenziyali rasm ishlatish kerak."));
 
-// 7. Joylashuv va xodimlar
-c.push(H1("7. Joylashuv, infratuzilma va xodimlar"));
-c.push(H2("7.1. Joylashuv"));
-c.push(P("Tavsiya: **Toshkent viloyatidagi sanoat zonasi yoki erkin iqtisodiy zona** (masalan, Chirchiq, Olmaliq, Yangiyo‘l yo‘nalishlari). Sabablari: TKTI va laboratoriyalarga yaqinlik, asosiy mijozlar (Toshkent savdo tarmoqlari) 50 km radiusda, yog‘-moy korxonalari va HoReCa chiqindilari ko‘p, gaz va uch fazali elektr ulanishi mavjud. Farg‘ona vodiysi — qishloq xo‘jaligi mulcha plyonkasi bozori uchun ikkinchi bosqichdagi filial."));
+// 7. Joylashuv, bosh reja va xodimlar
+c.push(H1("7. Joylashuv, yer maydoni va bosh reja"));
+c.push(H2("7.1. Qaysi viloyat: tanlov mezonlari"));
+c.push(P("Joy 6 ta mezon bo‘yicha tanlandi: xomashyo manbai, asosiy bozor, ilmiy hamkor, kimyo infratuzilmasi, imtiyozlar va logistika. Uchta real variant solishtirildi:"));
+c.push(...T(["Mezon", "Chirchiq kimyo-industrial texnoparki (Toshkent vil.)", "«Qo‘qon» EIZ (Farg‘ona vil.)", "Angren EIZ (Toshkent vil.)"], [
+  ["Xomashyo (yog‘)", "**Toshkent HoReCa sektorining ishlatilgan yog‘i, ≈35 km**", "**Farg‘ona va Qo‘qon yog‘-moy zavodlari soapstoki**", "Uzoq, ≈110 km"],
+  ["Paket bozori", "**Toshkent savdo tarmoqlari, ≈35 km**", "Vodiy bozori; Toshkentgacha ≈230 km, dovon orqali", "Toshkentgacha ≈110 km"],
+  ["Mulcha plyonka bozori", "Toshkent viloyati fermerlari", "**Farg‘ona vodiysi — eng zich dehqonchilik hududi**", "Cheklangan"],
+  ["Ilmiy hamkor", "**TKTI va laboratoriyalar yaqin**", "Farg‘ona politexnika instituti", "TKTI uzoqroq"],
+  ["Infratuzilma", "**Kimyo klasteri, gaz, 10 kV tarmoq, temir yo‘l**", "Zona 2024-yilda +210,4 ga kengaytirilgan", "Energetika, tog‘-kon sanoati"],
+  ["Huquqiy rejim", "Texnopark: erkin sanoat zonasi rejimi, 30 yil (2022-yil qarori)", "EIZ rejimi (2017-yildan)", "EIZ rejimi (2016-yildan)"],
+], [16, 30, 28, 26]));
+c.push(P("**Tavsiya: Toshkent viloyati, Chirchiq shahri — kimyo-industrial texnopark.** Asosiy mijozlar va xomashyo Toshkentda, ilmiy hamkor TKTI yaqin, kimyo korxonalari uchun gaz, elektr va temir yo‘l tayyor. Texnoparkka 30 yillik maxsus soliq, bojxona va valyuta rejimi belgilangan. **Zaxira variant — Farg‘ona viloyati, «Qo‘qon» EIZ.** Bu yerda soapstok manbai yaqin va mulcha plyonka bozori katta, ammo Toshkent bozoriga logistika qimmatroq."));
+c.push(NOTE("Eslatma: Toshkent yog‘-moy kombinati 2025-yilda tugatilgan (Kun.uz, 2026-yil aprel). Shuning uchun Toshkent variantida asosiy xomashyo — restoran va oshxonalarning ishlatilgan yog‘i, soapstok esa vodiy zavodlaridan keltiriladi. Texnopark va EIZ ning amaldagi imtiyoz shartlarini direksiyalardan rasman so‘rab olish kerak."));
+c.push(H2("7.2. Necha gektar kerak: 1,8 ga"));
+c.push(P("Zavod uchun **150 × 120 m = 1,8 gektar** yer uchastkasi tavsiya etiladi. Faqat 1–2-faza uchun minimal maydon ≈ 1,2 ga. Qolgan 0,6 ga 3-faza kengayishi va yashil bufer uchun ajratilgan."));
+c.push(...IMGP("site_plan.jpg", 1600, 1000, "5-rasm. BioPlast Tech bosh rejasi (shimol — yuqorida, kirish — janubdagi jamoat yo‘lidan)"));
+c.push(...T(["Hudud elementi", "Maydon, m²", "Ulush"], [
+  ["Ishlab chiqarish binosi (54 × 28 × 8 m)", "1 512", "8%"],
+  ["Ombor (36 × 18 × 9 m, 2 rampa)", "648", "4%"],
+  ["Ma’muriy-maishiy bino (30 × 12 m, 2 qavat)", "360", "2%"],
+  ["KPP, yong‘in nasos stansiyasi", "55", "0,3%"],
+  ["Muhandislik inshootlari: yog‘ parki, KTP va generator, gaz shkafi, yong‘in suvi, oqova suv, sovutish minorasi, chiqindi maydoni", "500", "3%"],
+  ["Yo‘llar (6–7 m), yuk maydoni, avtoturargoh (18 joy), trotuarlar", "4 520", "25%"],
+  ["3-faza zaxira maydoni (40 × 30 m li bino uchun)", "1 540", "9%"],
+  ["Ko‘kalamzor va yashil bufer", "8 865", "49%"],
+  ["Jami", "18 000", "100%"],
+], [62, 20, 18], { right: [1, 2], totals: [8] }));
+c.push(P("Qurilish zichligi ≈ 17%. Bino atrofida 6–7 m li yong‘in o‘tish yo‘li bor. Yuk transporti (sisterna, mahsulot mashinalari) va yengil avtomobillar alohida harakatlanadi."));
+c.push(H2("7.3. Hududdagi obyektlar va ularning vazifasi"));
+c.push(...T(["Obyekt", "Vazifasi va asosiy parametrlari"], [
+  ["KPP va shlagbaum", "Xodimlar turniketdan elektron karta bilan o‘tadi; yuk mashinalari hujjat tekshiruvidan so‘ng tarozi tomon yo‘naltiriladi; 24/7 videokuzatuv"],
+  ["Avtotarozi 60 t (18 × 3,5 m)", "Kirishda yuk bilan, chiqishda bo‘sh tortiladi; ma’lumot hisob tizimiga yoziladi"],
+  ["Yog‘ idishlari parki", "2 × 10 m³ isitiladigan idish, beton obvalovka (eng katta idishning ≥110%), sisterna tushirish maydonchasi; estakada orqali sexga"],
+  ["Ishlab chiqarish binosi", "Metall karkas, 100 mm PIR sendvich panel, epoksid qoplamali pol; ichida biotexnologiya, ajratish-quritish, plyonka va utilita zonalari"],
+  ["Ombor", "≈700 paddon o‘rni, 4 yarusli stellajlar, elektr pogruzchik, 2 jo‘natish rampasi; harorat < 30 °C"],
+  ["Transformator podstansiyasi + dizel-generator", "630 kVA (10/0,4 kV); o‘rnatilgan quvvat ≈450 kVt; 200 kVA generator elektr uzilsa fermenterlarni 10–15 soniyada ta’minlaydi (partiya buzilmasligi uchun)"],
+  ["Gaz taqsimlash shkafi", "Bosimni pasaytiradi, sarfni hisoblaydi; ≈80–100 m³/soat (bug‘ qozoni va quritgich)"],
+  ["Yong‘in suvi zaxirasi", "2 × 150 m³ rezervuar, nasos stansiyasi, halqa gidrant tarmog‘i (hajm loyihada aniqlanadi)"],
+  ["Oqova suvni dastlabki tozalash", "Neytrallash, yog‘ ushlagich, flotatsiya; cho‘kma biogaz yoki kompostga"],
+  ["Ma’muriy-maishiy bino", "Ofislar, kiyinish xonalari va dush, oshxona (40 o‘rin), tibbiy punkt, o‘quv xonasi"],
+  ["3-faza zaxira maydoni", "40 × 30 m li bino: 4 × 50 m³ fermenter, PHA ≈500 t/yil"],
+], [30, 70]));
+c.push(H2("7.4. Muhandislik ta’minoti va me’yorlar"));
 c.push(...T(["Talab", "Miqdor"], [
-  ["Ishlab chiqarish maydoni", "1 500 m² (shundan ~150 m² laboratoriya va toza xona)"],
-  ["Elektr quvvati", "≈400–500 kVt o‘rnatilgan quvvat, uch faza 0,4 kV"],
-  ["Tabiiy gaz", "≈60–80 m³/soat (1 t/soat bug‘ qozoni)"],
+  ["Elektr quvvati", "≈450 kVt o‘rnatilgan; yiliga ≈1,5–2 mln kVt·soat; 10 kV ga ulanish"],
+  ["Tabiiy gaz", "≈80–100 m³/soat (bug‘ qozoni 1 t/soat + quritgich gorelkasi)"],
   ["Suv", "≈30–50 m³/sutka; kanalizatsiyaga ulanish"],
-  ["Transport", "Yuk mashinasi kirishi, avtomobil yo‘liga yaqinlik"],
-], [40, 60]));
-c.push(H2("7.2. Xodimlar"));
+  ["Sanitariya himoya zonasi", "Loyihada 300 m deb olingan (plastmassa ishlab chiqarish analogi); aniq kenglik sanitariya ekspertizasida belgilanadi"],
+  ["Yer olish", "Texnopark/EIZ direksiyasiga ariza → ekspert kengashi → yer ijarasi → topografiya va geologiya → texnik shartlar → loyiha-smeta, ekologik va sanitariya ekspertizasi → qurilish ruxsatnomasi"],
+], [30, 70]));
+c.push(H2("7.5. Ijara yoki o‘z hududida qurish"));
+c.push(P("Moliyaviy modelning asosiy ssenariysi (**A variant**) — texnopark yoki sanoat zonasida tayyor 1 500 m² binoni ijaraga olish ($72 ming/yil). Bosh reja esa **B variant** — 1,8 ga yerda o‘z zavodini qurish uchun mo‘ljallangan maqsadli joylashuv. B variant uchun qo‘shimcha kapital xarajatlar taxminan quyidagicha:"));
+c.push(...T(["B variant: qo‘shimcha qurilish xarajatlari (taxmin)", "$"], [
+  ["Ishlab chiqarish binosi, 1 512 m² × $250–350", "380–530 ming"],
+  ["Ombor, 648 m² × $180–250", "120–160 ming"],
+  ["Ma’muriy-maishiy bino, 720 m² × $300–400", "220–290 ming"],
+  ["Yo‘llar va maydonchalar, 4 520 m² × $20–30", "90–135 ming"],
+  ["To‘siq, KPP, avtotarozi", "50–70 ming"],
+  ["Tashqi tarmoqlar: KTP va generator, gaz, suv, kanalizatsiya, yong‘in suvi", "180–250 ming"],
+  ["Loyihalash va ekspertizalar", "40–60 ming"],
+  ["Jami qo‘shimcha", "≈ 1,1–1,5 mln"],
+], [70, 30], { right: [1], totals: [7] }));
+c.push(P("Tavsiya: 1–2-fazada **A variant** (ijara) — investitsiya kam, ishga tushish tez. O‘z hududiga (B variant) 3-faza boshlanganda yoki strategik investor qurilishni moliyalashtirganda o‘tiladi. Yuqoridagi narxlar mahalliy smeta bilan aniqlanishi kerak."));
+c.push(H2("7.6. Xodimlar"));
 c.push(...T(["Lavozim", "1-yil", "2-yildan", "Oylik ($)"], D.staff.map((s) => [s[0], String(s[1]), String(s[2]), usd(s[3])]).concat([["Jami", String(D.staff1), String(D.staff2), ""]]), [52, 14, 14, 20], { right: [1, 2, 3], totals: [D.staff.length] }));
 c.push(NOTE(`Ish haqi fondi ijtimoiy soliq (12%) bilan: 1-yil ${usd(D.pay1)}, 2-yildan ${usd(D.pay2)}. Taqqoslash uchun: 2026-yil I choragida O‘zbekistonda o‘rtacha oylik 6,8 mln so‘m (~$570).`));
 
@@ -427,6 +482,9 @@ c.push(H1("Manbalar"));
   ["nova-institute — biologik parchalanish sertifikatlari sharhi", "https://nova-institute.eu/wp-content/plugins/nova-pr/pr_download.php?id=1917"],
   ["TÜV AUSTRIA — Green Marks (OK compost)", "https://en.tuv.at/tag/green-marks"],
   ["WageIndicator — O‘zbekistonda eng kam ish haqi", "https://wageindicator.org/salary/minimum-wage/uzbekistan"],
+  ["Kun.uz — Chirchiqda kimyo-industrial texnoparki tashkil etiladi (2022)", "https://kun.uz/news/2022/02/08/chirchiqda-kimyo-industrial-texnoparki-tashkil-etiladi"],
+  ["UzA — «Qo‘qon» EIZ hududi kengaytiriladi (2024)", "https://uza.uz/posts/614860"],
+  ["Kun.uz — Toshkent yog‘-moy kombinati tugatildi (2026)", "https://kun.uz/news/2026/04/20/10-mlrd-qarzi-bilan-tugatilgan-zavod-toshkent-yog-moy-kombinatining-ishchilari-chorasiz-qoldirildi"],
   ["Kun.uz — o‘rtacha ish haqi 6,8 mln so‘m (28.04.2026)", "https://kun.uz/ru/news/2026/04/28/srednyaya-zarplata-v-uzbekistane-dostigla-68-mln-sumov"],
 ].forEach(([l, u]) => c.push(LINK(l, u)));
 

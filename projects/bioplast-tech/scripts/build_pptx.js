@@ -186,6 +186,19 @@ bal.forEach((t, i) => {
 });
 s.addText("Taqqoslash: dastlabki taqdimotdagi «oyiga 50 t» uchun ≈600 m³ fermenter hajmi kerak bo‘lardi.", { x: 0.6, y: 6.4, w: 12.1, h: 0.4, fontSize: 14, italic: true, color: C.background2, isTextBox: true, margin: 0 });
 
+// ---------- 8b. Joylashuv va bosh reja
+s = slide("BP_CONTENT", "Joylashuv: Chirchiq, 1,8 gektar", "Joylashuv");
+s.addImage({ path: path.join(IMG, "site_plan.jpg"), x: 0.6, y: 1.45, w: 7.6, h: 4.75, altText: "BioPlast Tech bosh rejasi: ishlab chiqarish binosi, ombor, ma’muriy bino, yog‘ parki, KPP, tarozi, yong‘in suvi, 3-faza zaxira maydoni", objectName: "site plan" });
+s.addText("Bosh reja (shimol — yuqorida). 3D modeldan olingan.", { x: 0.6, y: 6.3, w: 7.6, h: 0.35, fontSize: 11, color: C.accent6, isTextBox: true, margin: 0 });
+stat(s, 8.6, 1.45, 4.1, "Toshkent vil.", "Chirchiq kimyo-industrial texnoparki (30 yillik maxsus rejim)", { size: 30, color: C.text2, lh: 0.75 });
+stat(s, 8.6, 3.15, 4.1, "1,8 ga", "150 × 120 m; minimal 1,2 ga (1–2-faza)", { size: 34 });
+s.addText([
+  { text: "Xomashyo va bozor Toshkentda, ≈35 km", options: { bullet: true, breakLine: true } },
+  { text: "TKTI yaqin; gaz, 10 kV, temir yo‘l tayyor", options: { bullet: true, breakLine: true } },
+  { text: "Zaxira variant: «Qo‘qon» EIZ (soapstok, mulcha bozori)", options: { bullet: true, breakLine: true } },
+  { text: "Qurilish zichligi 17%, 3-faza uchun 0,15 ga zaxira", options: { bullet: true } },
+], { x: 8.6, y: 4.65, w: 4.1, h: 2.0, fontSize: 14, color: C.text1, paraSpaceAfter: 4, isTextBox: true, valign: "top", margin: 0 });
+
 // ---------- 9. Uskunalar
 s = slide("BP_CONTENT", "Asosiy uskunalar va yetkazib beruvchilar", "Uskunalar");
 const norm = (t) => t.replace(/[‘’']/g, "'");
