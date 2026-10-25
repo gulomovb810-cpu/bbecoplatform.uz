@@ -9,6 +9,7 @@ Muallif: Asilbekova Z. (TKTI). Dastlabki 9 slaydli taqdimot asosida qayta ishlan
 | `BioPlast_Tech_biznes_reja.docx` | To‘liq biznes-reja (21 bet): muammo, ishlash prinsipi, texnologiya, uskunalar va rasmlar manbalari, moliya, xavflar, manbalar |
 | `BioPlast_Tech_taqdimot.pptx` | Yangilangan taqdimot (16 slayd) |
 | `BioPlast_Tech_moliyaviy_model.xlsx` | Formulali moliyaviy model: Kirish (farazlar), CAPEX, Xodimlar, Tannarx, Prognoz (2027–2034, NPV/IRR), Sezgirlik, Eski vs Yangi |
+| `zavod-3d/index.html` | Zavodning interaktiv 3D modeli (Three.js): barcha uskunalar, quvurlardagi oqimlar, 11 bosqichli jarayon, har uskunaning ishlash tamoyili |
 | `rasmlar/` | Texnologik sxema va grafiklar (PNG) |
 | `scripts/` | Fayllarni qayta yaratish skriptlari |
 

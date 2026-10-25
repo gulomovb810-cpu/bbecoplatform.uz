@@ -1,0 +1,1132 @@
+<title>BioPlast Tech zavodi 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: bitta ekranli ilova — tepada boshqaruv paneli, markazda 3D sahna, o'ngda uskuna kartasi, pastda jarayon bosqichlari lentasi */
+:root {
+  --bg: #eef2f1;
+  --surface: #ffffff;
+  --surface-2: #f4f7f6;
+  --ink: #12211f;
+  --ink-2: #4a5b58;
+  --line: #d3dcda;
+  --accent: #0f7a63;
+  --accent-ink: #ffffff;
+  --scene: #dfe7e5;
+  --warn: #b5541c;
+  --display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "Barlow", "Segoe UI", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1615; --surface: #15201f; --surface-2: #1b2826; --ink: #e6efed; --ink-2: #9db0ac;
+    --line: #2a3a37; --accent: #3cc49f; --accent-ink: #062019; --scene: #121c1b; --warn: #f0995e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #15201f; --surface-2: #1b2826; --ink: #e6efed; --ink-2: #9db0ac;
+  --line: #2a3a37; --accent: #3cc49f; --accent-ink: #062019; --scene: #121c1b; --warn: #f0995e; color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; overflow: hidden; }
+#app {
+  height: 100%; display: grid; gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "bar bar" "stage panel" "steps steps";
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+.bar { grid-area: bar; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; margin-right: auto; min-width: 0; }
+.brand b { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: .01em; line-height: 1; }
+.brand span { color: var(--ink-2); font-size: 13px; }
+.tools { display: flex; gap: 6px; flex-wrap: wrap; }
+button { font: 600 14px var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+#stage { grid-area: stage; position: relative; border-radius: 12px; overflow: hidden; background: var(--scene); border: 1px solid var(--line); min-height: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+.lbl { position: absolute; transform: translate(-50%, -100%); font: 600 12px var(--display); letter-spacing: .04em; text-transform: uppercase;
+  background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--ink); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; white-space: nowrap; pointer-events: auto; cursor: pointer; }
+.lbl i { font-style: normal; color: var(--accent); margin-right: 4px; font-family: var(--mono); font-weight: 500; }
+.lbl.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.lbl.sel i { color: var(--accent-ink); }
+.hint { position: absolute; z-index: 2; left: 12px; bottom: 12px; font-size: 12px; color: var(--ink-2); background: color-mix(in srgb, var(--surface) 85%, transparent); padding: 4px 8px; border-radius: 6px; pointer-events: none; }
+.legend { position: absolute; z-index: 2; right: 12px; top: 12px; display: grid; gap: 3px; font-size: 12px; background: color-mix(in srgb, var(--surface) 88%, transparent); border: 1px solid var(--line); padding: 8px 10px; border-radius: 8px; }
+.legend div { display: flex; align-items: center; gap: 7px; }
+.legend s { display: inline-block; width: 18px; height: 5px; border-radius: 3px; text-decoration: none; }
+.legend b { font: 600 11px var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+#panel { grid-area: panel; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow-y: auto; min-height: 0; padding: 18px 18px 22px; }
+#panel h2 { font: 700 28px/1.05 var(--display); margin: 4px 0 6px; text-wrap: balance; }
+#panel h3 { font: 600 13px var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin: 18px 0 6px; }
+#panel p { margin: 0 0 8px; line-height: 1.5; }
+#panel ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; line-height: 1.45; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font: 600 12px var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); }
+.chip.step { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+table.kv { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.kv td { border-top: 1px solid var(--line); padding: 5px 0; vertical-align: top; }
+table.kv td:last-child { text-align: right; font-family: var(--mono); font-size: 12.5px; padding-left: 10px; font-variant-numeric: tabular-nums; }
+.io { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.io div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; line-height: 1.4; min-width: 0; }
+.io b { display: block; font: 600 12px var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 3px; }
+.price { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; border: 1px solid var(--line); }
+.price b { font: 700 22px var(--display); }
+.nav { display: flex; gap: 8px; margin-top: 18px; }
+.nav button { flex: 1; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.stats div { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; border: 1px solid var(--line); }
+.stats b { display: block; font: 700 24px var(--display); }
+.stats span { font-size: 12.5px; color: var(--ink-2); }
+.zones { display: grid; gap: 4px; font-size: 13.5px; }
+.zones button { text-align: left; font-weight: 500; display: flex; gap: 8px; align-items: center; padding: 6px 10px; }
+.zones s { width: 10px; height: 10px; border-radius: 3px; flex: none; text-decoration: none; }
+#steps { grid-area: steps; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+#steps button { flex: none; display: flex; gap: 7px; align-items: center; font-weight: 500; }
+#steps button i { font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--accent); }
+#steps button[aria-pressed="true"] i { color: var(--accent-ink); }
+.note { font-size: 12.5px; color: var(--ink-2); }
+.warn { color: var(--warn); }
+@media (max-width: 860px) {
+  #app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 52% auto minmax(0, 1fr); grid-template-areas: "bar" "stage" "steps" "panel"; }
+  .legend { display: none; }
+  .brand b { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div id="app">
+  <header class="bar">
+    <div class="brand"><b>BioPlast Tech zavodi</b><span>PHA biopolimeri va kompost bo‘ladigan plyonka · 54 × 28 m sex · 3D model</span></div>
+    <div class="tools">
+      <button id="bTour" type="button">▶ Jarayon bo‘ylab sayohat</button>
+      <button id="bHome" type="button">Umumiy ko‘rinish</button>
+      <button id="bLabels" type="button" aria-pressed="true">Yorliqlar</button>
+      <button id="bWalls" type="button" aria-pressed="true">Devorlar</button>
+      <button id="bXray" type="button" aria-pressed="true">Ichki tuzilma</button>
+      <button id="bAnim" type="button" aria-pressed="true">Harakat</button>
+    </div>
+  </header>
+  <div id="stage">
+    <div id="labels"></div>
+    <div class="legend" aria-label="Quvurlar ranglari">
+      <b>Quvurlardagi oqim</b>
+      <div><s style="background:#e0a030"></s>Yog‘ (uglerod manbai)</div>
+      <div><s style="background:#3fae7a"></s>Ozuqa muhiti, kultura</div>
+      <div><s style="background:#f1efe6;border:1px solid #9aa"></s>PHA suspenziyasi / kukun</div>
+      <div><s style="background:#d77a2b"></s>Granula (pnevmotransport)</div>
+      <div><s style="background:#8cc8f0"></s>Steril havo</div>
+      <div><s style="background:#e05a4f"></s>Bug‘ 8 bar</div>
+      <div><s style="background:#3a7bd5"></s>Sovuq suv 7–12 °C</div>
+      <div><s style="background:#8a7356"></s>Oqova suv</div>
+    </div>
+    <div class="hint">Sudrang: aylantirish · g‘ildirak yoki ikki barmoq: yaqinlashtirish · uskunani bosing</div>
+  </div>
+  <aside id="panel" aria-live="polite"></aside>
+  <nav id="steps" aria-label="Jarayon bosqichlari"></nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+"use strict";
+// ============================================================ MA'LUMOTLAR
+const ZONES = {
+  raw:  { name: "Xomashyo", color: 0xe0a030 },
+  lab:  { name: "Laboratoriya", color: 0x7a6fb0 },
+  bio:  { name: "Biotexnologiya", color: 0x1f8a70 },
+  dsp:  { name: "Ajratish va quritish", color: 0x2f6fa8 },
+  poly: { name: "Polimer qayta ishlash", color: 0xd77a2b },
+  util: { name: "Utilitalar", color: 0x6b7c88 },
+  ctrl: { name: "Boshqaruv", color: 0x4a5b58 },
+  store:{ name: "Ombor", color: 0x8a7356 },
+  env:  { name: "Ekologiya", color: 0x4f9d4f },
+};
+
+// Jarayon bosqichlari (haqiqiy ketma-ketlik)
+const STEPS = [
+  { id: "oil",     n: 1,  t: "Xomashyo" },
+  { id: "media",   n: 2,  t: "Ozuqa muhiti" },
+  { id: "seed",    n: 3,  t: "Urug‘" },
+  { id: "f1",      n: 4,  t: "Fermentatsiya" },
+  { id: "sep1",    n: 5,  t: "Separator" },
+  { id: "react",   n: 6,  t: "Parchalash va yuvish" },
+  { id: "dryer",   n: 7,  t: "Quritish" },
+  { id: "comp",    n: 8,  t: "Kompaundlash" },
+  { id: "film1",   n: 9,  t: "Plyonka puflash" },
+  { id: "bag",     n: 10, t: "Bosma va paket" },
+  { id: "store",   n: 11, t: "Ombor" },
+];
+
+const INFO = {
+  oil: { zone: "raw", step: 1, name: "Yog‘ qabul qilish va saqlash",
+    role: "Ishlatilgan o‘simlik yog‘i va yog‘-moy kombinatlari soapstoki bakteriyalar uchun uglerod manbai. Bu yerda u qabul qilinadi, tozalanadi va saqlanadi.",
+    how: ["Avtosisterna yon darvozadan kiradi, har partiyadan namuna olinadi: kislota soni, namlik, mexanik aralashmalar.",
+      "Yog‘ 50–60 °C gacha isitiladi, shunda qovushqoqligi kamayadi va nasos bilan oson haydaladi.",
+      "Savatli filtr (100–200 mkm) qoldiqlar va ovqat zarralarini ushlab qoladi.",
+      "Toza yog‘ isitiladigan ko‘ylakli 2 × 10 m³ idishda saqlanadi.",
+      "Dozalovchi vintli nasos yog‘ni sterilizatorga, u yerdan fermenterlarga uzatadi."],
+    params: [["Saqlash hajmi", "2 × 10 m³"], ["Bir partiyaga sarf", "≈ 760 kg"], ["Yillik sarf", "≈ 120 t"], ["Saqlash harorati", "40–50 °C"], ["Zaxira", "≈ 7 hafta"]],
+    io: ["Ishlatilgan yog‘, soapstok", "Filtrlangan yog‘ → sterilizator"], price: 20000, sup: "Mahalliy idish ishlab chiqaruvchilar; filtr: Eaton, Xitoy analoglari" },
+  oilf: { zone: "raw", name: "Yog‘ filtri va isitkichi",
+    role: "Yog‘ni idishga yuborishdan oldin qizdiradi va mexanik aralashmalardan tozalaydi.",
+    how: ["Plastinkali issiqlik almashtirgich bug‘ yordamida yog‘ni 50–60 °C gacha qizdiradi.", "Ikki parallel savatli filtr navbatma-navbat ishlaydi: biri tozalanayotganda ikkinchisi ishda bo‘ladi.", "Bosim farqi datchigi filtr to‘lganini ko‘rsatadi."],
+    params: [["Filtr teshigi", "100–200 mkm"], ["Unumdorlik", "2–3 m³/soat"]], price: 6000, sup: "Alfa Laval, Eaton, mahalliy" },
+  media: { zone: "bio", step: 2, name: "Ozuqa muhitini tayyorlash",
+    role: "Bakteriyalar o‘sishi uchun suvda mineral tuzlar eritmasi tayyorlanadi: azot, fosfor, magniy va iz elementlar.",
+    how: ["Teskari osmosdan o‘tgan suvga ammoniy sulfat, KH₂PO₄, Na₂HPO₄, MgSO₄ va iz elementlar eritiladi.",
+      "Aralashtirgichli idishda pH 6,8 ga keltiriladi.",
+      "Eritma fermenterga haydaladi va o‘sha yerda 121 °C da 20–30 daqiqa sterillanadi (in situ).",
+      "Yog‘ alohida idishda 121 °C da sterillanadi, chunki u muhit bilan birga yaxshi qizimaydi.",
+      "Azot miqdori atayin cheklangan: u tugagach, bakteriyalar ko‘payishni to‘xtatib PHA to‘play boshlaydi."],
+    params: [["Idishlar", "2 × 5 m³"], ["pH", "6,8"], ["Sterilizatsiya", "121 °C, 20–30 daq"], ["Bir partiyaga", "≈ 6,3 m³"]],
+    io: ["RO suv, tuzlar, yog‘, bug‘", "Steril muhit → fermenter"], price: 30000, sup: "Wenzhou Ace, mahalliy idish ustaxonalari" },
+  ster: { zone: "bio", name: "Yog‘ sterilizatori",
+    role: "Yog‘ni fermenterga berishdan oldin mikroblardan tozalaydi.",
+    how: ["Yog‘ ko‘ylakli idishga olinadi va bug‘ bilan 121 °C gacha qizdiriladi.", "20–30 daqiqa ushlab turiladi, keyin 30–40 °C gacha sovitiladi.", "Steril yog‘ fermentatsiya davomida dozalovchi nasos bilan bosqichma-bosqich beriladi."],
+    params: [["Hajm", "1 m³"], ["Harorat", "121 °C"], ["Bosim", "1,1 bar (ortiqcha)"]], price: 12000, sup: "Mahalliy, Xitoy" },
+  lab: { zone: "lab", name: "Laboratoriya va sifat nazorati",
+    role: "Shtammni saqlaydi, retseptni sinaydi va har bir partiyaning sifatini tekshiradi.",
+    how: ["Shtamm (Cupriavidus necator H16, DSM 428) −80 °C da glitserinli zaxirada saqlanadi.",
+      "Yangi retseptlar avval kolbada, keyin 5 L bioreaktorlarda sinaladi.",
+      "PHA miqdori GC-FID bilan o‘lchanadi: quruq biomassa metanol va sulfat kislota bilan 100 °C da qizdiriladi (metanoliz), so‘ng 3-gidroksibutirat metil efiri tahlil qilinadi.",
+      "Mikroskopda PHA donachalari Nil qizili bo‘yog‘i bilan ko‘rinadi.",
+      "Plyonka uchun eritma oqimi indeksi (MFI), cho‘zilishga mustahkamlik va qalinlik o‘lchanadi."],
+    params: [["Bioreaktorlar", "2 × 5 L"], ["Asosiy asbob", "GC-FID"], ["Sinov", "MFI, cho‘zilish"], ["Maydon", "≈ 80 m²"]], price: 109500, sup: "Sartorius, Eppendorf, Agilent, Shimadzu, ZwickRoell" },
+  seed: { zone: "bio", step: 3, name: "Urug‘ (inokulyum) fermenterlari",
+    role: "Asosiy fermenterga kerakli miqdorda faol, toza bakteriya tayyorlaydi.",
+    how: ["Muzlatilgan zaxiradan 3 ta kolbaga ekiladi: 30 °C, 200 ayl/daq, 24 soat.",
+      "Kolbalar 30 L fermenterga o‘tkaziladi, u yerda 18–24 soat o‘stiriladi.",
+      "So‘ng 1 m³ urug‘ fermenteriga o‘tadi (ishchi hajmi 700 L).",
+      "Har o‘tkazishda yangi hajmning 5–10% i urug‘ bo‘ladi.",
+      "Har bosqichda mikroskop va ekish bilan tozaligi tekshiriladi.",
+      "300 L pilot fermenter yangi xomashyo va rejimlarni sinash uchun ishlatiladi."],
+    params: [["Zanjir", "kolba → 30 L → 1 m³"], ["Harorat", "30 °C"], ["pH", "6,8–7,0"], ["Asosiy fermenterga", "700 L (10%)"]],
+    io: ["Muzlatilgan shtamm, steril muhit", "Faol urug‘ → 10 m³ fermenter"], price: 107000, sup: "Bailun (BLBIO), T&J Bio-engineering, Zhengzhou Laboao" },
+  f1: { zone: "bio", step: 4, name: "Asosiy fermenter №1 (10 m³)",
+    role: "Zavodning yuragi. Bakteriyalar yog‘ni yeb, hujayra ichida PHA donachalarini to‘playdi.",
+    how: ["Tuzilishi: 316L zanglamas po‘lat korpus, sovutish ko‘ylagi, tepada 30 kW motor va reduktor, valda 3 ta Rushton turbinasi, devorda 4 ta to‘siq (baffle), pastda halqasimon havo taqsimlagich (barbotyor).",
+      "Muhit quyiladi va bug‘ bilan ichida 121 °C da sterillanadi, so‘ng ko‘ylakdagi sovuq suv bilan 30 °C gacha sovitiladi.",
+      "1 m³ fermenterdan 700 L urug‘ steril quvur orqali beriladi.",
+      "O‘sish fazasi (0–24 soat): havo 0,5–1 vvm, aralashtirish 150–300 ayl/daq. Erigan kislorod (DO) 20% dan pasaysa, avval aylanish, keyin havo oshiriladi (kaskad boshqaruv).",
+      "pH 6,8 ammiak suvi bilan ushlanadi. U bir vaqtda azot manbai ham hisoblanadi.",
+      "To‘planish fazasi (24–72 soat): azot tugaydi, pH endi NaOH bilan ushlanadi. Yog‘ DO-stat usulida beriladi: DO keskin oshsa, uglerod tugagan, demak yog‘ qo‘shiladi.",
+      "Ko‘pik datchigi silikon antiko‘pik qo‘shadi. Issiqlik ko‘ylakdagi sovuq suv bilan chiqariladi.",
+      "Oxirida kultura 70–80 °C da 30 daqiqa pasterizatsiya qilinadi va separatorga yuboriladi."],
+    params: [["Umumiy / ishchi hajm", "10 / 7 m³"], ["Harorat", "30 °C"], ["pH", "6,8"], ["Erigan kislorod", "> 20%"], ["Havo", "3,5–7 m³/daq"], ["Bosim", "0,5 bar"], ["Motor", "30 kW"], ["Davomiyligi", "72 + 24 soat"], ["Yakuniy PHA", "60 g/L (≈ 420 kg)"]],
+    io: ["6,3 m³ muhit, 700 L urug‘, 760 kg yog‘, steril havo", "7 m³ kultura (≈ 420 kg PHA hujayra ichida)"], price: 90000, sup: "Bailun, T&J, Jiangsu Zhongtai; Yevropa: Bioengineering AG" },
+  f2: { zone: "bio", step: 4, name: "Asosiy fermenter №2 (10 m³)",
+    role: "Birinchi fermenter bilan 2 sutka siljigan grafikda ishlaydi, shunda separator va quritgich bir maromda yuklanadi.",
+    how: ["Tuzilishi va rejimi №1 fermenter bilan bir xil.", "Ikki fermenter 4 sutkalik siklda navbatma-navbat bo‘shaydi: ajratish liniyasi har 2 sutkada bitta partiya qabul qiladi.", "Yiliga ikkalasi birgalikda ≈ 160 partiya va ≈ 57 t PHA beradi."],
+    params: [["Ishchi hajm", "7 m³"], ["Sikl", "4 sutka"], ["Yillik partiyalar", "≈ 80"]], price: 90000, sup: "Bailun, T&J, Jiangsu Zhongtai" },
+  sep1: { zone: "dsp", step: 5, name: "Disk separatori (biomassa)",
+    role: "Kulturadagi bakteriya hujayralarini suyuqlikdan ajratib, quyuqlashtiradi.",
+    how: ["Kultura aylanayotgan barabanning markaziga beriladi.",
+      "Baraban 5 000–7 000 ayl/daq tezlikda aylanadi, ichida 80–150 ta konussimon disk bor.",
+      "Markazdan qochma kuch (≈ 8 000 g) og‘ir hujayralarni disklar yuzasidan tashqi devorga suradi.",
+      "Tiniq suyuqlik markazdan yuqoriga chiqadi va oqova suvga ketadi.",
+      "Devorda to‘plangan biomassa har bir necha daqiqada avtomatik bo‘shatiladi.",
+      "Natija: 15–25% quruq moddali quyuq biomassa."],
+    params: [["Unumdorlik", "3–5 m³/soat"], ["Aylanish", "5 000–7 000 ayl/daq"], ["Bitta partiya", "≈ 2 soat"], ["Biomassa", "15–25% quruq modda"]],
+    io: ["7 m³ kultura", "≈ 2,5 m³ quyuq biomassa; tiniq suyuqlik → oqova"], price: 70000, sup: "Alfa Laval, GEA Westfalia, Nanjing Huasheng" },
+  react: { zone: "dsp", step: 6, name: "Hujayrani parchalash reaktorlari",
+    role: "Hujayra devorini eritib, ichidagi PHA donachalarini ajratadi. Xloroform kabi zaharli erituvchi ishlatilmaydi.",
+    how: ["Biomassa suv bilan 5–10% quruq moddagacha suyultiriladi.",
+      "NaOH (0,1–0,2 M) va SDS (natriy dodetsilsulfat) qo‘shiladi, 30–40 °C da 30–60 daqiqa aralashtiriladi.",
+      "Hujayra membranasi, oqsil va nuklein kislotalar eriydi. PHA donachalari erimaydi va qattiq zarra holida qoladi.",
+      "Suspenziya 2-separatorga yuboriladi, u yerda PHA ajratiladi va 2–3 marta suv bilan yuviladi.",
+      "Kerak bo‘lsa, past konsentratsiyali H₂O₂ bilan oqartiriladi."],
+    params: [["Reaktorlar", "2 × 4 m³"], ["pH", "11–12"], ["Harorat", "30–40 °C"], ["PHA tozaligi", "≥ 95%"], ["Ajratish unumi", "≈ 85%"]],
+    io: ["Quyuq biomassa, NaOH, SDS, suv", "PHA suspenziyasi → 2-separator"], price: 30000, sup: "Wenzhou Ace, mahalliy" },
+  sep2: { zone: "dsp", step: 6, name: "Yuvish separatori",
+    role: "Erigan hujayra qoldiqlaridan PHA zarralarini ajratadi va yuvadi.",
+    how: ["Ishlash tamoyili birinchi separator bilan bir xil.", "PHA zarralari (0,2–0,5 mkm donachalar to‘plami) og‘ir fraksiya bo‘lib ajraladi.", "Har yuvishda toza suv qo‘shiladi va qayta separatsiya qilinadi.", "Chiqishda 15–20% quruq moddali oq PHA suspenziyasi olinadi."],
+    params: [["Yuvish", "2–3 marta"], ["Chiqish", "15–20% quruq modda"]], price: 40000, sup: "Alfa Laval, GEA, Nanjing Huasheng" },
+  dryer: { zone: "dsp", step: 7, name: "Purkab quritgich",
+    role: "Oq PHA suspenziyasini soniyalar ichida quruq kukunga aylantiradi.",
+    how: ["Suspenziya nasos bilan kamera tepasidagi rotor-atomizatorga beriladi.",
+      "Rotor 10 000–20 000 ayl/daq aylanib suyuqlikni 20–100 mkm li tomchilarga sochadi.",
+      "Gaz gorelkali isitkichdan 180–200 °C li toza havo kameraga kiradi.",
+      "Tomchidagi suv 1–2 soniyada bug‘lanadi. Bug‘lanish zarrachani sovitadi, shuning uchun PHA (erish harorati ≈ 170 °C) qizib ketmaydi.",
+      "Quruq kukun kameraning konus qismidan va siklondan yig‘iladi.",
+      "Eng mayda chang yengli filtrda ushlanadi, havo 80–90 °C da chiqariladi."],
+    params: [["Bug‘lanish", "50 kg/soat"], ["Kirish havosi", "180–200 °C"], ["Chiqish havosi", "80–90 °C"], ["Namlik", "< 0,5%"], ["Bir partiya", "≈ 32 soat"]],
+    io: ["≈ 2 t PHA suspenziyasi", "≈ 357 kg quruq PHA kukuni"], price: 60000, sup: "GEA Niro, Changzhou Lemar, Changzhou Yibu" },
+  comp: { zone: "poly", step: 8, name: "Ikki shnekli kompaundlash ekstruderi",
+    role: "PHA, PBAT, PLA va qo‘shimchalarni bir jinsli granulaga aylantiradi.",
+    how: ["PLA va PHA namlikka sezgir, shuning uchun avval 60–80 °C da 4 soat quritiladi (namlik < 250 ppm).",
+      "Gravimetrik dozatorlar komponentlarni retsept bo‘yicha ±0,5% aniqlikda beradi: PBAT 62%, PLA 24%, PHA 6,5%, qo‘shimchalar 8%.",
+      "Bir yo‘nalishda aylanuvchi ikki shnek materialni eritadi va aralashtiradi. Silindrda 9–11 ta isitish zonasi bor (150–175 °C).",
+      "Vakuum zonasi namlik va uchuvchi moddalarni tortib oladi.",
+      "Eritma filyeradan ip bo‘lib chiqadi, suv vannasida qotadi, havo pichog‘ida quriydi.",
+      "Granulyator iplarni 3–4 mm li granulaga kesadi, elakdan o‘tkazib silosga yuboradi.",
+      "PHA 180 °C dan yuqorida tez parchalanadi, shuning uchun harorat va ushlab turish vaqti qisqa tutiladi."],
+    params: [["Shnek diametri", "65 mm"], ["Unumdorlik", "150–250 kg/soat"], ["Harorat", "150–175 °C"], ["Granula", "3–4 mm"]],
+    io: ["PBAT, PLA, PHA, CaCO₃, kompatibilizator", "Kompost bo‘ladigan granula → silos"], price: 85000, sup: "Coperion ZSK, Nanjing Kerke, Nanjing Haisi" },
+  silo: { zone: "poly", name: "Granula silosi va pnevmotransport",
+    role: "Tayyor granulani saqlaydi va plyonka liniyalariga havo oqimi bilan uzatadi.",
+    how: ["Granula vakuumli pnevmotransport bilan silosga ko‘tariladi.", "Silosdan har bir plyonka liniyasining bunkeriga avtomatik yuklagich uzatadi.", "Silos germetik, namlik kirmaydi."],
+    params: [["Hajm", "≈ 10 t"]], price: 0, sup: "Piovan, Moretto, Xitoy analoglari" },
+  film1: { zone: "poly", step: 9, name: "Plyonka puflash liniyasi №1",
+    role: "Granuladan yupqa yengsimon plyonka puflab chiqaradi.",
+    how: ["Granula bunkerdan bir shnekli ekstruderga tushadi va 140–160 °C da eriydi.",
+      "Eritma spiral halqasimon kallakdan yupqa trubka bo‘lib yuqoriga chiqadi.",
+      "Trubka ichiga havo puflanadi va u pufakka (bubble) aylanadi: diametri 2,5–3,5 marta kattalashadi.",
+      "Tashqi sovutish halqasi pufakka havo uradi. Sovish chizig‘idan keyin plyonka qotadi.",
+      "Yuqorida yassilovchi ramka pufakni yassilaydi, qisuvchi roliklar uni ikki qavatli lentaga aylantiradi.",
+      "Plyonka pastga tushadi, bosma yaxshi yopishishi uchun korona bilan ishlov beriladi va rulonga o‘raladi."],
+    params: [["Unumdorlik", "≈ 90 kg/soat"], ["Qalinlik", "12–30 mkm"], ["Puflash nisbati", "2,5–3,5"], ["Eni", "300–800 mm"], ["Minora", "≈ 7 m"]],
+    io: ["Granula", "Plyonka rulonlari"], price: 70000, sup: "Ruian Ruipai, Wenzhou Ruida, Hosokawa Alpine" },
+  film2: { zone: "poly", step: 9, name: "Plyonka puflash liniyasi №2",
+    role: "Ikkinchi liniya. Ikkalasi birgalikda 1 080 t/yil quvvatga ega.",
+    how: ["Tuzilishi №1 liniya bilan bir xil.", "Odatda biri mayka-paket plyonkasi (15–20 mkm), ikkinchisi chiqindi qopi yoki mulcha plyonka (12–30 mkm) uchun sozlanadi."],
+    params: [["Unumdorlik", "≈ 90 kg/soat"], ["Yillik (2 liniya)", "1 080 t maks."]], price: 70000, sup: "Ruian Ruipai, Wenzhou Ruida" },
+  flexo: { zone: "poly", step: 10, name: "Fleksografik bosma mashinasi",
+    role: "Plyonkaga logotip, «kompost bo‘ladi» belgisi va sertifikat raqamini bosadi.",
+    how: ["Rulon yechiladi va taranglik bilan tortiladi.",
+      "Anilox valik suv asosli bo‘yoqni aniq qatlamda fotopolimer klishega o‘tkazadi.",
+      "Klishe bosma silindrda plyonkaga tegib tasvirni bosadi.",
+      "Issiq havo quritgichi bo‘yoqni quritadi, so‘ng plyonka qayta o‘raladi."],
+    params: [["Ranglar", "2"], ["Tezlik", "60–100 m/daq"], ["Bo‘yoq", "suv asosli"]], price: 22000, sup: "Ruian Changhong, Ruian Ruiting" },
+  bag: { zone: "poly", step: 10, name: "Paket tayyorlash mashinalari",
+    role: "Plyonkadan mayka-paket va rulondagi qoplar tayyorlaydi.",
+    how: ["Plyonka uzunlik bo‘yicha tortiladi, fotodatchik bosma belgisini topadi.",
+      "Qizdirilgan pichoq tikuvni payvandlaydi va kesadi.",
+      "Mayka-paketda shtamp tutqich teshigini kesadi. Rulondagi qopda perforatsiya qilinib, rulonga o‘raladi.",
+      "Paketlar sanaladi va qadoqlanadi."],
+    params: [["Mashinalar", "2"], ["Tezlik", "100–200 dona/daq"]], price: 36000, sup: "Ruian Xinye, Ruian Kingdom" },
+  store: { zone: "store", step: 11, name: "Xomashyo va tayyor mahsulot ombori",
+    role: "PBAT/PLA xomashyosi va tayyor paketlarni saqlaydi.",
+    how: ["PBAT va PLA 25 kg li qoplarda yoki 1 t big-bag’larda keladi. Ular quruq joyda, 30 °C dan past haroratda saqlanadi.",
+      "Tayyor mahsulot palletlarda, partiya raqami bilan saqlanadi.",
+      "Kompost bo‘ladigan mahsulotning saqlash muddati cheklangan (odatda 12 oy), shuning uchun «birinchi kirgan — birinchi chiqadi» tartibi qo‘llanadi."],
+    params: [["Maydon", "≈ 200 m²"], ["Zaxira", "2–3 oylik PBAT/PLA"]], price: 0, sup: "—" },
+  boiler: { zone: "util", name: "Bug‘ qozoni (1 t/soat)",
+    role: "Sterilizatsiya, idishlarni isitish va CIP yuvish uchun bug‘ beradi.",
+    how: ["Tabiiy gaz gorelkasi olov trubalarini qizdiradi, ular atrofidagi suv bug‘ga aylanadi (yong‘in-quvurli qozon).", "Bug‘ 8 bar bosimda magistral orqali fermenterlar va sterilizatorga boradi.", "Kondensat qozonga qaytariladi: suv va issiqlik tejaladi.", "Qozon suvi yumshatilgan (RO) suvdan tayyorlanadi."],
+    params: [["Unumdorlik", "1 t bug‘/soat"], ["Bosim", "8 bar"], ["Gaz sarfi", "≈ 75 m³/soat"]], price: 35000, sup: "Bosch Industriekessel, ZOZEN, mahalliy" },
+  air: { zone: "util", name: "Havo puflagich va steril filtrlar",
+    role: "Bakteriyalarga kislorod beradi. Havo mutlaqo steril bo‘lishi kerak.",
+    how: ["Moysiz vintli puflagich havoni 1–1,5 bar gacha siqadi.", "Ressiver bosimni tekislaydi, sovutgich va koalessent filtr namlikni chiqaradi.", "Har bir fermenter oldida 0,2 mkm li membrana filtr barcha mikroblarni ushlaydi.", "Filtrlar har partiyadan oldin bug‘ bilan sterillanadi."],
+    params: [["Havo sarfi", "≈ 15 m³/daq"], ["Bosim", "1–1,5 bar"], ["Steril filtr", "0,2 mkm"]], price: 35000, sup: "Atlas Copco ZS, Kaeser; filtrlar: Pall, Donaldson" },
+  chiller: { zone: "util", name: "Chiller (sovuq suv)",
+    role: "Fermentatsiya issiqlik chiqaradi. Chiller 7–12 °C suv bilan fermenter ko‘ylagini sovitadi.",
+    how: ["Freon siklli sovutish mashinasi suvni 7 °C gacha sovitadi.", "Suv fermenter ko‘ylagidan o‘tib, 12 °C da qaytadi.", "Fermenter harorati 30 °C ± 0,5 °C da avtomatik klapan bilan ushlanadi."],
+    params: [["Sovuq suv", "7 / 12 °C"], ["Quvvat", "≈ 150 kW sovuq"]], price: 15000, sup: "Carrier, Daikin, Xitoy" },
+  tower: { zone: "util", name: "Sovutish minorasi",
+    role: "Ekstruderlar va chiller kondensatoridan issiqlikni atmosferaga chiqaradi.",
+    how: ["Iliq suv minora tepasidan to‘ldirgich ustiga sepiladi.", "Ventilyator pastdan havo tortadi, suvning bir qismi bug‘lanib qolganini sovitadi.", "Sovigan suv (25–30 °C) hovuzdan qayta uzatiladi."],
+    params: [["Aylanma suv", "25–30 °C"]], price: 15000, sup: "Mahalliy, Xitoy" },
+  ro: { zone: "util", name: "Suv tayyorlash (teskari osmos)",
+    role: "Muhit va qozon uchun tuzsiz toza suv tayyorlaydi.",
+    how: ["Qum filtri muallaq zarralarni ushlaydi.", "Ko‘mir filtri xlorni yutadi.", "Yumshatgich kalsiy va magniyni chiqaradi.", "Teskari osmos membranasi erigan tuzlarning 95–99% ini ushlab qoladi."],
+    params: [["Unumdorlik", "≈ 3 m³/soat"]], price: 15000, sup: "Mahalliy, Xitoy" },
+  scada: { zone: "ctrl", name: "Boshqaruv xonasi (PLC/SCADA)",
+    role: "Barcha uskunalarni bitta joydan kuzatadi va boshqaradi.",
+    how: ["PLC kontrollerlar harorat, pH, DO, bosim va oqim datchiklarini soniyasiga bir necha marta o‘qiydi.",
+      "Kaskad boshqaruv: DO pasaysa, avval aralashtirgich tezligi, keyin havo sarfi oshiriladi.",
+      "SCADA ekranida har bir fermenterning trendlari va signallari ko‘rinadi.",
+      "Har partiyaning elektron jurnali (batch record) saqlanadi: sifat va sertifikatlash uchun zarur."],
+    params: [["Kontroller", "Siemens S7-1500 yoki analog"], ["Signallar", "≈ 400 I/O"]], price: 25000, sup: "Siemens, Schneider Electric, Delta" },
+  ww: { zone: "env", name: "Oqova suvni dastlabki tozalash",
+    role: "Separatordan chiqqan suyuqlik va yuvish suvlarini kanalizatsiyaga ruxsat etilgan me’yorgacha tozalaydi.",
+    how: ["Yig‘uvchi idishda oqim tekislanadi.", "Neytrallash: pH 6,5–8,5 ga keltiriladi (SDS va NaOH qoldiqlari).", "Yog‘ ushlagich va flotator yog‘ va muallaq moddalarni ajratadi.", "Cho‘kma (oqsilga boy biomassa) zichlashtiriladi va kompost yoki biogaz uchun beriladi.", "Tozalangan suv nazorat qudug‘i orqali kanalizatsiyaga tushadi."],
+    params: [["Oqim", "≈ 20–30 m³/sutka"], ["pH chiqishda", "6,5–8,5"]], price: 40000, sup: "Mahalliy, Xitoy" },
+};
+const MAIN_INFO = { oilf: "oil", ster: "media", f2: "f1", sep2: "react", silo: "comp", film2: "film1" };
+
+// ============================================================ SAHNA
+const stage = document.getElementById("stage");
+const labelsEl = document.getElementById("labels");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 500);
+const HOME = () => (stage.clientWidth < stage.clientHeight * 1.1 ? new THREE.Vector3(-26, 52, 70) : new THREE.Vector3(-18, 34, 46));
+camera.position.copy(HOME());
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.5, 0);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.49;
+controls.minDistance = 4;
+controls.maxDistance = 120;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9590, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.85);
+sun.position.set(-20, 40, 25);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 30, bottom: -30, near: 1, far: 120 });
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.25);
+fill.position.set(30, 20, -20);
+scene.add(fill);
+
+const root = new THREE.Group();
+root.position.set(-27, 0, -14); // zavod koordinatalari: x 0..54, z 0..28 (metr)
+scene.add(root);
+
+// materiallar
+const M = {
+  steel: new THREE.MeshStandardMaterial({ color: 0xc7cfd3, metalness: 0.35, roughness: 0.38 }),
+  dark: new THREE.MeshStandardMaterial({ color: 0x3c4648, metalness: 0.3, roughness: 0.6 }),
+  motor: new THREE.MeshStandardMaterial({ color: 0x2f6fa8, metalness: 0.2, roughness: 0.5 }),
+  paint: (c) => new THREE.MeshStandardMaterial({ color: c, metalness: 0.1, roughness: 0.6 }),
+  floor: new THREE.MeshStandardMaterial({ color: 0xb9c2bf, roughness: 0.95 }),
+  ground: new THREE.MeshStandardMaterial({ color: 0x9fae9a, roughness: 1 }),
+  wall: new THREE.MeshStandardMaterial({ color: 0xe8eeec, roughness: 0.9, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }),
+  glass: new THREE.MeshStandardMaterial({ color: 0xbfe3ef, roughness: 0.1, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false }),
+  shell: new THREE.MeshStandardMaterial({ color: 0xc7cfd3, metalness: 0.35, roughness: 0.35, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false }),
+  broth: new THREE.MeshStandardMaterial({ color: 0x9bc27a, roughness: 0.4, transparent: true, opacity: 0.55, depthWrite: false }),
+  water: new THREE.MeshStandardMaterial({ color: 0x5b8fa8, roughness: 0.2, transparent: true, opacity: 0.8 }),
+  film: new THREE.MeshStandardMaterial({ color: 0xf4f1e4, roughness: 0.25, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }),
+  bubble: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 }),
+  screen: new THREE.MeshBasicMaterial({ color: 0x3cc49f }),
+  rail: new THREE.MeshStandardMaterial({ color: 0xe3b23c, roughness: 0.6 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0xa88760, roughness: 0.9 }),
+  box: new THREE.MeshStandardMaterial({ color: 0xd9cdb4, roughness: 0.9 }),
+  flame: new THREE.MeshBasicMaterial({ color: 0xff8a3d }),
+};
+const shellMats = [M.shell];
+
+const pickables = [];
+const equip = {}; // id -> {group, anchor(Vector3 local), label el}
+const spinners = []; // {obj, axis, speed}
+const updaters = []; // f(dt, t)
+
+function mesh(geo, mat, x = 0, y = 0, z = 0, parent) {
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y, z);
+  m.castShadow = true; m.receiveShadow = true;
+  (parent || root).add(m);
+  return m;
+}
+function group(id, x, z, labelY) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+  g.userData.id = id;
+  root.add(g);
+  equip[id] = { group: g, labelY };
+  return g;
+}
+const cyl = (r, h, seg = 32) => new THREE.CylinderGeometry(r, r, h, seg);
+const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+
+// vertikal idish: oyoqli, gumbazli
+function vessel(g, r, h, y0, mat = M.steel, opts = {}) {
+  const body = mesh(cyl(r, h), mat, 0, y0 + h / 2, 0, g);
+  const dome = mesh(new THREE.SphereGeometry(r, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2), mat, 0, y0 + h, 0, g);
+  dome.scale.y = 0.35;
+  const bot = mesh(new THREE.SphereGeometry(r, 32, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat, 0, y0, 0, g);
+  bot.scale.y = 0.35;
+  if (y0 > 0.2) for (let i = 0; i < 4; i++) {
+    const a = i * Math.PI / 2 + Math.PI / 4;
+    mesh(cyl(0.06, y0, 8), M.dark, Math.cos(a) * r * 0.8, y0 / 2, Math.sin(a) * r * 0.8, g);
+  }
+  if (opts.band) mesh(new THREE.TorusGeometry(r * 1.01, 0.04, 6, 32), M.paint(opts.band), 0, y0 + h * 0.85, 0, g).rotation.x = Math.PI / 2;
+  return { body, dome, bot, top: y0 + h + r * 0.35 };
+}
+function motorOn(g, y, s = 1) {
+  mesh(box(0.45 * s, 0.35 * s, 0.45 * s), M.dark, 0, y + 0.17 * s, 0, g);
+  mesh(cyl(0.22 * s, 0.6 * s, 16), M.motor, 0, y + 0.65 * s, 0, g);
+}
+function railing(g, x0, x1, z, y) {
+  const len = x1 - x0;
+  mesh(box(len, 0.04, 0.04), M.rail, (x0 + x1) / 2, y + 1.05, z, g);
+  mesh(box(len, 0.04, 0.04), M.rail, (x0 + x1) / 2, y + 0.55, z, g);
+  for (let x = x0; x <= x1 + 0.01; x += 1) mesh(box(0.05, 1.05, 0.05), M.rail, x, y + 0.52, z, g);
+}
+
+// ============================================================ BINO
+mesh(new THREE.PlaneGeometry(140, 110), M.ground, 27, -0.02, 14).rotation.x = -Math.PI / 2;
+const floor = mesh(box(54, 0.2, 28), M.floor, 27, -0.1, 14);
+floor.castShadow = false;
+// zona belgilari polda
+function zoneMark(zone, x0, z0, x1, z1) {
+  const m = new THREE.MeshBasicMaterial({ color: ZONES[zone].color, transparent: true, opacity: 0.16, depthWrite: false });
+  const p = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0), m);
+  p.rotation.x = -Math.PI / 2;
+  p.position.set((x0 + x1) / 2, 0.012, (z0 + z1) / 2);
+  root.add(p);
+}
+zoneMark("raw", 0.5, 1, 8, 13); zoneMark("bio", 8.5, 1, 28, 18); zoneMark("dsp", 28.5, 1, 44, 12);
+zoneMark("poly", 31, 12.5, 53.5, 22.5); zoneMark("poly", 44.5, 1, 53.5, 12); zoneMark("lab", 0.5, 19, 10, 27.5);
+zoneMark("ctrl", 10.5, 21, 18.5, 27.5); zoneMark("util", 19, 21, 31, 27.5); zoneMark("store", 31.5, 23, 53.5, 27.5);
+// devorlar
+const walls = new THREE.Group(); root.add(walls);
+const WH = 8;
+[[27, 0, 54, 0], [27, 28, 54, 0], [0, 14, 28, 1], [54, 14, 28, 1]].forEach(([x, z, len, rot]) => {
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(len, WH), M.wall);
+  w.position.set(x, WH / 2, z);
+  if (rot) w.rotation.y = Math.PI / 2;
+  walls.add(w);
+});
+// ustunlar va fermalar
+const colMat = M.paint(0x7f8c8d);
+for (let x = 0; x <= 54; x += 6) for (const z of [0, 28]) {
+  const c = new THREE.Mesh(box(0.35, WH, 0.35), colMat); c.position.set(x, WH / 2, z); c.castShadow = true; walls.add(c);
+}
+for (let x = 0; x <= 54; x += 6) {
+  const t = new THREE.Mesh(box(0.18, 0.5, 28), colMat); t.position.set(x, WH + 0.25, 14); walls.add(t);
+}
+// ichki to'siqlar (laboratoriya, boshqaruv, utilita xonalari) — shisha
+function glassWall(x0, z0, x1, z1, h = 3.2) {
+  const len = Math.hypot(x1 - x0, z1 - z0);
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(len, h), M.glass);
+  w.position.set((x0 + x1) / 2, h / 2, (z0 + z1) / 2);
+  w.rotation.y = -Math.atan2(z1 - z0, x1 - x0);
+  walls.add(w);
+}
+glassWall(0.5, 19, 10, 19); glassWall(10, 19, 10, 28);
+glassWall(10.5, 21, 18.5, 21); glassWall(18.5, 21, 18.5, 28);
+glassWall(19, 21, 31, 21); glassWall(31, 21, 31, 28);
+// darvozalar (yoriq belgisi)
+mesh(box(0.1, 4, 4), M.paint(0xe3b23c), 0.05, 2, 7);
+mesh(box(4, 4, 0.1), M.paint(0xe3b23c), 42, 2, 28.05);
+
+// ============================================================ USKUNALAR
+// 1. Yog' idishlari
+{
+  const g = group("oil", 3.5, 7, 5.6);
+  for (const dz of [-2.2, 2.2]) {
+    const sub = new THREE.Group(); sub.position.z = dz; g.add(sub);
+    vessel(sub, 1.15, 3.6, 0.5, M.paint(0xd8c9a3), { band: 0xe0a030 });
+    mesh(new THREE.TorusGeometry(1.25, 0.03, 6, 32), M.rail, 0, 4.55, 0, sub).rotation.x = Math.PI / 2;
+  }
+  const f = group("oilf", 6.6, 7, 2.2);
+  mesh(box(1.6, 0.15, 1.2), M.dark, 0, 0.08, 0, f);
+  for (const dz of [-0.3, 0.3]) mesh(cyl(0.18, 0.8, 16), M.steel, -0.3, 0.6, dz, f);
+  mesh(box(0.5, 0.9, 0.35), M.paint(0x9aa6aa), 0.45, 0.6, 0, f);
+}
+// 2. Muhit idishlari va sterilizator
+{
+  const g = group("media", 10.3, 5.5, 4.6);
+  for (const dz of [-1.6, 1.6]) {
+    const sub = new THREE.Group(); sub.position.z = dz; g.add(sub);
+    const v = vessel(sub, 0.85, 2.4, 0.6, M.steel, { band: 0x3fae7a });
+    motorOn(sub, v.top, 0.7);
+  }
+  const s = group("ster", 13.4, 5.5, 3.3);
+  const v = vessel(s, 0.55, 1.5, 0.6, M.steel, { band: 0xe0a030 });
+  mesh(box(1.4, 0.15, 1.4), M.dark, 0, 0.08, 0, s);
+}
+// 3. Laboratoriya
+{
+  const g = group("lab", 5.2, 23.2, 2.6);
+  for (const [dx, dz] of [[-3, -1.6], [0.5, -1.6], [-3, 1.8], [0.5, 1.8]]) {
+    mesh(box(3, 0.9, 1), M.paint(0xe6e8ea), dx, 0.45, dz, g);
+  }
+  // 5 L bioreaktorlar
+  for (const dx of [-3.8, -3.1]) {
+    mesh(cyl(0.13, 0.35, 16), M.glass, dx, 1.08, -1.6, g);
+    mesh(cyl(0.135, 0.06, 16), M.steel, dx, 1.27, -1.6, g);
+    mesh(box(0.25, 0.3, 0.2), M.paint(0xf0f0f0), dx + 0.3, 1.05, -1.6, g);
+  }
+  mesh(box(0.9, 0.5, 0.6), M.paint(0x6c7a89), 0.3, 1.15, -1.6, g); // GC
+  mesh(box(0.7, 0.4, 0.5), M.paint(0xdfe5e8), 1.4, 1.1, -1.6, g); // shaker
+  mesh(box(0.8, 1.9, 0.75), M.paint(0xf2f2f2), 3.2, 0.95, -2.3, g); // -80 muzlatkich
+  mesh(box(1.2, 1.4, 0.75), M.paint(0xdfe5e8), 3.2, 0.7, 1.0, g); // laminar boks
+  mesh(cyl(0.3, 0.9, 20), M.steel, -2.2, 1.35, 1.8, g); // avtoklav
+  mesh(box(0.5, 0.45, 0.4), M.paint(0x333b3d), 0.8, 1.13, 1.8, g); // mikroskop
+}
+// 4. Urug' fermenterlari
+{
+  const g = group("seed", 15.6, 14.5, 3.6);
+  const a = new THREE.Group(); a.position.x = -2.1; g.add(a);
+  let v = vessel(a, 0.2, 0.6, 0.8); motorOn(a, v.top, 0.35); mesh(box(0.8, 0.8, 0.8), M.paint(0xdfe5e8), 0.6, 0.4, 0, a);
+  const b = new THREE.Group(); b.position.x = 0; g.add(b);
+  v = vessel(b, 0.38, 1.2, 0.7, M.steel, { band: 0x3fae7a }); motorOn(b, v.top, 0.5);
+  const c = new THREE.Group(); c.position.x = 2.3; g.add(c);
+  v = vessel(c, 0.55, 2.1, 0.7, M.steel, { band: 0x3fae7a }); motorOn(c, v.top, 0.6);
+  mesh(box(0.6, 1.6, 0.4), M.paint(0xdfe5e8), 3.4, 0.8, 0, g); // boshqaruv shkafi
+}
+// 5. Asosiy fermenterlar — ichki tuzilma bilan
+function fermenter(id, x, z) {
+  const g = group(id, x, z, 6.4);
+  const r = 1.05, h = 3.4, y0 = 1.0;
+  const v = vessel(g, r, h, y0, M.shell);
+  mesh(new THREE.TorusGeometry(r * 1.01, 0.05, 6, 40), M.paint(0x1f8a70), 0, y0 + h * 0.9, 0, g).rotation.x = Math.PI / 2;
+  // sovutish ko'ylagi (spiral ko'rinishi)
+  const coilPts = [];
+  for (let i = 0; i <= 260; i++) { const a = i / 260 * Math.PI * 2 * 10; coilPts.push(new THREE.Vector3(Math.cos(a) * (r + 0.03), y0 + 0.3 + i / 260 * (h - 0.8), Math.sin(a) * (r + 0.03))); }
+  mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coilPts), 600, 0.022, 5), M.paint(0x3a7bd5), 0, 0, 0, g);
+  // suyuqlik
+  const liquid = mesh(cyl(r * 0.97, h * 0.7, 32), M.broth, 0, y0 + h * 0.35, 0, g);
+  liquid.castShadow = false;
+  // val va Rushton turbinalari
+  const shaft = new THREE.Group(); g.add(shaft);
+  mesh(cyl(0.04, h + 0.5, 8), M.dark, 0, y0 + h / 2 + 0.1, 0, shaft);
+  for (const yy of [y0 + 0.5, y0 + 1.5, y0 + 2.5]) {
+    mesh(cyl(0.2, 0.02, 20), M.dark, 0, yy, 0, shaft);
+    for (let k = 0; k < 6; k++) {
+      const a = k * Math.PI / 3;
+      const bl = mesh(box(0.14, 0.14, 0.015), M.dark, Math.cos(a) * 0.28, yy, Math.sin(a) * 0.28, shaft);
+      bl.rotation.y = -a + Math.PI / 2;
+    }
+  }
+  spinners.push({ obj: shaft, speed: 3.2 });
+  // to'siqlar
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; mesh(box(0.02, h - 0.6, 0.12), M.dark, Math.cos(a) * (r - 0.1), y0 + h / 2, Math.sin(a) * (r - 0.1), g).rotation.y = -a; }
+  // barbotyor halqasi
+  mesh(new THREE.TorusGeometry(0.4, 0.03, 6, 24), M.paint(0x8cc8f0), 0, y0 + 0.22, 0, g).rotation.x = Math.PI / 2;
+  // datchiklar
+  for (let k = 0; k < 3; k++) { const a = Math.PI * (0.9 + k * 0.18); const p = mesh(cyl(0.025, 0.4, 8), M.paint(0xe05a4f), Math.cos(a) * (r + 0.1), y0 + 0.9 + k * 0.25, Math.sin(a) * (r + 0.1), g); p.rotation.z = Math.PI / 2; p.rotation.y = -a; }
+  motorOn(g, v.top, 1);
+  // pufakchalar
+  const N = 70, geo = new THREE.SphereGeometry(0.035, 6, 4);
+  const inst = new THREE.InstancedMesh(geo, M.bubble, N);
+  const seeds = [];
+  for (let i = 0; i < N; i++) seeds.push({ a: Math.random() * Math.PI * 2, rr: 0.3 + Math.random() * 0.15, t: Math.random(), sp: 0.25 + Math.random() * 0.2 });
+  g.add(inst);
+  const dummy = new THREE.Object3D();
+  updaters.push((dt) => {
+    for (let i = 0; i < N; i++) {
+      const s = seeds[i]; s.t = (s.t + dt * s.sp) % 1; s.a += dt * 1.6;
+      const rr = s.rr + s.t * 0.45;
+      dummy.position.set(Math.cos(s.a) * rr, y0 + 0.25 + s.t * (h * 0.7 - 0.3), Math.sin(s.a) * rr);
+      dummy.updateMatrix(); inst.setMatrixAt(i, dummy.matrix);
+    }
+    inst.instanceMatrix.needsUpdate = true;
+  });
+  return g;
+}
+fermenter("f1", 21, 7.5);
+fermenter("f2", 25.6, 7.5);
+// xizmat maydonchasi va zinapoya
+{
+  const y = 4.3;
+  mesh(box(7.4, 0.08, 1.2), M.paint(0x8f9a9e), 23.3, y, 9.4);
+  railing(root, 19.6, 27, 10.0, y);
+  for (const x of [19.8, 26.8]) mesh(box(0.1, y, 0.1), M.dark, x, y / 2, 9.9);
+  // zinapoya — qiya
+  const st = new THREE.Group(); st.position.set(27.9, 0, 9.4); root.add(st);
+  for (let i = 0; i < 14; i++) mesh(box(0.28, 0.05, 0.9), M.paint(0x8f9a9e), 2.0 - i * 0.15, 0.3 + i * 0.3, 0, st);
+}
+// 6. Separatorlar
+function separator(id, x, z, s = 1) {
+  const g = group(id, x, z, 2.6);
+  mesh(box(1.4, 0.9, 1.1), M.paint(0x9aa6aa), 0, 0.45, 0, g);
+  mesh(box(0.5, 0.5, 0.5), M.motor, -0.8, 0.35, 0, g);
+  const bowl = new THREE.Group(); bowl.position.y = 0.9; g.add(bowl);
+  mesh(new THREE.CylinderGeometry(0.45, 0.35, 0.6, 24), M.steel, 0, 0.3, 0, bowl);
+  mesh(new THREE.CylinderGeometry(0.2, 0.45, 0.4, 24), M.steel, 0, 0.8, 0, bowl);
+  for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; mesh(box(0.03, 0.62, 0.05), M.paint(0x2f6fa8), Math.cos(a) * 0.45, 0.3, Math.sin(a) * 0.45, bowl).rotation.y = -a; }
+  mesh(cyl(0.06, 0.4, 8), M.steel, 0, 2.1, 0, g);
+  spinners.push({ obj: bowl, speed: 9 });
+}
+separator("sep1", 30.2, 5.5);
+separator("sep2", 35.6, 6.5);
+{
+  const g = group("react", 32.9, 6.3, 3.8);
+  for (const dz of [-2, 2]) { const sub = new THREE.Group(); sub.position.z = dz; g.add(sub); const v = vessel(sub, 0.8, 2.0, 0.5, M.steel, { band: 0xd8d4c4 }); motorOn(sub, v.top, 0.6); }
+}
+// 7. Purkab quritgich
+{
+  const g = group("dryer", 40, 6.5, 7.6);
+  const y0 = 2.8;
+  mesh(cyl(1.2, 2.6, 32), M.steel, 0, y0 + 1.3, 0, g);
+  mesh(new THREE.CylinderGeometry(1.2, 0.18, 1.9, 32), M.steel, 0, y0 - 0.95, 0, g);
+  mesh(new THREE.CylinderGeometry(0.5, 1.2, 0.5, 32), M.steel, 0, y0 + 2.85, 0, g);
+  const atom = new THREE.Group(); atom.position.y = y0 + 3.2; g.add(atom);
+  mesh(cyl(0.25, 0.5, 16), M.motor, 0, 0.2, 0, atom);
+  for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; mesh(cyl(0.07, y0 + 0.2, 8), M.dark, Math.cos(a) * 1.0, (y0 + 0.2) / 2, Math.sin(a) * 1.0, g); }
+  mesh(box(2.8, 0.08, 2.8), M.paint(0x8f9a9e), 0, y0 + 0.05, 0, g);
+  // siklon
+  const cy = new THREE.Group(); cy.position.set(2.6, 0, 1.3); g.add(cy);
+  mesh(cyl(0.4, 1.2, 20), M.steel, 0, 3.6, 0, cy); mesh(new THREE.CylinderGeometry(0.4, 0.1, 1.2, 20), M.steel, 0, 2.4, 0, cy);
+  mesh(cyl(0.05, 1.8, 8), M.dark, 0, 0.9, 0, cy);
+  // yengli filtr
+  mesh(box(1.2, 2.6, 1.2), M.paint(0xb9c3c6), 2.6, 1.3 + 1.2, -1.6, g);
+  mesh(new THREE.CylinderGeometry(0.5, 0.15, 0.8, 4), M.paint(0xb9c3c6), 2.6, 0.8, -1.6, g).rotation.y = Math.PI / 4;
+  // gorelkali isitkich
+  mesh(box(1.4, 1.2, 1.0), M.paint(0x6c7a89), -0.4, 0.6, 3.6, g);
+  const fl = mesh(new THREE.SphereGeometry(0.16, 10, 8), M.flame, -1.15, 0.6, 3.6, g);
+  updaters.push((dt, t) => { fl.scale.setScalar(0.85 + 0.25 * Math.sin(t * 13)); });
+  // havo kanali
+  const duct = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.4, 1.2, 3.6), new THREE.Vector3(-0.4, 6.7, 3.6), new THREE.Vector3(0, 6.7, 0.6), new THREE.Vector3(0, 6.2, 0.2)]);
+  mesh(new THREE.TubeGeometry(duct, 40, 0.18, 10), M.paint(0xb5bcbf), 0, 0, 0, g);
+  const duct2 = new THREE.CatmullRomCurve3([new THREE.Vector3(1.0, 2.6, 0.4), new THREE.Vector3(2.2, 4.5, 1.3), new THREE.Vector3(2.6, 4.25, 1.3)]);
+  mesh(new THREE.TubeGeometry(duct2, 20, 0.14, 10), M.paint(0xb5bcbf), 0, 0, 0, g);
+  const duct3 = new THREE.CatmullRomCurve3([new THREE.Vector3(2.6, 4.25, 1.3), new THREE.Vector3(2.6, 4.6, 0), new THREE.Vector3(2.6, 3.8, -1.6)]);
+  mesh(new THREE.TubeGeometry(duct3, 20, 0.12, 10), M.paint(0xb5bcbf), 0, 0, 0, g);
+}
+// 8. Kompaundlash liniyasi
+{
+  const g = group("comp", 36, 14.5, 3.4);
+  // reduktor va motor
+  mesh(box(1.4, 1.1, 1.0), M.motor, -3.8, 0.55, 0, g);
+  mesh(box(1.0, 0.9, 0.9), M.dark, -2.7, 0.45 + 0.2, 0, g);
+  // silindr isitish zonalari bilan
+  mesh(box(5.0, 0.3, 0.3), M.steel, 0, 1.05, 0, g);
+  for (let i = 0; i < 10; i++) mesh(box(0.38, 0.42, 0.42), M.paint(i % 2 ? 0xc0504d : 0xa94442), -2.0 + i * 0.47, 1.05, 0, g);
+  mesh(box(5.4, 0.85, 0.8), M.paint(0x8f9a9e), 0, 0.42, 0, g);
+  // gravimetrik dozatorlar va quritgich bunkerlari
+  for (let i = 0; i < 4; i++) {
+    const x = -2.1 + i * 0.6;
+    mesh(new THREE.CylinderGeometry(0.22, 0.08, 0.5, 16), M.steel, x, 1.6, -0.6, g);
+    mesh(cyl(0.22, 0.5, 16), M.paint([0xd8c9a3, 0xe8e2cf, 0xf1efe6, 0xcfd6d8][i]), x, 2.1, -0.6, g);
+  }
+  mesh(cyl(0.45, 1.6, 20), M.steel, -2.5, 2.9, -1.6, g); mesh(new THREE.CylinderGeometry(0.45, 0.1, 0.6, 20), M.steel, -2.5, 1.8, -1.6, g); // quritgich-bunker
+  mesh(cyl(0.45, 1.6, 20), M.steel, -1.3, 2.9, -1.6, g); mesh(new THREE.CylinderGeometry(0.45, 0.1, 0.6, 20), M.steel, -1.3, 1.8, -1.6, g);
+  for (const x of [-2.5, -1.3]) for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.7; mesh(cyl(0.04, 1.5, 6), M.dark, x + Math.cos(a) * 0.35, 0.75, -1.6 + Math.sin(a) * 0.35, g); }
+  // suv vannasi, havo pichog'i, granulyator
+  mesh(box(2.6, 0.5, 0.5), M.paint(0x9aa6aa), 3.9, 0.7, 0, g);
+  mesh(box(2.4, 0.06, 0.4), M.water, 3.9, 0.95, 0, g);
+  // eritma iplari
+  for (let k = 0; k < 4; k++) mesh(box(3.2, 0.02, 0.02), M.paint(0xe2d6b8), 3.9, 1.0, -0.12 + k * 0.08, g);
+  mesh(box(0.8, 1.0, 0.8), M.paint(0x6c7a89), 5.7, 0.5, 0, g);
+  mesh(box(0.5, 0.4, 0.6), M.paint(0x9aa6aa), 5.7, 1.2, 0, g);
+}
+{
+  const g = group("silo", 44.3, 14.5, 6.3);
+  mesh(cyl(1.0, 3.2, 24), M.paint(0xe3e6e7), 0, 3.6, 0, g);
+  mesh(new THREE.CylinderGeometry(1.0, 0.15, 1.2, 24), M.paint(0xe3e6e7), 0, 1.4, 0, g);
+  mesh(new THREE.ConeGeometry(1.0, 0.4, 24), M.paint(0xe3e6e7), 0, 5.4, 0, g);
+  for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; mesh(cyl(0.06, 2.0, 8), M.dark, Math.cos(a) * 0.8, 1.0, Math.sin(a) * 0.8, g); }
+}
+// 9. Plyonka puflash liniyalari
+function filmLine(id, z) {
+  const tx = 48.8;
+  const g = group(id, tx, z, 8.0);
+  // ekstruder (gorizontal) va bunker
+  mesh(box(1.0, 1.0, 0.8), M.motor, -3.6, 0.5, 0, g);
+  mesh(box(2.4, 0.3, 0.3), M.steel, -2.0, 1.0, 0, g);
+  for (let i = 0; i < 5; i++) mesh(box(0.35, 0.4, 0.4), M.paint(0xa94442), -2.8 + i * 0.42, 1.0, 0, g);
+  mesh(box(3.0, 0.8, 0.7), M.paint(0x8f9a9e), -2.2, 0.4, 0, g);
+  mesh(new THREE.CylinderGeometry(0.3, 0.08, 0.5, 16), M.steel, -2.9, 1.5, 0, g);
+  mesh(cyl(0.3, 0.5, 16), M.paint(0xe8e2cf), -2.9, 1.95, 0, g);
+  // kallak va sovutish halqasi
+  mesh(cyl(0.35, 0.35, 24), M.steel, 0, 1.0, 0, g);
+  mesh(new THREE.TorusGeometry(0.5, 0.08, 8, 24), M.paint(0x6c7a89), 0, 1.3, 0, g).rotation.x = Math.PI / 2;
+  // pufak
+  const prof = [];
+  prof.push(new THREE.Vector2(0.18, 1.2), new THREE.Vector2(0.22, 1.5), new THREE.Vector2(0.38, 2.0), new THREE.Vector2(0.5, 2.6), new THREE.Vector2(0.52, 4.8), new THREE.Vector2(0.5, 5.1));
+  const bub = mesh(new THREE.LatheGeometry(prof, 32), M.film, 0, 0, 0, g); bub.castShadow = false;
+  // yassilovchi ramka (A shakl)
+  for (const s of [-1, 1]) { const p = mesh(box(0.06, 1.6, 1.1), M.paint(0xb5bcbf), s * 0.35, 5.8, 0, g); p.rotation.z = -s * 0.22; }
+  mesh(new THREE.PlaneGeometry(1.6, 1.4), M.film, 0, 5.8, 0, g).rotation.y = Math.PI / 2;
+  // qisuvchi roliklar
+  const nip = new THREE.Group(); nip.position.y = 6.7; g.add(nip);
+  for (const s of [-1, 1]) { const rl = mesh(cyl(0.12, 1.4, 16), M.steel, s * 0.13, 0, 0, nip); rl.rotation.x = Math.PI / 2; spinners.push({ obj: rl, speed: 4 * s, axis: "y" }); }
+  // minora ramkasi
+  for (const [dx, dz] of [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]]) mesh(box(0.1, 7.2, 0.1), M.paint(0x2f6fa8), dx, 3.6, dz, g);
+  for (const yy of [3.5, 7.1]) { mesh(box(1.7, 0.08, 0.08), M.paint(0x2f6fa8), 0, yy, -0.8, g); mesh(box(1.7, 0.08, 0.08), M.paint(0x2f6fa8), 0, yy, 0.8, g); }
+  mesh(box(1.8, 0.06, 1.8), M.paint(0x8f9a9e), 0, 7.15, 0, g);
+  // plyonka pastga tushishi va o'ragich
+  mesh(box(0.02, 6.3, 1.2), M.film, 1.0, 3.75, 0, g);
+  const wind = new THREE.Group(); wind.position.set(2.3, 0.9, 0); g.add(wind);
+  mesh(box(1.4, 0.15, 1.6), M.dark, 0, -0.75, 0, wind);
+  for (const s of [-1, 1]) mesh(box(0.1, 1.5, 0.1), M.dark, 0, 0, s * 0.75, wind);
+  const roll = mesh(cyl(0.32, 1.3, 24), M.film, 0, 0.2, 0, wind); roll.rotation.x = Math.PI / 2;
+  spinners.push({ obj: roll, speed: 2, axis: "y" });
+  updaters.push((dt, t) => { bub.scale.x = bub.scale.z = 1 + 0.015 * Math.sin(t * 3 + z); });
+}
+filmLine("film1", 4.3);
+filmLine("film2", 9.6);
+// 10. Bosma va paket
+{
+  const g = group("flexo", 49, 19.5, 2.6);
+  mesh(box(3.2, 1.8, 1.4), M.paint(0x6c7a89), 0, 0.9, 0, g);
+  for (let i = 0; i < 4; i++) { const rl = mesh(cyl(0.16, 1.3, 16), M.steel, -1.2 + i * 0.8, 1.9, 0, g); rl.rotation.x = Math.PI / 2; spinners.push({ obj: rl, speed: 3, axis: "y" }); }
+  const ur = mesh(cyl(0.4, 1.2, 20), M.film, -2.1, 1.0, 0, g); ur.rotation.x = Math.PI / 2;
+  const rr = mesh(cyl(0.35, 1.2, 20), M.paint(0x8fc6a8), 2.1, 1.0, 0, g); rr.rotation.x = Math.PI / 2;
+}
+{
+  const g = group("bag", 41, 19.8, 2.4);
+  for (const dx of [-2.4, 2.4]) {
+    mesh(box(3.6, 1.0, 1.1), M.paint(0xdfe5e8), dx, 0.5, 0, g);
+    const ur = mesh(cyl(0.35, 1.0, 20), M.paint(0x8fc6a8), dx - 1.9, 1.2, 0, g); ur.rotation.x = Math.PI / 2;
+    mesh(box(0.5, 0.6, 1.1), M.paint(0xc0504d), dx + 0.6, 1.3, 0, g);
+    mesh(box(0.8, 0.5, 0.8), M.box, dx + 2.3, 0.25, 0, g);
+  }
+}
+// 11. Ombor
+{
+  const g = group("store", 42.5, 25.3, 2.6);
+  for (let i = 0; i < 7; i++) for (let j = 0; j < 2; j++) {
+    const x = -9.5 + i * 2.9, z = -1.2 + j * 2.2;
+    mesh(box(1.2, 0.14, 1.0), M.wood, x, 0.07, z, g);
+    const hgt = 0.8 + ((i * 7 + j * 3) % 4) * 0.25;
+    mesh(box(1.1, hgt, 0.95), i < 3 ? M.paint(0xf1efe6) : M.box, x, 0.14 + hgt / 2, z, g);
+  }
+}
+// Utilitalar
+{
+  const g = group("boiler", 22.8, 24.6, 3.4);
+  const b = mesh(cyl(0.9, 3.2, 24), M.paint(0xc0504d), 0, 1.3, 0, g); b.rotation.z = Math.PI / 2;
+  mesh(box(3.0, 0.4, 1.4), M.dark, 0, 0.2, 0, g);
+  mesh(cyl(0.18, 7.5, 12), M.paint(0x7f8c8d), 1.2, 5.5, 0, g);
+  mesh(box(0.6, 0.8, 0.8), M.paint(0x6c7a89), -1.9, 1.3, 0, g);
+}
+{
+  const g = group("air", 26.6, 23.3, 2.3);
+  mesh(box(1.8, 1.5, 1.1), M.paint(0x2f6fa8), 0, 0.75, 0, g);
+  mesh(cyl(0.45, 1.8, 20), M.steel, 1.6, 0.9 + 0.2, 0, g);
+  for (let i = 0; i < 3; i++) mesh(cyl(0.1, 0.7, 12), M.steel, -0.6 + i * 0.4, 1.9, 0.3, g);
+}
+{
+  const g = group("chiller", 29.4, 24.5, 2.0);
+  mesh(box(1.6, 1.4, 2.2), M.paint(0xdfe5e8), 0, 0.7, 0, g);
+  for (let i = 0; i < 2; i++) mesh(cyl(0.35, 0.05, 20), M.dark, 0, 1.43, -0.5 + i, g);
+}
+{
+  const g = group("ro", 25.5, 26.6, 2.4);
+  mesh(box(2.4, 0.1, 0.6), M.dark, 0, 0.05, 0, g);
+  for (let i = 0; i < 3; i++) mesh(cyl(0.18, 1.6, 14), M.paint(0x3a7bd5), -0.9 + i * 0.5, 0.9, 0, g);
+  for (let i = 0; i < 4; i++) { const t = mesh(cyl(0.07, 1.8, 10), M.paint(0xf2f2f2), 0.6 + (i % 2) * 0.2, 0.6 + Math.floor(i / 2) * 0.35, 0, g); t.rotation.z = Math.PI / 2; t.position.x = 0.7; t.position.z = -0.15 + (i % 2) * 0.3; }
+}
+{
+  const g = group("tower", 26, 31.2, 4.6);
+  mesh(box(3.0, 3.0, 3.0), M.paint(0x8fa6ad), 0, 1.5, 0, g);
+  mesh(cyl(1.2, 0.6, 24), M.paint(0x6c7a89), 0, 3.3, 0, g);
+  const fan = new THREE.Group(); fan.position.y = 3.5; g.add(fan);
+  for (let k = 0; k < 4; k++) { const bl = mesh(box(1.0, 0.04, 0.22), M.dark, 0, 0, 0, fan); bl.rotation.y = k * Math.PI / 2; bl.position.set(Math.cos(k * Math.PI / 2) * 0.5, 0, -Math.sin(k * Math.PI / 2) * 0.5); }
+  spinners.push({ obj: fan, speed: 6 });
+}
+{
+  const g = group("scada", 14.5, 24.5, 2.4);
+  mesh(box(4.2, 0.8, 1.0), M.paint(0x6c7a89), 0, 0.4, -0.6, g);
+  for (let i = 0; i < 4; i++) { mesh(box(0.85, 0.55, 0.05), M.dark, -1.5 + i * 1.0, 1.15, -0.95, g); mesh(new THREE.PlaneGeometry(0.78, 0.48), M.screen, -1.5 + i * 1.0, 1.15, -0.92, g); }
+  mesh(box(3.5, 1.6, 0.05), M.dark, 0, 2.2, -2.8, g);
+  mesh(new THREE.PlaneGeometry(3.3, 1.4), M.screen, 0, 2.2, -2.77, g);
+  for (let i = 0; i < 6; i++) mesh(box(0.6, 2.0, 0.6), M.paint(0xb9c3c6), 3.5, 1.0, -2.5 + i * 0.65, g);
+}
+{
+  const g = group("ww", 31.5, -4, 2.0);
+  for (const [dx, w] of [[-2.6, 2.4], [0.2, 2.4], [3.0, 2.4]]) {
+    mesh(box(w, 1.4, 2.6), M.paint(0x9aa59f), dx, 0.7, 0, g);
+    mesh(box(w - 0.3, 0.05, 2.3), M.water, dx, 1.3, 0, g);
+  }
+  mesh(box(1.0, 1.6, 1.0), M.paint(0x6c7a89), 5.0, 0.8, 0, g);
+}
+
+// ============================================================ QUVURLAR VA OQIMLAR
+const RACK = 6.2;
+const flows = [];
+function P(x, y, z) { return new THREE.Vector3(x, y, z); }
+function pipe(pts, color, r = 0.07, particles = true, speed = 1.6) {
+  const path = new THREE.CurvePath();
+  for (let i = 0; i < pts.length - 1; i++) path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.2 });
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(path, Math.max(16, pts.length * 24), r, 8, false), mat);
+  tube.castShadow = true; root.add(tube);
+  if (particles) {
+    const len = path.getLength();
+    const n = Math.max(3, Math.round(len / 1.6));
+    const im = new THREE.InstancedMesh(new THREE.SphereGeometry(r * 1.35, 8, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).offsetHSL(0, 0, 0.18) }), n);
+    root.add(im);
+    flows.push({ path, im, n, len, speed, t: 0 });
+  }
+}
+// yuqori estakada orqali yo'nalish: a (x,y,z) -> tepaga -> rack (via) -> b
+function route(a, b, via, color, r, sp) {
+  const pts = [P(a[0], a[1], a[2]), P(a[0], RACK + (via.dy || 0), a[2])];
+  for (const v of via.pts || []) pts.push(P(v[0], RACK + (via.dy || 0), v[1]));
+  pts.push(P(b[0], RACK + (via.dy || 0), b[2]), P(b[0], b[1], b[2]));
+  pipe(pts, color, r, true, sp);
+}
+const C_OIL = 0xe0a030, C_MED = 0x3fae7a, C_PHA = 0xf1efe6, C_GRAN = 0xd77a2b, C_AIR = 0x8cc8f0, C_STEAM = 0xe05a4f, C_COLD = 0x3a7bd5, C_WW = 0x8a7356;
+// yog': idish -> filtr -> sterilizator -> fermenterlar
+pipe([P(4.5, 0.6, 4.8), P(4.5, 0.25, 4.8), P(6.0, 0.25, 4.8), P(6.0, 0.25, 7)], C_OIL, 0.06);
+route([6.9, 1.1, 7], [13.4, 2.8, 5.5], { pts: [[6.9, 5.5]], dy: 0 }, C_OIL, 0.06);
+route([13.6, 2.8, 5.0], [20.6, 5.2, 7.2], { pts: [[13.6, 5.0], [20.6, 5.0]], dy: 0.25 }, C_OIL, 0.05);
+route([13.6, 2.8, 5.0], [25.2, 5.2, 7.2], { pts: [[13.6, 4.8], [25.2, 4.8]], dy: 0.25 }, C_OIL, 0.05);
+// muhit -> fermenterlar
+route([10.3, 3.6, 3.9], [21.4, 5.2, 7.0], { pts: [[10.3, 3.0], [21.4, 3.0]], dy: -0.25 }, C_MED, 0.07);
+route([10.3, 3.6, 7.1], [26.0, 5.2, 7.0], { pts: [[10.3, 3.3], [26.0, 3.3]], dy: -0.25 }, C_MED, 0.07);
+// urug' -> fermenterlar
+route([17.9, 3.6, 14.5], [21.0, 5.3, 7.8], { pts: [[17.9, 11.5], [21.0, 11.5]], dy: -0.5 }, C_MED, 0.05);
+route([17.9, 3.6, 14.5], [25.6, 5.3, 7.8], { pts: [[17.9, 11.8], [25.6, 11.8]], dy: -0.5 }, C_MED, 0.05);
+// kultura: fermenterlar tubidan -> separator (pol bo'ylab)
+pipe([P(21, 0.6, 7.5), P(21, 0.25, 7.5), P(21, 0.25, 4.0), P(30.2, 0.25, 4.0), P(30.2, 0.25, 5.5), P(30.2, 1.0, 5.5)], C_MED, 0.08, true, 1.4);
+pipe([P(25.6, 0.6, 7.5), P(25.6, 0.25, 7.5), P(25.6, 0.25, 4.3), P(29.6, 0.25, 4.3)], C_MED, 0.08, true, 1.4);
+// biomassa -> reaktorlar -> separator2 -> quritgich
+route([30.4, 2.3, 5.5], [32.9, 3.4, 4.3], { pts: [[30.4, 4.3]], dy: -2.2 }, C_PHA, 0.06, 1.2);
+route([30.4, 2.3, 5.5], [32.9, 3.4, 8.3], { pts: [[30.4, 8.3]], dy: -2.2 }, C_PHA, 0.06, 1.2);
+pipe([P(33.6, 0.5, 4.3), P(33.6, 0.25, 4.3), P(34.6, 0.25, 4.3), P(34.6, 0.25, 6.5), P(35.6, 0.25, 6.5), P(35.6, 1.0, 6.5)], C_PHA, 0.06, true, 1.2);
+pipe([P(33.6, 0.5, 8.3), P(33.6, 0.25, 8.3), P(34.6, 0.25, 8.3), P(34.6, 0.25, 6.6)], C_PHA, 0.06, true, 1.2);
+route([35.8, 2.3, 6.5], [40, 6.6, 6.5], { pts: [[35.8, 6.5]], dy: 0.6 }, C_PHA, 0.06, 1.2);
+// PHA kukuni -> kompaund dozatori (pnevmotransport)
+pipe([P(40, 0.9, 6.5), P(40, 0.5, 6.5), P(40, 0.5, 11.2), P(40, 5.0, 11.2), P(34.5, 5.0, 11.2), P(34.5, 5.0, 13.9), P(34.5, 2.4, 13.9)], C_PHA, 0.07, true, 2.2);
+// granula -> silos -> plyonka liniyalari
+pipe([P(41.7, 1.4, 14.5), P(41.7, 6.0, 14.5), P(44.3, 6.0, 14.5), P(44.3, 5.6, 14.5)], C_GRAN, 0.07, true, 2.4);
+pipe([P(44.6, 0.9, 14.5), P(44.6, 0.5, 13.3), P(45.9, 0.5, 13.3), P(45.9, 5.4, 13.3), P(45.9, 5.4, 4.3), P(45.9, 2.2, 4.3)], C_GRAN, 0.06, true, 2.4);
+pipe([P(45.9, 5.4, 9.6), P(45.9, 2.2, 9.6)], C_GRAN, 0.06, true, 2.4);
+// steril havo -> fermenterlar va urug'
+route([26.6, 1.6, 23.3], [21.9, 5.0, 7.5], { pts: [[26.6, 12.5], [21.9, 12.5]], dy: 0.6 }, C_AIR, 0.06, 2.6);
+route([26.6, 1.6, 23.3], [26.5, 5.0, 7.5], { pts: [[26.9, 12.8], [26.5, 12.8]], dy: 0.6 }, C_AIR, 0.06, 2.6);
+route([26.6, 1.6, 23.3], [18.4, 3.6, 14.5], { pts: [[26.3, 16.5], [18.4, 16.5]], dy: 0.6 }, C_AIR, 0.05, 2.6);
+// bug' -> muhit, sterilizator, fermenterlar
+route([24.0, 2.0, 24.6], [13.4, 2.6, 6.2], { pts: [[24.0, 18.5], [13.4, 18.5]], dy: 0.9 }, C_STEAM, 0.05, 2.8);
+route([24.0, 2.0, 24.6], [20.2, 3.2, 8.4], { pts: [[24.3, 18.8], [20.2, 18.8]], dy: 0.9 }, C_STEAM, 0.05, 2.8);
+route([24.0, 2.0, 24.6], [24.8, 3.2, 8.4], { pts: [[24.6, 19.1], [24.8, 19.1]], dy: 0.9 }, C_STEAM, 0.05, 2.8);
+// sovuq suv -> fermenter ko'ylaklari
+route([29.4, 1.4, 23.5], [22.0, 1.6, 8.2], { pts: [[29.4, 13.2], [22.0, 13.2]], dy: -1.0 }, C_COLD, 0.06, 1.8);
+route([29.4, 1.4, 23.5], [26.6, 1.6, 8.2], { pts: [[29.7, 13.5], [26.6, 13.5]], dy: -1.0 }, C_COLD, 0.06, 1.8);
+// oqova suv -> tashqi tozalash
+pipe([P(30.9, 1.2, 5.0), P(30.9, 0.25, 4.6), P(30.9, 0.25, -1), P(30.9, 1.3, -3.0)], C_WW, 0.07, true, 1.2);
+pipe([P(36.1, 1.2, 6.0), P(36.1, 0.25, 5.4), P(36.1, 0.25, 0.6), P(33.7, 0.25, 0.6), P(33.7, 0.25, -1), P(33.7, 1.3, -3.0)], C_WW, 0.06, true, 1.2);
+// sovutish minorasi aylanma suvi
+pipe([P(26, 1.0, 29.6), P(26, 1.0, 28.6), P(29.4, 1.0, 28.6), P(29.4, 1.0, 25.6)], C_COLD, 0.07, true, 1.6);
+
+// ============================================================ YORLIQLAR
+const LABELS = { oil: "Yog‘ idishlari", oilf: "Filtr", media: "Muhit idishlari", ster: "Yog‘ sterilizatori", lab: "Laboratoriya", seed: "Urug‘ fermenterlari",
+  f1: "Fermenter 10 m³ №1", f2: "Fermenter 10 m³ №2", sep1: "Separator", react: "Parchalash reaktorlari", sep2: "Yuvish separatori", dryer: "Purkab quritgich",
+  comp: "Kompaund ekstruder", silo: "Granula silosi", film1: "Plyonka liniyasi №1", film2: "Plyonka liniyasi №2", flexo: "Fleksobosma", bag: "Paket mashinalari",
+  store: "Ombor", boiler: "Bug‘ qozoni", air: "Havo puflagich", chiller: "Chiller", ro: "Teskari osmos", tower: "Sovutish minorasi", scada: "Boshqaruv xonasi", ww: "Oqova suv tozalash" };
+const stepOf = {}; STEPS.forEach((s) => { stepOf[s.id] = s.n; });
+stepOf.f2 = 4; stepOf.sep2 = 6; stepOf.film2 = 9; stepOf.bag = 10; stepOf.flexo = 10;
+for (const id in equip) {
+  const el = document.createElement("div");
+  el.className = "lbl";
+  el.innerHTML = (stepOf[id] ? `<i>${stepOf[id]}</i>` : "") + LABELS[id];
+  el.addEventListener("click", () => select(id, true));
+  labelsEl.appendChild(el);
+  equip[id].label = el;
+  equip[id].group.traverse((o) => { if (o.isMesh) { o.userData.id = id; pickables.push(o); } });
+}
+
+// ============================================================ PANEL
+const panel = document.getElementById("panel");
+const fmt = (v) => "$" + v.toLocaleString("en-US").replace(/,/g, " ");
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function overview() {
+  panel.innerHTML = `
+    <div class="chips"><span class="chip">Umumiy ko‘rinish</span></div>
+    <h2>BioPlast Tech zavodi</h2>
+    <p>Yog‘ chiqindisidan bakteriyalar yordamida PHA biopolimeri olinadi. Undan PBAT va PLA bilan aralashtirib kompost bo‘ladigan paket va plyonka tayyorlanadi.</p>
+    <div class="stats">
+      <div><b>1 512 m²</b><span>sex maydoni (54 × 28 m)</span></div>
+      <div><b>2 × 10 m³</b><span>asosiy fermenterlar</span></div>
+      <div><b>≈ 58 t/yil</b><span>PHA biopolimeri</span></div>
+      <div><b>1 080 t/yil</b><span>plyonka quvvati</span></div>
+    </div>
+    <h3>Zonalar</h3>
+    <div class="zones">${[["raw", "oil"], ["lab", "lab"], ["bio", "f1"], ["dsp", "sep1"], ["poly", "comp"], ["util", "boiler"], ["ctrl", "scada"], ["store", "store"], ["env", "ww"]]
+      .map(([z, id]) => `<button type="button" data-go="${id}"><s style="background:#${ZONES[z].color.toString(16).padStart(6, "0")}"></s>${ZONES[z].name}</button>`).join("")}</div>
+    <h3>Qanday foydalanish</h3>
+    <p class="note">Istalgan uskunani yoki yorliqni bosing: uning vazifasi, ishlash tamoyili, parametrlari va narxi chiqadi. «Jarayon bo‘ylab sayohat» xomashyodan omborgacha 11 bosqichni ketma-ket ko‘rsatadi. «Ichki tuzilma» fermenterlar ichidagi aralashtirgich, to‘siqlar, havo taqsimlagich va pufakchalarni ko‘rsatadi.</p>
+    <p class="note">O‘lchamlar va joylashuv konseptual: loyihalash instituti batafsil loyiha tayyorlaydi.</p>`;
+  panel.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => select(b.dataset.go, true)));
+}
+function show(id) {
+  const d = INFO[id];
+  const z = ZONES[d.zone];
+  const n = stepOf[id];
+  const si = STEPS.findIndex((s) => s.n === n);
+  panel.innerHTML = `
+    <div class="chips">${n ? `<span class="chip step">${n}-bosqich</span>` : ""}<span class="chip">${z.name}</span></div>
+    <h2>${esc(d.name)}</h2>
+    <p>${esc(d.role)}</p>
+    ${d.io ? `<div class="io"><div><b>Kiradi</b>${esc(d.io[0])}</div><div><b>Chiqadi</b>${esc(d.io[1])}</div></div>` : ""}
+    <h3>Qanday ishlaydi</h3>
+    <ol>${d.how.map((h) => `<li>${esc(h)}</li>`).join("")}</ol>
+    <h3>Asosiy parametrlar</h3>
+    <table class="kv">${d.params.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table>
+    <h3>Narx va yetkazib beruvchilar</h3>
+    <div class="price"><span class="note">Taxminiy narx</span><b>${d.price ? fmt(d.price) : "CAPEXga kiritilgan"}</b></div>
+    <p class="note" style="margin-top:8px">${esc(d.sup)}</p>
+    ${n ? `<div class="nav"><button type="button" id="pPrev" ${si <= 0 ? "disabled" : ""}>← Oldingi bosqich</button><button type="button" id="pNext" ${si >= STEPS.length - 1 ? "disabled" : ""}>Keyingi bosqich →</button></div>` : ""}
+    <div class="nav"><button type="button" id="pHome">Umumiy ko‘rinish</button></div>`;
+  panel.scrollTop = 0;
+  const pv = document.getElementById("pPrev"), nx = document.getElementById("pNext");
+  if (pv) pv.onclick = () => select(STEPS[si - 1].id, true);
+  if (nx) nx.onclick = () => select(STEPS[si + 1].id, true);
+  document.getElementById("pHome").onclick = home;
+}
+
+// bosqichlar lentasi
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.dataset.id = s.id;
+  b.innerHTML = `<i>${String(s.n).padStart(2, "0")}</i>${s.t}`;
+  b.onclick = () => { stopTour(); select(s.id, true); };
+  stepsEl.appendChild(b);
+});
+
+// ============================================================ TANLASH VA KAMERA
+let selected = null;
+const hl = new Map();
+function setHighlight(id, on) {
+  if (!id) return;
+  equip[id].group.traverse((o) => {
+    if (!o.isMesh || !o.material || !o.material.emissive) return;
+    if (on) { if (!hl.has(o)) { hl.set(o, o.material); o.material = o.material.clone(); } o.material.emissive.setHex(0x0f7a63); o.material.emissiveIntensity = 0.35; }
+    else if (hl.has(o)) { o.material.dispose(); o.material = hl.get(o); hl.delete(o); }
+  });
+}
+function worldPos(id, yOff = 0) {
+  const g = equip[id].group;
+  const v = new THREE.Vector3(0, (equip[id].labelY || 2) * 0.55 + yOff, 0);
+  return g.localToWorld(v);
+}
+let fly = null;
+function flyTo(target, dist) {
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  if (dir.y < 0.35) { dir.y = 0.45; dir.normalize(); }
+  const toPos = target.clone().add(dir.multiplyScalar(dist));
+  if (reduce) { camera.position.copy(toPos); controls.target.copy(target); return; }
+  fly = { t: 0, fromPos: camera.position.clone(), toPos, fromT: controls.target.clone(), toT: target.clone() };
+}
+const DIST = { f1: 10, f2: 10, lab: 12, store: 18, comp: 12, film1: 13, film2: 13, dryer: 12, ww: 12, oil: 11, bag: 11 };
+function select(id, move) {
+  const infoId = INFO[id] ? id : (MAIN_INFO[id] || id);
+  if (selected) { setHighlight(selected, false); equip[selected].label.classList.remove("sel"); }
+  selected = id;
+  setHighlight(id, true);
+  equip[id].label.classList.add("sel");
+  show(infoId);
+  const n = stepOf[id];
+  stepsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(stepOf[b.dataset.id] === n && !!n)));
+  const act = stepsEl.querySelector('button[aria-pressed="true"]');
+  if (act) act.scrollIntoView({ block: "nearest", inline: "center", behavior: reduce ? "auto" : "smooth" });
+  if (move) flyTo(worldPos(id), DIST[id] || 9);
+}
+function home() {
+  stopTour();
+  if (selected) { setHighlight(selected, false); equip[selected].label.classList.remove("sel"); selected = null; }
+  stepsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", "false"));
+  overview();
+  const tgt = new THREE.Vector3(0, 1.5, 0);
+  if (reduce) { camera.position.copy(HOME()); controls.target.copy(tgt); return; }
+  fly = { t: 0, fromPos: camera.position.clone(), toPos: HOME(), fromT: controls.target.clone(), toT: tgt };
+}
+
+// sichqoncha bilan tanlash
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+let down = null;
+renderer.domElement.addEventListener("pointerdown", (e) => { down = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener("pointerup", (e) => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(pickables, false).find((h) => h.object.visible);
+  if (hit) { stopTour(); select(hit.object.userData.id, true); }
+});
+renderer.domElement.addEventListener("pointermove", (e) => {
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  renderer.domElement.style.cursor = ray.intersectObjects(pickables, false).length ? "pointer" : "grab";
+});
+
+// ============================================================ TUGMALAR
+let tour = null;
+const bTour = document.getElementById("bTour");
+function stopTour() { if (tour) { clearInterval(tour); tour = null; bTour.textContent = "▶ Jarayon bo‘ylab sayohat"; bTour.setAttribute("aria-pressed", "false"); } }
+bTour.onclick = () => {
+  if (tour) return stopTour();
+  let i = 0;
+  select(STEPS[0].id, true);
+  bTour.textContent = "■ Sayohatni to‘xtatish"; bTour.setAttribute("aria-pressed", "true");
+  tour = setInterval(() => { i++; if (i >= STEPS.length) return stopTour(); select(STEPS[i].id, true); }, 7000);
+};
+document.getElementById("bHome").onclick = home;
+function toggle(btn, fn) { btn.onclick = () => { const on = btn.getAttribute("aria-pressed") !== "true"; btn.setAttribute("aria-pressed", String(on)); fn(on); }; }
+let showLabels = true, animate = !reduce;
+toggle(document.getElementById("bLabels"), (on) => { showLabels = on; labelsEl.hidden = !on; });
+toggle(document.getElementById("bWalls"), (on) => { walls.visible = on; });
+toggle(document.getElementById("bXray"), (on) => { M.shell.opacity = on ? 0.28 : 1; M.shell.transparent = on; M.shell.depthWrite = !on; M.shell.needsUpdate = true; });
+const bAnim = document.getElementById("bAnim");
+bAnim.setAttribute("aria-pressed", String(animate));
+toggle(bAnim, (on) => { animate = on; });
+
+// ============================================================ MAVZU (yorug'/qorong'i)
+function applyTheme() {
+  const c = getComputedStyle(document.documentElement).getPropertyValue("--scene").trim() || "#dfe7e5";
+  scene.background = new THREE.Color(c);
+  const dark = new THREE.Color(c).getHSL({}).l < 0.3;
+  M.ground.color.setHex(dark ? 0x2c3a33 : 0x9fae9a);
+  M.floor.color.setHex(dark ? 0x56625f : 0xb9c2bf);
+  scene.fog = new THREE.Fog(scene.background, 80, 160);
+}
+applyTheme();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+// ============================================================ SIKL
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(1, h);
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+const tmp = new THREE.Vector3(), dummy = new THREE.Object3D();
+const clock = new THREE.Clock();
+let T = 0;
+function placeLabels() {
+  if (!showLabels) return;
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const id in equip) {
+    const e = equip[id];
+    tmp.set(0, e.labelY || 2, 0);
+    e.group.localToWorld(tmp);
+    const dist = tmp.distanceTo(camera.position);
+    tmp.project(camera);
+    const small = w < 640;
+    const vis = tmp.z < 1 && Math.abs(tmp.x) < 1.05 && Math.abs(tmp.y) < 1.05 &&
+      (id === selected || (small ? (dist < 22 || (stepOf[id] && dist < 45)) : (dist < 60 || stepOf[id])));
+    e.label.style.display = vis ? "" : "none";
+    if (vis) {
+      e.label.style.left = ((tmp.x + 1) / 2 * w).toFixed(1) + "px";
+      e.label.style.top = ((1 - tmp.y) / 2 * h).toFixed(1) + "px";
+      e.label.style.zIndex = String(1000 - Math.round(dist));
+    }
+  }
+}
+function tick() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (fly) {
+    fly.t = Math.min(1, fly.t + dt / 1.3);
+    const k = fly.t < 0.5 ? 4 * fly.t ** 3 : 1 - (-2 * fly.t + 2) ** 3 / 2;
+    camera.position.lerpVectors(fly.fromPos, fly.toPos, k);
+    controls.target.lerpVectors(fly.fromT, fly.toT, k);
+    if (fly.t >= 1) fly = null;
+  }
+  if (animate) {
+    T += dt;
+    for (const s of spinners) s.obj.rotation.y += dt * s.speed;
+    for (const u of updaters) u(dt, T);
+    for (const f of flows) {
+      f.t = (f.t + dt * f.speed / f.len) % 1;
+      for (let i = 0; i < f.n; i++) {
+        const u = (f.t + i / f.n) % 1;
+        dummy.position.copy(f.path.getPointAt(u));
+        dummy.updateMatrix(); f.im.setMatrixAt(i, dummy.matrix);
+      }
+      f.im.instanceMatrix.needsUpdate = true;
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  placeLabels();
+  requestAnimationFrame(tick);
+}
+// boshlang'ich holat: pufakchalar va oqimlar joylashsin
+for (const u of updaters) u(0.016, 0);
+for (const f of flows) { for (let i = 0; i < f.n; i++) { dummy.position.copy(f.path.getPointAt(i / f.n)); dummy.updateMatrix(); f.im.setMatrixAt(i, dummy.matrix); } f.im.instanceMatrix.needsUpdate = true; }
+overview();
+tick();
+})();
+</script>
